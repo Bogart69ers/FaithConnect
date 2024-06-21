@@ -11,68 +11,67 @@ namespace FaithConnect.Repository
         private BaseRepository<UserAccount> _userAcc;
         private BaseRepository<UserInformation> _userInfo;
 
-
         public AccountManager()
         {
             _userAcc = new BaseRepository<UserAccount>();
             _userInfo = new BaseRepository<UserInformation>();
-
         }
 
         public UserAccount GetUserById(int Id)
         {
             return _userAcc.Get(Id);
         }
-        public UserAccount GetUserByUserId(String userId)
+
+        public UserAccount GetUserByUserId(string userId)
         {
-            return _userAcc._table.Where(m => m.userId == userId).FirstOrDefault();
-        }
-        public UserAccount GetUserByUsername(String username)
-        {
-            return _userAcc._table.Where(m => m.username == username).FirstOrDefault();
-        }
-        public UserAccount GetUserByEmail(String email)
-        {
-            return _userAcc._table.Where(m => m.email == email).FirstOrDefault();
+            return _userAcc._table.FirstOrDefault(m => m.userId == userId);
         }
 
-        public ErrorCode SignIn(String username, String password, ref String errMsg)
+        public UserAccount GetUserByUsername(string username)
+        {
+            return _userAcc._table.FirstOrDefault(m => m.username == username);
+        }
+
+        public UserAccount GetUserByEmail(string email)
+        {
+            return _userAcc._table.FirstOrDefault(m => m.email == email);
+        }
+
+        public ErrorCode SignIn(string username, string password, ref string errMsg)
         {
             var userSignIn = GetUserByUsername(username);
             if (userSignIn == null)
             {
-                errMsg = "User not exist!";
+                errMsg = "User does not exist!";
                 return ErrorCode.Error;
             }
 
             if (!userSignIn.password.Equals(password))
             {
-                errMsg = "Password is Incorrect";
+                errMsg = "Password is incorrect";
                 return ErrorCode.Error;
             }
 
-            // user exist
-            errMsg = "Login Successful";
+            errMsg = "Login successful";
             return ErrorCode.Success;
         }
 
-        public ErrorCode SignUp(UserAccount userac, ref String errMsg)
+        public ErrorCode SignUp(UserAccount userac, ref string errMsg)
         {
             userac.userId = Utilities.gUid;
             userac.vcode = Utilities.code.ToString();
             userac.date_created = DateTime.Now;
-            userac.status = (Int32)Status.InActive;
+            userac.status = (int)Status.InActive;
 
-            // if the user already exist this will execute
             if (GetUserByUsername(userac.username) != null)
             {
-                errMsg = "Username Already Exist";
+                errMsg = "Username already exists";
                 return ErrorCode.Error;
             }
-            // if the email already exist this will execute
+
             if (GetUserByEmail(userac.email) != null)
             {
-                errMsg = "Email Already Exist";
+                errMsg = "Email already exists";
                 return ErrorCode.Error;
             }
 
@@ -81,56 +80,71 @@ namespace FaithConnect.Repository
                 return ErrorCode.Error;
             }
 
-            // use the generated code for OTP "ua.code"
-            // send email or sms here...........
-
             return ErrorCode.Success;
         }
 
-        public ErrorCode UpdateUser(UserAccount userac, ref String errMsg)
+        public ErrorCode UpdateUser(UserAccount userac, ref string errMsg)
         {
             return _userAcc.Update(userac.id, userac, out errMsg);
         }
-        public ErrorCode UpdateUserInformation(UserInformation userinf, ref String errMsg)
+
+        public ErrorCode UpdateUserInformation(UserInformation userinf, ref string errMsg)
         {
             return _userInfo.Update(userinf.id, userinf, out errMsg);
-        }       
-        public UserInformation GetUserInfoByUsername(String username)
+        }
+
+        public UserInformation GetUserInfoByUsername(string username)
         {
             var userAcc = GetUserByUsername(username);
-            return _userInfo._table.Where(m => m.userId == userAcc.userId).FirstOrDefault();
-        }
-        public UserInformation GetUserInfoByUserId(String userId)
-        {
-            return _userInfo._table.Where(m => m.userId == userId).FirstOrDefault();
-        }
-        public UserInformation CreateOrRetrieve(String username, ref String err)
-        {
-            var User = GetUserByUsername(username);
-            var UserInfo = GetUserInfoByUserId(User.userId);
-            if (UserInfo != null)
-                return UserInfo;
-
-            UserInfo = new UserInformation();
-            UserInfo.userId = User.userId;
-            UserInfo.email = User.email;
-            UserInfo.Status = (Int32)Status.Active;
-
-            var userEmail = User.email;
-            if (userEmail != null)
+            if (userAcc == null)
             {
-                UserInfo.email = userEmail;
+                return null;
             }
-            _userInfo.Create(UserInfo, out err);
-
-            return GetUserInfoByUserId(User.userId);
+            return _userInfo._table.FirstOrDefault(m => m.userId == userAcc.userId);
         }
 
-        public UserAccount Retrieve(int id, ref String err)
+        public UserInformation GetUserInfoByUserId(string userId)
         {
-            var User = GetUserById(id);
+            return _userInfo._table.FirstOrDefault(m => m.userId == userId);
+        }
 
-            return GetUserByUserId(User.userId);
+        public UserInformation CreateOrRetrieve(string username, ref string err)
+        {
+            var user = GetUserByUsername(username);
+            if (user == null)
+            {
+                err = "User does not exist";
+                return null;
+            }
+
+            var userInfo = GetUserInfoByUserId(user.userId);
+            if (userInfo != null)
+            {
+                return userInfo;
+            }
+
+            userInfo = new UserInformation
+            {
+                userId = user.userId,
+                email = user.email,
+                Status = (int)Status.Active
+            };
+
+            _userInfo.Create(userInfo, out err);
+
+            return GetUserInfoByUserId(user.userId);
+        }
+
+        public UserAccount Retrieve(int id, ref string err)
+        {
+            var user = GetUserById(id);
+            if (user == null)
+            {
+                err = "User not found";
+                return null;
+            }
+
+            return GetUserByUserId(user.userId);
         }
     }
 }

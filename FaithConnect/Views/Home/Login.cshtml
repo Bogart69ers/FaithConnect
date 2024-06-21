@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>Faith Connect</title>
+    <link rel="shortcut icon" href="~/Assets/login/img/Logo.ico" type="image/x-icon">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/assets/web/assets/mobirise-icons2/mobirise2.css">
+    <link rel="stylesheet" href="~/Assets/login/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Assets/login/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="~/Assets/login/css/bootstrap-reboot.min.css">
+    <link rel="stylesheet" href="~/Assets/login/css/jarallax.css">
+    <link rel="stylesheet" href="~/Assets/login/css/animate.css">
+    <link rel="stylesheet" href="~/Assets/login/css/style.css">
+    <link rel="stylesheet" href="~/Assets/login/css/style2.css">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Inter+Tight:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter+Tight:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap"></noscript>
+    <link rel="preload" as="style" href="~/Assets/login/css/mbr-additional.css?v=CW5Q19">
+    <link rel="stylesheet" href="~/Assets/login/css/mbr-additional.css?v=CW5Q19" type="text/css">
+
+</head>
+<body>
+    @using (Html.BeginForm())
+    {
+        <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+
+        <section data-bs-version="5.1" class="form03 cid-uagZCfXL7S" id="form03-1z">
+
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg item-wrapper">
+                        <div class="mbr-section-head mb-5">
+                            <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-5">
+                                <strong>Login</strong>
+                            </h3>
+
+                        </div>
+                        <div class="col-lg-12 mx-auto mbr-form" data-form-type="formoid">
+                            <input type="hidden" name="email" data-form-email="true" value="ypwsixtd6j+sxA5zWOep7XVXQO4F9EeHqywLleKZfYhbwnW5/2ZjAhfY3Ss/QghZR+yxAAC849AQ3gP4lSlJ8q7SD8b50I+YY/F2P50dxhBF+WoJkdPipzKYzpPyUicJ">
+
+                            <div class="dragArea row">
+                                <div class="col-md col-sm-12 form-group mb-3 mb-3">
+                                    <input type="text" class="form-control" name="username" value="" placeholder="Username" required />
+                                </div>
+
+                                <div class="col-12 form-group mb-3 mb-3">
+                                    <input type="password" class="form-control" name="password" value="" placeholder="Password" required />
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-10">
+                                        @if (!String.IsNullOrEmpty(ViewBag.Error as String))
+                                        {
+                                            <div style="color: red;">
+                                                @ViewBag.Error
+                                            </div>
+                                        }
+
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <br />
+                                    <div class="col-md-10">
+                                        <input type="submit" class="btn btn-success" value="Login" style="width: 100%;padding-left:10px;" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-10">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <hr />
+                                            </div>
+                                            <div class="col-md-2">
+                                                <center>OR</center>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <hr />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-10">
+                                        <a href="/Home/SignUp" class="btn btn-outline-light" style="background-color:#876f54; color: white;width: 100%;">Sign Up</a>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="image-wrapper">
+                            <img class="w-100" src="~/Assets/login/img/Logo.png" alt="Mobirise Website Builder">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    }
+
+    <section data-bs-version="5.1" class="footer2 cid-uagYZQ5ASz" once="footers" id="footer02-1y">
+
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-6 center mt-2 mb-3">
+                    <p class="mbr-fonts-style copyright mb-0 display-7">
+                        © Copyright 2024 Faith Connect - All Rights Reserved
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</body>
+</html>

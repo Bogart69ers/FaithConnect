@@ -26,7 +26,14 @@ namespace FaithConnect.Utils
         InActive,
         Active
     }
+    public class Constant
+    {
+        public const string Role_Admin = "Admin";
+        public const string Role_User = "User";
 
+        public const int ERROR = 1;
+        public const int SUCCESS = 0;
+    }
    public class Utilities
     {
         public static String gUid
