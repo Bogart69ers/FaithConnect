@@ -5,11 +5,16 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="71be2f41dff64ed28ee5644e72bbd70d" Name="Diagram1">
-        <EntityTypeShape EntityType="FaithConnectModel.Role" Width="1.5" PointX="0.75" PointY="1.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.UserAccount" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.UserInformation" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
-        <AssociationConnector Association="FaithConnectModel.FK_UserAccount_Role" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="FaithConnectModel.vw_Role" Width="1.5" PointX="0.625" PointY="4" />
+        <EntityTypeShape EntityType="FaithConnectModel.Content" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.Event" Width="1.5" PointX="0.75" PointY="5.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.Feedback" Width="1.5" PointX="2.75" PointY="5.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.Role" Width="1.5" PointX="0.75" PointY="1.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.Survey" Width="1.5" PointX="5.75" PointY="3.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.sysdiagrams" Width="1.5" PointX="4.75" PointY="6.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserAccount" Width="1.5" PointX="3" PointY="1" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserInformation" Width="1.5" PointX="6.75" PointY="6.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.vw_Role" Width="1.5" PointX="7.75" PointY="0.75" />
+        <AssociationConnector Association="FaithConnectModel.FK_UserAccount_Role" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

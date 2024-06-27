@@ -12,18 +12,13 @@ namespace FaithConnect
     using System;
     using System.Collections.Generic;
     
-    public partial class UserInformation
+    public partial class Event
     {
         public int id { get; set; }
-        public string userId { get; set; }
-        public string last_name { get; set; }
-        public string first_name { get; set; }
-        public string phone { get; set; }
-        public string email { get; set; }
-        public string location { get; set; }
-        public Nullable<int> status { get; set; }
-        public string imageFile { get; set; }
-        public string bio { get; set; }
-        public Nullable<System.DateTime> date_created { get; set; }
+        public string EventId { get; set; }
+        public string Title { get; set; }
+        public Nullable<System.DateTime> Date { get; set; }
+        public string Description { get; set; }
+        public string Organizer { get; set; }
     }
 }

@@ -20,6 +20,7 @@ namespace FaithConnect.Controllers
         public BaseController()
         {
             _UserAcc = new BaseRepository<UserAccount>();
+            _AccManager = new AccountManager();
         }
 
         public void IsUserLoggedSession()

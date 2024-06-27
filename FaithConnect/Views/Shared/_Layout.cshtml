@@ -150,17 +150,11 @@
                 <!-- nav -->
                 <div class="col d-none d-xl-flex justify-content-center">
                     <!-- home -->
-                    <div class="mx-4 nav__btn nav__btn-active">
-                        <button type="button" class="btn px-4">
-                            <i class="fas fa-home text-muted fs-4"></i>
+                    <div class="mx-4 nav__btn nav__btn-active" >
+                        <button type="button" class="btn px-4" href="~/Home/Index">
+                            <i class="fas fa-home text-muted fs-4" ></i>
                         </button>
-                    </div>
-                    <!-- market -->
-                    <div class="mx-4 nav__btn">
-                        <button type="button" class="btn px-4">
-                            <i class="fas fa-store text-muted fs-4"></i>
-                        </button>
-                    </div>
+                    </div>                   
                     <!-- group -->
                     <div class="mx-4 nav__btn">
                         <button type="button" class="btn px-4">
@@ -181,13 +175,7 @@
                                 </span>
                             </i>
                         </button>
-                    </div>
-                    <!-- gaming -->
-                    <div class="mx-4 nav__btn">
-                        <button type="button" class="btn px-4">
-                            <i class="fas fa-gamepad text-muted fs-4"></i>
-                        </button>
-                    </div>
+                    </div>                   
                 </div>
                 <!-- menus -->
                 <div class="col d-flex align-items-center justify-content-end">
@@ -197,7 +185,7 @@
                              class="rounded-circle me-2"
                              alt="avatar"
                              style="width: 38px; height: 38px; object-fit: cover" />
-                        <p class="m-0">Name</p>
+                        <p class="m-0">@User.Identity.Name</p>
                     </div>
                     <!-- main menu -->
                     <div class="
@@ -922,7 +910,7 @@
                         aria-labelledby="secondMenu"
                         style="width: 23em">
                         <!-- avatar -->
-                        <li class="dropdown-item p-1 rounded d-flex" type="button">
+                        <li class="dropdown-item p-1 rounded d-flex" type="button" href="~/Home/MyProfile">
                             <img src="https://source.unsplash.com/collection/happy-people"
                                  alt="avatar"
                                  class="rounded-circle me-2"
@@ -1349,7 +1337,7 @@
                         <li class="dropdown-item p-1 my-3 rounded" type="button">
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a href="~/Home/Login"
+                                    <a href="/Home/Logout"
                                        class="d-flex text-decoration-none text-dark">
                                         <i class="fas fa-cog bg-gray p-2 rounded-circle"></i>
                                         <div class="

@@ -58,29 +58,42 @@ namespace FaithConnect.Repository
 
         public ErrorCode SignUp(UserAccount userac, ref string errMsg)
         {
-            userac.userId = Utilities.gUid;
-            userac.vcode = Utilities.code.ToString();
-            userac.date_created = DateTime.Now;
-            userac.status = (int)Status.InActive;
-
-            if (GetUserByUsername(userac.username) != null)
+            try
             {
-                errMsg = "Username already exists";
+                userac.userId = Utilities.gUid;
+                userac.vcode = Utilities.code.ToString();
+                userac.date_created = DateTime.Now;
+                userac.status = (int)Status.InActive;
+
+                if (GetUserByUsername(userac.username) != null)
+                {
+                    errMsg = "Username already exists";
+                    return ErrorCode.Error;
+                }
+
+                if (GetUserByEmail(userac.email) != null)
+                {
+                    errMsg = "Email already exists";
+                    return ErrorCode.Error;
+                }
+
+                if (_userAcc.Create(userac, out errMsg) != ErrorCode.Success)
+                {
+                    return ErrorCode.Error;
+                }
+
+                return ErrorCode.Success;
+            }
+            catch (Exception ex)
+            {
+                errMsg = $"An error occurred: {ex.Message}";
                 return ErrorCode.Error;
             }
+        }
 
-            if (GetUserByEmail(userac.email) != null)
-            {
-                errMsg = "Email already exists";
-                return ErrorCode.Error;
-            }
-
-            if (_userAcc.Create(userac, out errMsg) != ErrorCode.Success)
-            {
-                return ErrorCode.Error;
-            }
-
-            return ErrorCode.Success;
+        public ErrorCode CreateUserInformation(UserInformation userinf, ref string errMsg)
+        {
+            return _userInfo.Create(userinf, out errMsg);
         }
 
         public ErrorCode UpdateUser(UserAccount userac, ref string errMsg)
@@ -108,7 +121,7 @@ namespace FaithConnect.Repository
             return _userInfo._table.FirstOrDefault(m => m.userId == userId);
         }
 
-        public UserInformation CreateOrRetrieve(string username, ref string err)
+        public UserInformation CreateOrRetrieve(String username, ref String err)
         {
             var user = GetUserByUsername(username);
             if (user == null)
@@ -123,13 +136,17 @@ namespace FaithConnect.Repository
                 return userInfo;
             }
 
-            userInfo = new UserInformation
-            {
-                userId = user.userId,
-                email = user.email,
-                Status = (int)Status.Active
-            };
+            userInfo = new UserInformation();
+            userInfo.userId = user.userId;
+            userInfo.email = user.email;
+            userInfo.status = (int)Status.Active;
+            userInfo.date_created = DateTime.Now;
 
+            var userEmail = user.email;
+            if (userEmail != null)
+            {
+                userInfo.email = userEmail;
+            }
             _userInfo.Create(userInfo, out err);
 
             return GetUserInfoByUserId(user.userId);

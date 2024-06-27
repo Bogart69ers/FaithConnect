@@ -13,13 +13,30 @@ namespace FaithConnect.Controllers
     [Authorize(Roles = "Admin, User")]
     public class HomeController : BaseController
     {
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Index()
         {
+
             IsUserLoggedSession();
-            return View();
+            var username = User.Identity.Name;
+
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
         }
 
+        [HttpPost]
+        public ActionResult Index(UserInformation userInf)
+        {
+            if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
+            {
+                ModelState.AddModelError(String.Empty, ErrorMessage);
+                return View(userInf);
+
+            }
+            return RedirectToAction("Index");
+
+        }
 
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
@@ -54,17 +71,17 @@ namespace FaithConnect.Controllers
                     return View();
                 }
 
+                if (user.status != (Int32)Status.Active)
+                {
+                    TempData["username"] = username;
+                    return RedirectToAction("Verify");
+                }
+
                 var info = _AccManager.GetUserInfoByUsername(username);
                 if (info == null)
                 {
                     ViewBag.Error = "User information not found.";
                     return View();
-                }
-
-                if (user.status != (int)Status.Active)
-                {
-                    TempData["username"] = username;
-                    return RedirectToAction("Verify");
                 }
 
                 FormsAuthentication.SetAuthCookie(username, false);
@@ -83,9 +100,9 @@ namespace FaithConnect.Controllers
                 switch (user.Role1.roleName)
                 {
                     case Constant.Role_Admin:
-                        return RedirectToAction("Index", "Admin");
+                        return RedirectToAction("Index", "Home");
                     case Constant.Role_User:
-                        return RedirectToAction("Index", "User");
+                        return RedirectToAction("Index", "Home");
                     default:
                         return RedirectToAction("Index");
                 }
@@ -96,7 +113,13 @@ namespace FaithConnect.Controllers
             return View();
         }
 
-
+        [AllowAnonymous]
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Login");
+        }
 
         [AllowAnonymous]
         public ActionResult Verify()
@@ -106,9 +129,10 @@ namespace FaithConnect.Controllers
 
             return View();
         }
+
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult Verify(String code, String username)
+        public ActionResult Verify(string code, string username)
         {
             if (String.IsNullOrEmpty(username))
                 return RedirectToAction("Login");
@@ -116,6 +140,11 @@ namespace FaithConnect.Controllers
             TempData["username"] = username;
 
             var user = _AccManager.GetUserByUsername(username);
+            if (user == null)
+            {
+                TempData["error"] = "User not found.";
+                return View();
+            }
 
             if (!user.vcode.Equals(code))
             {
@@ -123,67 +152,84 @@ namespace FaithConnect.Controllers
                 return View();
             }
 
-            user.status = (Int32)Status.Active;
+            user.status = (int)Status.Active;
             _AccManager.UpdateUser(user, ref ErrorMessage);
 
-            return RedirectToAction("MyProfile");
+            // Now add the user information to the UserInformation table
+            var ui = new UserInformation
+            {
+                userId = user.userId,
+                email = user.email,
+                first_name = TempData["firstname"]?.ToString(),
+                last_name = TempData["lastname"]?.ToString(),
+                phone = TempData["phone"]?.ToString()
+            };
+
+            if (_AccManager.CreateUserInformation(ui, ref ErrorMessage) != ErrorCode.Success)
+            {
+                TempData["error"] = ErrorMessage;
+                return View();
+            }
+
+            TempData["SuccessMessage"] = "Account verified successfully.";
+            return RedirectToAction("Login");
         }
-        [AllowAnonymous]
+
+
+        [Authorize]
         public ActionResult MyProfile()
         {
-            //IsUserLoggedSession();
-
-            //var username = User.Identity.Name;
-
-            //var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-
-            //var userEmail = _AccManager.GetUserByEmail(user.email);
-
-            //ViewBag.userEmail = userEmail.email;
-
-            return View();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Error retrieving user information.";
+                return RedirectToAction("Index");
+            }
+            return View(user);
         }
 
-        //[HttpPost]
-        //public ActionResult MyProfile(UserInformation userInf, HttpPostedFileBase profilePicture)
-        //{
-        //    var userEmail = _AccManager.GetUserByEmail(userInf.email); // Assuming User.Identity.Name contains the user's email
+        [HttpPost]
+        public ActionResult MyProfile(UserInformation userInf, HttpPostedFileBase profilePicture)
+        {
+            var user = _AccManager.GetUserByUserId(userInf.userId);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Error updating profile: User not found.";
+                return RedirectToAction("Index");
+            }
 
-        //    ViewBag.userEmail = userEmail.email;
+            if (profilePicture != null && profilePicture.ContentLength > 0)
+            {
+                var uploadsFolderPath = Server.MapPath("~/UploadedFiles/");
 
-        //    if (profilePicture != null && profilePicture.ContentLength > 0)
-        //    {
-        //        var uploadsFolderPath = Server.MapPath("~/UploadedFiles/");
+                // Check if the directory exists, and create it if it does not
+                if (!Directory.Exists(uploadsFolderPath))
+                {
+                    Directory.CreateDirectory(uploadsFolderPath);
+                }
 
-        //        // Check if the directory exists, and create it if it does not
-        //        if (!Directory.Exists(uploadsFolderPath))
-        //        {
-        //            Directory.CreateDirectory(uploadsFolderPath);
-        //        }
+                // Save the profile picture to the server
+                var fileName = Path.GetFileName(profilePicture.FileName);
+                var serverSavePath = Path.Combine(uploadsFolderPath, fileName);
+                profilePicture.SaveAs(serverSavePath);
 
-        //        // Save the profile picture to the server
-        //        var fileName = Path.GetFileName(profilePicture.FileName);
-        //        var serverSavePath = Path.Combine(uploadsFolderPath, fileName);
-        //        profilePicture.SaveAs(serverSavePath);
+                // Update the user's profile with the new image file name
+                userInf.imageFile = fileName;
+            }
 
-        //        // Update the user's profile with the new image file name
-        //        userInf.imageFile = fileName;
+            userInf.userId = user.userId;  // Ensure userId is correctly set
+            if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
+            {
+                TempData["ErrorMessage"] = $"Error updating profile: {ErrorMessage}";
+                return View(userInf);
+            }
 
-        //        // Update user information in the database
-        //        if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
-        //        {
-        //            ModelState.AddModelError(string.Empty, ErrorMessage);
-        //            return View(userInf);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Please select a valid image file.");
-        //    }
+            TempData["SuccessMessage"] = "Profile updated successfully.";
+            return RedirectToAction("Index");
+        }
 
-        //    TempData["Message"] = ModelState.IsValid ? "Profile picture updated successfully." : "Failed to update profile picture.";
-        //    return RedirectToAction("MyProfile"); // Redirect to the MyProfile action to refresh the view
-        //}
+
 
         [AllowAnonymous]
         public ActionResult Signup()
@@ -195,44 +241,78 @@ namespace FaithConnect.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult SignUp(UserAccount ua, string ConfirmPass)
+        public ActionResult SignUp(UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone)
         {
-            if (!ua.password.Equals(ConfirmPass))
+            try
             {
-                ModelState.AddModelError(String.Empty, "Password not match");
+                if (!ua.password.Equals(ConfirmPass))
+                {
+                    ModelState.AddModelError(string.Empty, "Password not match");
+                    var roleList = Utilities.ListRole;
+                    roleList.FirstOrDefault(x => x.Value == "User").Selected = true;
+                    ViewBag.Role = roleList;
+                    return View(ua);
+                }
+
+                var ui = new UserInformation
+                {
+                    first_name = firstname,
+                    last_name = lastname,
+                    phone = phone
+                };
+
+                if (!ModelState.IsValid)
+                {
+                    var roleList = Utilities.ListRole;
+                    roleList.FirstOrDefault(x => x.Value == "User").Selected = true;
+                    ViewBag.Role = roleList;
+                    return View(ua);
+                }
+
+                if (_AccManager.SignUp(ua, ref ErrorMessage) != ErrorCode.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ErrorMessage);
+                    ViewBag.Role = Utilities.ListRole;
+                    return View(ua);
+                }
+
+                var user = _AccManager.GetUserByEmail(ua.email);
+                string verificationCode = ua.vcode;
+
+                string emailBody = $"Your verification code is: {verificationCode}";
+                string errorMessage = "";
+
+                var mailManager = new MailManager();
+                bool emailSent = mailManager.SendEmail(ua.email, "Verification Code", emailBody, ref errorMessage);
+
+                if (!emailSent)
+                {
+                    ModelState.AddModelError(string.Empty, errorMessage);
+                    ViewBag.Role = Utilities.ListRole;
+                    return View(ua);
+                }
+
+                TempData["username"] = ua.username;
+                TempData["firstname"] = firstname;
+                TempData["lastname"] = lastname;
+                TempData["phone"] = phone;
+
+                TempData["SuccessMessage"] = "Account created successfully. Please enter the OTP sent to your email.";
+                return RedirectToAction("Verify");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
                 var roleList = Utilities.ListRole;
-                roleList.FirstOrDefault(x => x.Value == "user").Selected = true;
+                roleList.FirstOrDefault(x => x.Value == "User").Selected = true;
                 ViewBag.Role = roleList;
                 return View(ua);
             }
-
-            if (_AccManager.SignUp(ua, ref ErrorMessage) != ErrorCode.Success)
-            {
-                ModelState.AddModelError(String.Empty, ErrorMessage);
-
-                ViewBag.Role = Utilities.ListRole;
-                return View(ua);
-            }
-
-            var user = _AccManager.GetUserByEmail(ua.email);
-            string verificationCode = ua.vcode;
-
-            string emailBody = $"Your verification code is: {verificationCode}";
-            string errorMessage = "";
-
-            var mailManager = new MailManager();
-            bool emailSent = mailManager.SendEmail(ua.email, "Verification Code", emailBody, ref errorMessage);
-
-            if (!emailSent)
-            {
-                ModelState.AddModelError(String.Empty, errorMessage);
-                ViewBag.Role = Utilities.ListRole;
-                return View(ua);
-            }
-            TempData["username"] = ua.username;
-            return RedirectToAction("Verify");
-
         }
+
+
+
+
 
     }
 }

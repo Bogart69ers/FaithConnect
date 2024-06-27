@@ -125,7 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Index\css\main.css" />
-    <Content Include="Assets\Index\img\default.png" />
+    <Content Include="UploadedFiles\default.png" />
     <Content Include="Assets\Index\js\main.js" />
     <Content Include="Assets\login\css\animate.css" />
     <Content Include="Assets\login\css\bootstrap-grid.min.css" />
@@ -167,8 +167,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Content.cs">
+      <DependentUpon>FaithConnect.tt</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Event.cs">
+      <DependentUpon>FaithConnect.tt</DependentUpon>
+    </Compile>
     <Compile Include="FaithConnect.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -184,6 +190,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FaithConnect.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Feedback.cs">
+      <DependentUpon>FaithConnect.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -194,6 +203,12 @@
     <Compile Include="Repository\IBaseRepository.cs" />
     <Compile Include="Repository\MailManager.cs" />
     <Compile Include="Role.cs">
+      <DependentUpon>FaithConnect.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Survey.cs">
+      <DependentUpon>FaithConnect.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sysdiagrams.cs">
       <DependentUpon>FaithConnect.tt</DependentUpon>
     </Compile>
     <Compile Include="UserAccount.cs">
@@ -230,6 +245,8 @@
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\MyProfile.cshtml" />
+    <Content Include="Views\Home\Signup.cshtml" />
+    <Content Include="Views\Home\Verify.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -239,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Assets\Index\img\" />
     <Folder Include="Assets\login\js\" />
     <Folder Include="Assets\signup\js\" />
     <Folder Include="Views\Base\" />
