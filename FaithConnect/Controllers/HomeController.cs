@@ -196,7 +196,7 @@ namespace FaithConnect.Controllers
             if (user == null)
             {
                 TempData["ErrorMessage"] = "Error updating profile: User not found.";
-                return RedirectToAction("Index");
+                return RedirectToAction("MyProfile");
             }
 
             if (profilePicture != null && profilePicture.ContentLength > 0)
@@ -215,19 +215,20 @@ namespace FaithConnect.Controllers
                 profilePicture.SaveAs(serverSavePath);
 
                 // Update the user's profile with the new image file name
-                userInf.imageFile = fileName;
-            }
+                userInf.imageFile = fileName;           
 
-            userInf.userId = user.userId;  // Ensure userId is correctly set
-            if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
-            {
-                TempData["ErrorMessage"] = $"Error updating profile: {ErrorMessage}";
-                return View(userInf);
+                if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
+                {
+                    TempData["ErrorMessage"] = $"Error updating profile: {ErrorMessage}";
+                    return View(userInf);
+                }
+
             }
 
             TempData["SuccessMessage"] = "Profile updated successfully.";
-            return RedirectToAction("Index");
+            return RedirectToAction("MyProfile");
         }
+
 
 
 
