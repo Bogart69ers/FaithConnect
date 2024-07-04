@@ -12,17 +12,12 @@ namespace FaithConnect
     using System;
     using System.Collections.Generic;
     
-    public partial class Feedback
+    public partial class Image
     {
         public int id { get; set; }
-        public string FeedbackId { get; set; }
-        public Nullable<int> UserId { get; set; }
-        public Nullable<int> EventId { get; set; }
-        public string Comments { get; set; }
-        public Nullable<int> Rating { get; set; }
-        public Nullable<System.DateTime> DateCreated { get; set; }
+        public Nullable<int> userId { get; set; }
+        public string imageFile { get; set; }
     
-        public virtual Event Event { get; set; }
-        public virtual UserAccount UserAccount { get; set; }
+        public virtual UserInformation UserInformation { get; set; }
     }
 }

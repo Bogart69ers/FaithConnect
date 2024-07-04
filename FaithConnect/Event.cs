@@ -14,11 +14,18 @@ namespace FaithConnect
     
     public partial class Event
     {
+        public Event()
+        {
+            this.Feedback = new HashSet<Feedback>();
+        }
+    
         public int id { get; set; }
         public string EventId { get; set; }
         public string Title { get; set; }
         public Nullable<System.DateTime> Date { get; set; }
         public string Description { get; set; }
         public string Organizer { get; set; }
+    
+        public virtual ICollection<Feedback> Feedback { get; set; }
     }
 }

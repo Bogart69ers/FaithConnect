@@ -14,16 +14,22 @@ namespace FaithConnect
     
     public partial class UserInformation
     {
+        public UserInformation()
+        {
+            this.Image = new HashSet<Image>();
+        }
+    
         public int id { get; set; }
         public string userId { get; set; }
         public string last_name { get; set; }
         public string first_name { get; set; }
         public string phone { get; set; }
         public string email { get; set; }
-        public string location { get; set; }
+        public string address { get; set; }
         public Nullable<int> status { get; set; }
-        public string imageFile { get; set; }
         public string bio { get; set; }
         public Nullable<System.DateTime> date_created { get; set; }
+    
+        public virtual ICollection<Image> Image { get; set; }
     }
 }

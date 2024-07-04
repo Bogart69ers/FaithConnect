@@ -103,6 +103,8 @@ namespace FaithConnect.Controllers
                         return RedirectToAction("Index", "Home");
                     case Constant.Role_User:
                         return RedirectToAction("Index", "Home");
+                    case Constant.Role_Spiritual:
+                        return RedirectToAction("Index", "Home");
                     default:
                         return RedirectToAction("Index");
                 }
@@ -162,7 +164,12 @@ namespace FaithConnect.Controllers
                 email = user.email,
                 first_name = TempData["firstname"]?.ToString(),
                 last_name = TempData["lastname"]?.ToString(),
-                phone = TempData["phone"]?.ToString()
+                phone = TempData["phone"]?.ToString(),
+                status = (int)Status.Active,
+                date_created = user.date_created,
+                address = TempData["address"]?.ToString()
+
+
             };
 
             if (_AccManager.CreateUserInformation(ui, ref ErrorMessage) != ErrorCode.Success)
@@ -179,58 +186,78 @@ namespace FaithConnect.Controllers
         [Authorize]
         public ActionResult MyProfile()
         {
+            IsUserLoggedSession();
             var username = User.Identity.Name;
-            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            if (user == null)
+            var userInfo = _AccManager.GetUserInfoByUsername(username);
+            if (userInfo == null)
             {
                 TempData["ErrorMessage"] = "Error retrieving user information.";
                 return RedirectToAction("Index");
             }
-            return View(user);
+            return View(userInfo);
         }
 
         [HttpPost]
         public ActionResult MyProfile(UserInformation userInf, HttpPostedFileBase profilePicture)
         {
-            var user = _AccManager.GetUserByUserId(userInf.userId);
-            if (user == null)
+            IsUserLoggedSession();
+            if (ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Error updating profile: User not found.";
-                return RedirectToAction("MyProfile");
-            }
-
-            if (profilePicture != null && profilePicture.ContentLength > 0)
-            {
-                var uploadsFolderPath = Server.MapPath("~/UploadedFiles/");
-
-                // Check if the directory exists, and create it if it does not
-                if (!Directory.Exists(uploadsFolderPath))
+                var user = _AccManager.GetUserByUserId(userInf.userId);
+                if (user == null)
                 {
-                    Directory.CreateDirectory(uploadsFolderPath);
-                }
-
-                // Save the profile picture to the server
-                var fileName = Path.GetFileName(profilePicture.FileName);
-                var serverSavePath = Path.Combine(uploadsFolderPath, fileName);
-                profilePicture.SaveAs(serverSavePath);
-
-                // Update the user's profile with the new image file name
-                userInf.imageFile = fileName;           
-
-                if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
-                {
-                    TempData["ErrorMessage"] = $"Error updating profile: {ErrorMessage}";
+                    TempData["ErrorMessage"] = "Error updating profile: User not found.";
                     return View(userInf);
                 }
 
+                // Check if a new profile picture is uploaded
+                if (profilePicture != null && profilePicture.ContentLength > 0)
+                {
+                    var uploadsFolderPath = Server.MapPath("~/UploadedFiles/");
+                    if (!Directory.Exists(uploadsFolderPath))
+                        Directory.CreateDirectory(uploadsFolderPath);
+
+                    var fileName = Path.GetFileName(profilePicture.FileName);
+                    var serverSavePath = Path.Combine(uploadsFolderPath, fileName);
+                    profilePicture.SaveAs(serverSavePath);
+
+                    var existingImage = _imgMgr.ListImgAttachByUserId(userInf.id).FirstOrDefault();
+                    if (existingImage != null)
+                    {
+                        existingImage.imageFile = fileName;
+                        if (_imgMgr.UpdateImg(existingImage, ref ErrorMessage) == ErrorCode.Error)
+                        {
+                            ModelState.AddModelError(String.Empty, ErrorMessage);
+                            return View(userInf);
+                        }
+                    }
+                    else
+                    {
+                        Image img = new Image
+                        {
+                            imageFile = fileName,
+                            userId = userInf.id
+                        };
+
+                        if (_imgMgr.CreateImg(img, ref ErrorMessage) == ErrorCode.Error)
+                        {
+                            ModelState.AddModelError(String.Empty, ErrorMessage);
+                            return View(userInf);
+                        }
+                    }
+                }
+
+                if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
+                {
+                    ModelState.AddModelError(String.Empty, ErrorMessage);
+                    return View(userInf);
+                }
+
+                TempData["SuccessMessage"] = "Profile updated successfully.";
+                return RedirectToAction("MyProfile");
             }
-
-            TempData["SuccessMessage"] = "Profile updated successfully.";
-            return RedirectToAction("MyProfile");
+            return View(userInf);
         }
-
-
-
 
         [AllowAnonymous]
         public ActionResult Signup()
@@ -242,7 +269,7 @@ namespace FaithConnect.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult SignUp(UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone)
+        public ActionResult SignUp(UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address)
         {
             try
             {
@@ -259,7 +286,8 @@ namespace FaithConnect.Controllers
                 {
                     first_name = firstname,
                     last_name = lastname,
-                    phone = phone
+                    phone = phone,
+                    address = address
                 };
 
                 if (!ModelState.IsValid)
@@ -297,6 +325,7 @@ namespace FaithConnect.Controllers
                 TempData["firstname"] = firstname;
                 TempData["lastname"] = lastname;
                 TempData["phone"] = phone;
+                TempData["address"] = address;
 
                 TempData["SuccessMessage"] = "Account created successfully. Please enter the OTP sent to your email.";
                 return RedirectToAction("Verify");

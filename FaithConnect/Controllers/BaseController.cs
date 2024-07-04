@@ -1,8 +1,5 @@
 ﻿using FaithConnect.Repository;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using FaithConnect.Models;
 
@@ -13,6 +10,7 @@ namespace FaithConnect.Controllers
         public String ErrorMessage;
         public BaseRepository<UserAccount> _UserAcc;
         public AccountManager _AccManager;
+        public ImageManager _imgMgr;
 
         public String Username { get { return User.Identity.Name; } }
         public String UserId { get { return _AccManager.GetUserByUsername(Username).userId; } }
@@ -21,6 +19,7 @@ namespace FaithConnect.Controllers
         {
             _UserAcc = new BaseRepository<UserAccount>();
             _AccManager = new AccountManager();
+            _imgMgr = new ImageManager();
         }
 
         public void IsUserLoggedSession()

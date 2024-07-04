@@ -41,20 +41,25 @@ namespace FaithConnect.Repository
         {
             try
             {
-                var old_obj = Get(id); // Getting the existing entity by its id.
-                _db.Entry(old_obj).CurrentValues.SetValues(t); // Updating its values with the new values.
-                _db.SaveChanges(); // Saving changes to the database.
-                errorMsg = "Updated"; // Setting success message.
+                var old_obj = Get(id);
+                if (old_obj == null)
+                {
+                    errorMsg = "Entity not found";
+                    return ErrorCode.Error;
+                }
 
-                return ErrorCode.Success; // Returning success code.
+                _db.Entry(old_obj).CurrentValues.SetValues(t);
+                _db.SaveChanges();
+                errorMsg = "Updated";
+                return ErrorCode.Success;
             }
             catch (Exception ex)
             {
-                // Handling exceptions and setting error message accordingly.
                 errorMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return ErrorCode.Error; // Returning error code.
+                return ErrorCode.Error;
             }
         }
+
 
         public ErrorCode Delete(object id, out string errorMsg)
         {

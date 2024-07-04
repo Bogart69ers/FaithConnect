@@ -106,6 +106,7 @@ namespace FaithConnect.Repository
             return _userInfo.Update(userinf.id, userinf, out errMsg);
         }
 
+
         public UserInformation GetUserInfoByUsername(string username)
         {
             var userAcc = GetUserByUsername(username);
@@ -121,6 +122,10 @@ namespace FaithConnect.Repository
             return _userInfo._table.FirstOrDefault(m => m.userId == userId);
         }
 
+        public UserInformation GetUserInfoById(int Id)
+        {
+            return _userInfo.Get(Id);
+        }
         public UserInformation CreateOrRetrieve(String username, ref String err)
         {
             var user = GetUserByUsername(username);

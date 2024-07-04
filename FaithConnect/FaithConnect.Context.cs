@@ -28,6 +28,7 @@ namespace FaithConnect
         public DbSet<Content> Content { get; set; }
         public DbSet<Event> Event { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
+        public DbSet<Image> Image { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<Survey> Survey { get; set; }
         public DbSet<sysdiagrams> sysdiagrams { get; set; }

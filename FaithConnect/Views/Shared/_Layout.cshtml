@@ -1,6 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using FaithConnect.Models
+@model UserInformation
+@{
+    string profileImage = string.IsNullOrEmpty(Model.Image.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + Model.Image.FirstOrDefault()?.imageFile);
+}
+<!DOCTYPE html>
 <html>
 <head>
+   
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
@@ -151,9 +157,12 @@
                 <div class="col d-none d-xl-flex justify-content-center">
                     <!-- home -->
                     <div class="mx-4 nav__btn nav__btn-active" >
-                        <button type="button" class="btn px-4" href="~/Home/Index">
-                            <i class="fas fa-home text-muted fs-4" ></i>
+                        <button type="button" class="btn px-4" >
+                            <a href="~/Home/Index">
+                            <i class="fas fa-home text-muted fs-4" ></i>                       
+                            </a>
                         </button>
+
                     </div>                   
                     <!-- group -->
                     <div class="mx-4 nav__btn">
@@ -181,12 +190,15 @@
                 <div class="col d-flex align-items-center justify-content-end">
                     <!-- avatar -->
                     <div class="align-items-center justify-content-center d-none d-xl-flex">
-                        <img src="~/Assets/Index/img/default.png"
-                             class="rounded-circle me-2"
-                             alt="avatar"
-                             style="width: 38px; height: 38px; object-fit: cover" />
-                        <p class="m-0">@User.Identity.Name</p>
+                        <a href="~/Home/MyProfile">
+                            
+                            <img class="rounded-circle me-2" src="@profileImage" alt="Avatar" style="width: 45px; height: 45px; object-fit: cover"> 
+                        </a>
+                        <a href="~/Home/MyProfile" style="text-decoration: none; color: black;">
+                            <p class="m-0">@User.Identity.Name</p>
+                        </a>
                     </div>
+
                     <!-- main menu -->
                     <div class="
                          rounded-circle
@@ -910,16 +922,19 @@
                         aria-labelledby="secondMenu"
                         style="width: 23em">
                         <!-- avatar -->
-                        <li class="dropdown-item p-1 rounded d-flex" type="button" href="~/Home/MyProfile">
-                            <img src="https://source.unsplash.com/collection/happy-people"
-                                 alt="avatar"
-                                 class="rounded-circle me-2"
-                                 style="width: 45px; height: 45px; object-fit: cover" />
-                            <div>
-                                <p class="m-0">John</p>
-                                <p class="m-0 text-muted">See your profile</p>
-                            </div>
+                            <li class="dropdown-item p-1 rounded d-flex" type="button">
+                                <a href="~/Home/MyProfile" style="text-decoration: none; color: black;">
+                                   
+                                    <img class="rounded-circle me-2" src="@profileImage" alt="Avatar" style="width: 45px; height: 45px; object-fit: cover">  
+                                </a>
+                                <div>
+                                    <a href="~/Home/MyProfile" style="text-decoration: none; color: black;">
+                                        <p class="m-0">@User.Identity.Name</p>
+                                        <p class="m-0 text-muted">See your profile</p>
+                                    </a>
+                                </div>
                         </li>
+                        
                         <hr />
                         <!-- feedback -->
                         <li class="dropdown-item p-1 rounded d-flex align-items-center"
@@ -928,7 +943,7 @@
                             <div class="ms-3">
                                 <p class="m-0">Give Feedback</p>
                                 <p class="m-0 text-muted fs-7">
-                                    Help us improve the new Flexbook.
+                                    Help us improve the new FaithConnect.
                                 </p>
                             </div>
                         </li>

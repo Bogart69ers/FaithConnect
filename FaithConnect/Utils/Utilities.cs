@@ -30,6 +30,7 @@ namespace FaithConnect.Utils
     {
         public const string Role_Admin = "Admin";
         public const string Role_User = "User";
+        public const string Role_Spiritual = "Spiritual Leader";
 
         public const int ERROR = 1;
         public const int SUCCESS = 0;

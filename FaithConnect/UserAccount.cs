@@ -14,6 +14,11 @@ namespace FaithConnect
     
     public partial class UserAccount
     {
+        public UserAccount()
+        {
+            this.Feedback = new HashSet<Feedback>();
+        }
+    
         public int id { get; set; }
         public string userId { get; set; }
         public string username { get; set; }
@@ -25,6 +30,7 @@ namespace FaithConnect
         public Nullable<System.DateTime> date_created { get; set; }
         public Nullable<System.DateTime> date_modified { get; set; }
     
+        public virtual ICollection<Feedback> Feedback { get; set; }
         public virtual Role Role1 { get; set; }
     }
 }

@@ -33,11 +33,19 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FeedbackId" Type="nvarchar(max)" />
-          <Property Name="UserId" Type="nvarchar(max)" />
-          <Property Name="EventId" Type="nvarchar(max)" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="EventId" Type="int" />
           <Property Name="Comments" Type="nvarchar(max)" />
           <Property Name="Rating" Type="int" />
           <Property Name="DateCreated" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Image">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="userId" Type="int" />
+          <Property Name="imageFile" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -91,9 +99,8 @@
           <Property Name="first_name" Type="nvarchar" MaxLength="255" />
           <Property Name="phone" Type="nvarchar" MaxLength="255" />
           <Property Name="email" Type="nvarchar" MaxLength="255" />
-          <Property Name="location" Type="nvarchar" MaxLength="255" />
+          <Property Name="address" Type="nvarchar(max)" />
           <Property Name="status" Type="int" />
-          <Property Name="imageFile" Type="nvarchar(max)" />
           <Property Name="bio" Type="nvarchar(max)" />
           <Property Name="date_created" Type="datetime" />
         </EntityType>
@@ -107,6 +114,46 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           <Property Name="username" Type="nvarchar" MaxLength="100" />
           <Property Name="roleName" Type="nvarchar" MaxLength="100" />
         </EntityType>
+        <Association Name="FK_Feedback_Event1">
+          <End Role="Event" Type="Self.Event" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Feedback_UserAccount1">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Image_UserInformation">
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1" />
+          <End Role="Image" Type="Self.Image" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInformation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Image">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserAccount_Role">
           <End Role="Role" Type="Self.Role" Multiplicity="0..1" />
           <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="*" />
@@ -123,6 +170,7 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           <EntitySet Name="Content" EntityType="Self.Content" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Event" EntityType="Self.Event" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Feedback" EntityType="Self.Feedback" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Image" EntityType="Self.Image" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
@@ -135,6 +183,18 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
 [vw_Role].[roleName] AS [roleName]
 FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_Feedback_Event1" Association="Self.FK_Feedback_Event1">
+            <End Role="Event" EntitySet="Event" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Feedback_UserAccount1" Association="Self.FK_Feedback_UserAccount1">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Image_UserInformation" Association="Self.FK_Image_UserInformation">
+            <End Role="UserInformation" EntitySet="UserInformation" />
+            <End Role="Image" EntitySet="Image" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserAccount_Role" Association="Self.FK_UserAccount_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="UserAccount" EntitySet="UserAccount" />
@@ -148,12 +208,25 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySet Name="Content" EntityType="FaithConnectModel.Content" />
           <EntitySet Name="Event" EntityType="FaithConnectModel.Event" />
           <EntitySet Name="Feedback" EntityType="FaithConnectModel.Feedback" />
+          <EntitySet Name="Image" EntityType="FaithConnectModel.Image" />
           <EntitySet Name="Role" EntityType="FaithConnectModel.Role" />
           <EntitySet Name="Survey" EntityType="FaithConnectModel.Survey" />
           <EntitySet Name="sysdiagrams" EntityType="FaithConnectModel.sysdiagrams" />
           <EntitySet Name="UserAccount" EntityType="FaithConnectModel.UserAccount" />
           <EntitySet Name="UserInformation" EntityType="FaithConnectModel.UserInformation" />
           <EntitySet Name="vw_Role" EntityType="FaithConnectModel.vw_Role" />
+          <AssociationSet Name="FK_Feedback_Event1" Association="FaithConnectModel.FK_Feedback_Event1">
+            <End Role="Event" EntitySet="Event" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Feedback_UserAccount1" Association="FaithConnectModel.FK_Feedback_UserAccount1">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Image_UserInformation" Association="FaithConnectModel.FK_Image_UserInformation">
+            <End Role="UserInformation" EntitySet="UserInformation" />
+            <End Role="Image" EntitySet="Image" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserAccount_Role" Association="FaithConnectModel.FK_UserAccount_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="UserAccount" EntitySet="UserAccount" />
@@ -180,6 +253,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="Date" Type="DateTime" Precision="3" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Organizer" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Feedback" Relationship="FaithConnectModel.FK_Feedback_Event1" FromRole="Event" ToRole="Feedback" />
         </EntityType>
         <EntityType Name="Feedback">
           <Key>
@@ -187,11 +261,22 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="FeedbackId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="UserId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="EventId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="EventId" Type="Int32" />
           <Property Name="Comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Rating" Type="Int32" />
           <Property Name="DateCreated" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Event" Relationship="FaithConnectModel.FK_Feedback_Event1" FromRole="Feedback" ToRole="Event" />
+          <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_Feedback_UserAccount1" FromRole="Feedback" ToRole="UserAccount" />
+        </EntityType>
+        <EntityType Name="Image">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="userId" Type="Int32" />
+          <Property Name="imageFile" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="UserInformation" Relationship="FaithConnectModel.FK_Image_UserInformation" FromRole="Image" ToRole="UserInformation" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -235,6 +320,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="vcode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
           <Property Name="date_modified" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Feedback" Relationship="FaithConnectModel.FK_Feedback_UserAccount1" FromRole="UserAccount" ToRole="Feedback" />
           <NavigationProperty Name="Role1" Relationship="FaithConnectModel.FK_UserAccount_Role" FromRole="UserAccount" ToRole="Role" />
         </EntityType>
         <EntityType Name="UserInformation">
@@ -247,11 +333,11 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="first_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="phone" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="email" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="location" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="status" Type="Int32" />
-          <Property Name="imageFile" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="bio" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Image" Relationship="FaithConnectModel.FK_Image_UserInformation" FromRole="UserInformation" ToRole="Image" />
         </EntityType>
         <EntityType Name="vw_Role">
           <Key>
@@ -261,6 +347,46 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="username" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="roleName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
+        <Association Name="FK_Feedback_Event1">
+          <End Type="FaithConnectModel.Event" Role="Event" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="FaithConnectModel.Feedback" Role="Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Feedback_UserAccount1">
+          <End Type="FaithConnectModel.UserAccount" Role="UserAccount" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="FaithConnectModel.Feedback" Role="Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Image_UserInformation">
+          <End Type="FaithConnectModel.UserInformation" Role="UserInformation" Multiplicity="0..1" />
+          <End Type="FaithConnectModel.Image" Role="Image" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInformation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Image">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserAccount_Role">
           <End Type="FaithConnectModel.Role" Role="Role" Multiplicity="0..1" />
           <End Type="FaithConnectModel.UserAccount" Role="UserAccount" Multiplicity="*" />
@@ -273,7 +399,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -312,6 +438,15 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="EventId" ColumnName="EventId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="FeedbackId" ColumnName="FeedbackId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Image">
+            <EntityTypeMapping TypeName="FaithConnectModel.Image">
+              <MappingFragment StoreEntitySet="Image">
+                <ScalarProperty Name="imageFile" ColumnName="imageFile" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -367,9 +502,8 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
               <MappingFragment StoreEntitySet="UserInformation">
                 <ScalarProperty Name="date_created" ColumnName="date_created" />
                 <ScalarProperty Name="bio" ColumnName="bio" />
-                <ScalarProperty Name="imageFile" ColumnName="imageFile" />
                 <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="location" ColumnName="location" />
+                <ScalarProperty Name="address" ColumnName="address" />
                 <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="phone" ColumnName="phone" />
                 <ScalarProperty Name="first_name" ColumnName="first_name" />
