@@ -6,6 +6,8 @@
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="~/Assets/signup/css/style.css" rel="stylesheet">
+<link href="~/Assets/signup/css/style2.css" rel="stylesheet">
+
 
 <body>
     <div class="container">
@@ -30,14 +32,17 @@
                         <div class="cover">
                             <div class="gray-shade"></div>
                             <figure>
-                                <img src="https://bootdey.com/img/Content/bg1.jpg" class="img-fluid" alt="profile cover">
+                                @{
+                                    string coverImage = string.IsNullOrEmpty(Model.Image.FirstOrDefault()?.coverPhoto) ? Url.Content("~/UploadedFiles/default-cover.jpg") : Url.Content("~/UploadedFiles/" + Model.Image.FirstOrDefault()?.coverPhoto);
+                                }
+                                <img src="@coverImage" class="img-fluid" alt="profile cover" style="height: 500px; object-fit: cover;">
                             </figure>
                             <div class="cover-body d-flex justify-content-between align-items-center">
                                 <div>
                                     @{
                                         string profileImage = string.IsNullOrEmpty(Model.Image.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + Model.Image.FirstOrDefault()?.imageFile);
                                     }
-                                    <img class="rounded-circle me-2" src="@profileImage" alt="profile" style="width: 120px; height: 120px; object-fit: cover">
+                                    <img class="rounded-circle me-2" src="@profileImage" alt="profile" style="width: 120px; height: 120px; object-fit: cover;border: 3px solid white; border-radius: 50%; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
                                     <span class="profile-name">@Model.first_name @Model.last_name</span>
                                 </div>
                                 <div class="d-none d-md-block">
@@ -116,10 +121,22 @@
                         @Html.HiddenFor(model => model.userId)
                         @Html.HiddenFor(model => model.date_created)
                         @Html.HiddenFor(model => model.status)
-                        <div class="form-group">
+
+                        <div class="form-group text-center">
                             <label for="profilePicture">Profile Picture</label>
-                            <input type="file" name="profilePicture" accept="image/*" class="form-control">
+                            <input type="file" name="profilePicture" id="profilePicture" accept="image/*" class="form-control" onchange="previewImage(event, 'profilePicPreviewContainer')">
+                            <div id="profilePicPreviewContainer" class="image-preview-container mt-2 circular-container">
+                                <img id="profilePicPreview" src="#" alt="Profile Picture Preview" class="img-fluid preview-image" style="display: none;">
+                            </div>
                         </div>
+                        <div class="form-group text-center">
+                            <label for="coverPhoto">Cover Photo</label>
+                            <input type="file" name="coverPhoto" id="coverPhoto" accept="image/*" class="form-control" onchange="previewImage(event, 'coverPhotoPreviewContainer')">
+                            <div id="coverPhotoPreviewContainer" class="image-preview-container mt-2 rectangular-container">
+                                <img id="coverPhotoPreview" src="#" alt="Cover Photo Preview" class="img-fluid preview-image" style="display: none;">
+                            </div>
+                        </div>
+                       
                         <div class="form-group">
                             <label for="firstname">First Name</label>
                             @Html.EditorFor(model => model.first_name, new { htmlAttributes = new { @class = "form-control", placeholder = @Model.first_name, required = "required" } })
@@ -163,4 +180,7 @@
 
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Assets/signup/js/preview.js"></script>
+
+    
 </body>

@@ -46,6 +46,7 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="userId" Type="int" />
           <Property Name="imageFile" Type="nvarchar" MaxLength="255" />
+          <Property Name="coverPhoto" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -276,6 +277,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="userId" Type="Int32" />
           <Property Name="imageFile" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="coverPhoto" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="UserInformation" Relationship="FaithConnectModel.FK_Image_UserInformation" FromRole="Image" ToRole="UserInformation" />
         </EntityType>
         <EntityType Name="Role">
@@ -445,6 +447,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySetMapping Name="Image">
             <EntityTypeMapping TypeName="FaithConnectModel.Image">
               <MappingFragment StoreEntitySet="Image">
+                <ScalarProperty Name="coverPhoto" ColumnName="coverPhoto" />
                 <ScalarProperty Name="imageFile" ColumnName="imageFile" />
                 <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="id" ColumnName="id" />

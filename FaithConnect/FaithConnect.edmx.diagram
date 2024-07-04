@@ -8,7 +8,7 @@
         <EntityTypeShape EntityType="FaithConnectModel.Content" Width="1.5" PointX="7.75" PointY="0.75" />
         <EntityTypeShape EntityType="FaithConnectModel.Event" Width="1.5" PointX="3" PointY="5.5" />
         <EntityTypeShape EntityType="FaithConnectModel.Feedback" Width="1.5" PointX="5.25" PointY="1.25" />
-        <EntityTypeShape EntityType="FaithConnectModel.Image" Width="1.5" PointX="8" PointY="6.625" />
+        <EntityTypeShape EntityType="FaithConnectModel.Image" Width="1.5" PointX="8" PointY="6.5" />
         <EntityTypeShape EntityType="FaithConnectModel.Role" Width="1.5" PointX="0.75" PointY="1.875" />
         <EntityTypeShape EntityType="FaithConnectModel.Survey" Width="1.5" PointX="7.75" PointY="3.75" />
         <EntityTypeShape EntityType="FaithConnectModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="8.75" />

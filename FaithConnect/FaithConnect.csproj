@@ -125,7 +125,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Index\css\main.css" />
+    <Content Include="Assets\signup\css\style2.css" />
     <Content Include="Assets\signup\js\address.js" />
+    <Content Include="Assets\signup\js\preview.js" />
     <Content Include="UploadedFiles\default.png" />
     <Content Include="Assets\Index\js\main.js" />
     <Content Include="Assets\login\css\animate.css" />

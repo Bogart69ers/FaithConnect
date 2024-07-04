@@ -17,6 +17,7 @@ namespace FaithConnect
         public int id { get; set; }
         public Nullable<int> userId { get; set; }
         public string imageFile { get; set; }
+        public string coverPhoto { get; set; }
     
         public virtual UserInformation UserInformation { get; set; }
     }

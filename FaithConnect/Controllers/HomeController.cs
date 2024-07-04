@@ -198,7 +198,7 @@ namespace FaithConnect.Controllers
         }
 
         [HttpPost]
-        public ActionResult MyProfile(UserInformation userInf, HttpPostedFileBase profilePicture)
+        public ActionResult MyProfile(UserInformation userInf, HttpPostedFileBase profilePicture, HttpPostedFileBase coverPhoto)
         {
             IsUserLoggedSession();
             if (ModelState.IsValid)
@@ -210,21 +210,21 @@ namespace FaithConnect.Controllers
                     return View(userInf);
                 }
 
-                // Check if a new profile picture is uploaded
+                // Handle profile picture upload
                 if (profilePicture != null && profilePicture.ContentLength > 0)
                 {
                     var uploadsFolderPath = Server.MapPath("~/UploadedFiles/");
                     if (!Directory.Exists(uploadsFolderPath))
                         Directory.CreateDirectory(uploadsFolderPath);
 
-                    var fileName = Path.GetFileName(profilePicture.FileName);
-                    var serverSavePath = Path.Combine(uploadsFolderPath, fileName);
-                    profilePicture.SaveAs(serverSavePath);
+                    var profileFileName = Path.GetFileName(profilePicture.FileName);
+                    var profileSavePath = Path.Combine(uploadsFolderPath, profileFileName);
+                    profilePicture.SaveAs(profileSavePath);
 
                     var existingImage = _imgMgr.ListImgAttachByUserId(userInf.id).FirstOrDefault();
                     if (existingImage != null)
                     {
-                        existingImage.imageFile = fileName;
+                        existingImage.imageFile = profileFileName;
                         if (_imgMgr.UpdateImg(existingImage, ref ErrorMessage) == ErrorCode.Error)
                         {
                             ModelState.AddModelError(String.Empty, ErrorMessage);
@@ -235,7 +235,44 @@ namespace FaithConnect.Controllers
                     {
                         Image img = new Image
                         {
-                            imageFile = fileName,
+                            imageFile = profileFileName,
+                            userId = userInf.id
+                        };
+
+                        if (_imgMgr.CreateImg(img, ref ErrorMessage) == ErrorCode.Error)
+                        {
+                            ModelState.AddModelError(String.Empty, ErrorMessage);
+                            return View(userInf);
+                        }
+                    }
+                }
+
+                // Handle cover photo upload
+                if (coverPhoto != null && coverPhoto.ContentLength > 0)
+                {
+                    var uploadsFolderPath = Server.MapPath("~/UploadedFiles/");
+                    if (!Directory.Exists(uploadsFolderPath))
+                        Directory.CreateDirectory(uploadsFolderPath);
+
+                    var coverFileName = Path.GetFileName(coverPhoto.FileName);
+                    var coverSavePath = Path.Combine(uploadsFolderPath, coverFileName);
+                    coverPhoto.SaveAs(coverSavePath);
+
+                    var existingImage = _imgMgr.ListImgAttachByUserId(userInf.id).FirstOrDefault();
+                    if (existingImage != null)
+                    {
+                        existingImage.coverPhoto = coverFileName;
+                        if (_imgMgr.UpdateImg(existingImage, ref ErrorMessage) == ErrorCode.Error)
+                        {
+                            ModelState.AddModelError(String.Empty, ErrorMessage);
+                            return View(userInf);
+                        }
+                    }
+                    else
+                    {
+                        Image img = new Image
+                        {
+                            coverPhoto = coverFileName,
                             userId = userInf.id
                         };
 
@@ -258,6 +295,7 @@ namespace FaithConnect.Controllers
             }
             return View(userInf);
         }
+
 
         [AllowAnonymous]
         public ActionResult Signup()

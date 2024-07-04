@@ -1,0 +1,35 @@
+﻿.image-preview-container {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    background-color: #f0f0f0;
+    text-align: center;
+    cursor: move; /* Add cursor style for draggable area */
+}
+
+.circular-container {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 3px solid white;
+    line-height: 200px; /* Center vertically */
+}
+
+.rectangular-container {
+    width: 100%;
+    max-width: 400px;
+    height: 200px;
+    border: 3px solid white;
+}
+
+.image-preview-container img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 100%;
+}
