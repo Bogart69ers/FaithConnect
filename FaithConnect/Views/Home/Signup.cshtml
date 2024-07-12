@@ -137,7 +137,7 @@
                                     <input type="password" class="form-control" name="ConfirmPass" placeholder="Confirm Password" required />
                                     @Html.ValidationMessageFor(model => model.password, "", new { @class = "text-danger" })
                                 </div>
-                                <div class="col-12 form-group mb-3 mb-3">
+                                <div class="col-12 form-group mb-3 mb-3" >
                                     @Html.DropDownList("Role", (IEnumerable<SelectListItem>)ViewBag.Role, new { @class = "form-control" })
                                 </div>
                                 <div class="col-12 form-group">
