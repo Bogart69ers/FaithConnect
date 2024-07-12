@@ -377,10 +377,22 @@ namespace FaithConnect.Controllers
                 return View(ua);
             }
         }
+        public ActionResult Group()
+        {
+            return View();
+        }
 
+        public ActionResult MyCalendar()
+        {
+            return View();
+        }
 
-
+        public ActionResult Events()
+        {
+            return View();
+        }
 
 
     }
+    
 }
