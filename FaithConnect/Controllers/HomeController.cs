@@ -377,21 +377,50 @@ namespace FaithConnect.Controllers
                 return View(ua);
             }
         }
+        [AllowAnonymous]
         public ActionResult Group()
+        {
+
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
+        }
+        [HttpPost]
+        public ActionResult Group(Event ev)
         {
             return View();
         }
 
+        [Authorize]
         public ActionResult MyCalendar()
+        {
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
+        }
+        [HttpPost]
+        public ActionResult MyCalendar(Event ev)
         {
             return View();
         }
 
         public ActionResult Events()
         {
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            return View();
+        }
+        public ActionResult Guides()
+        {
             return View();
         }
 
+        //public ActionResult 
 
     }
     
