@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="FaithConnectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="FaithConnectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Content">
           <Key>
             <PropertyRef Name="id" />
@@ -201,38 +201,11 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="UserAccount" EntitySet="UserAccount" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FaithConnectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="FaithConnectEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Content" EntityType="FaithConnectModel.Content" />
-          <EntitySet Name="Event" EntityType="FaithConnectModel.Event" />
-          <EntitySet Name="Feedback" EntityType="FaithConnectModel.Feedback" />
-          <EntitySet Name="Image" EntityType="FaithConnectModel.Image" />
-          <EntitySet Name="Role" EntityType="FaithConnectModel.Role" />
-          <EntitySet Name="Survey" EntityType="FaithConnectModel.Survey" />
-          <EntitySet Name="sysdiagrams" EntityType="FaithConnectModel.sysdiagrams" />
-          <EntitySet Name="UserAccount" EntityType="FaithConnectModel.UserAccount" />
-          <EntitySet Name="UserInformation" EntityType="FaithConnectModel.UserInformation" />
-          <EntitySet Name="vw_Role" EntityType="FaithConnectModel.vw_Role" />
-          <AssociationSet Name="FK_Feedback_Event1" Association="FaithConnectModel.FK_Feedback_Event1">
-            <End Role="Event" EntitySet="Event" />
-            <End Role="Feedback" EntitySet="Feedback" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Feedback_UserAccount1" Association="FaithConnectModel.FK_Feedback_UserAccount1">
-            <End Role="UserAccount" EntitySet="UserAccount" />
-            <End Role="Feedback" EntitySet="Feedback" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Image_UserInformation" Association="FaithConnectModel.FK_Image_UserInformation">
-            <End Role="UserInformation" EntitySet="UserInformation" />
-            <End Role="Image" EntitySet="Image" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserAccount_Role" Association="FaithConnectModel.FK_UserAccount_Role">
-            <End Role="Role" EntitySet="Role" />
-            <End Role="UserAccount" EntitySet="UserAccount" />
-          </AssociationSet>
-        </EntityContainer>
         <EntityType Name="Content">
           <Key>
             <PropertyRef Name="id" />
@@ -254,7 +227,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="Date" Type="DateTime" Precision="3" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Organizer" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Feedback" Relationship="FaithConnectModel.FK_Feedback_Event1" FromRole="Event" ToRole="Feedback" />
+          <NavigationProperty Name="Feedback" Relationship="Self.FK_Feedback_Event1" FromRole="Event" ToRole="Feedback" />
         </EntityType>
         <EntityType Name="Feedback">
           <Key>
@@ -267,8 +240,8 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="Comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Rating" Type="Int32" />
           <Property Name="DateCreated" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Event" Relationship="FaithConnectModel.FK_Feedback_Event1" FromRole="Feedback" ToRole="Event" />
-          <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_Feedback_UserAccount1" FromRole="Feedback" ToRole="UserAccount" />
+          <NavigationProperty Name="Event" Relationship="Self.FK_Feedback_Event1" FromRole="Feedback" ToRole="Event" />
+          <NavigationProperty Name="UserAccount" Relationship="Self.FK_Feedback_UserAccount1" FromRole="Feedback" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="Image">
           <Key>
@@ -278,7 +251,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="userId" Type="Int32" />
           <Property Name="imageFile" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="coverPhoto" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="UserInformation" Relationship="FaithConnectModel.FK_Image_UserInformation" FromRole="Image" ToRole="UserInformation" />
+          <NavigationProperty Name="UserInformation" Relationship="Self.FK_Image_UserInformation" FromRole="Image" ToRole="UserInformation" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -286,7 +259,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </Key>
           <Property Name="roleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="roleName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_UserAccount_Role" FromRole="Role" ToRole="UserAccount" />
+          <NavigationProperty Name="UserAccount" Relationship="Self.FK_UserAccount_Role" FromRole="Role" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="Survey">
           <Key>
@@ -302,7 +275,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Key>
             <PropertyRef Name="diagram_id" />
           </Key>
-          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="principal_id" Type="Int32" Nullable="false" />
           <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="version" Type="Int32" />
@@ -322,8 +295,8 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="vcode" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
           <Property Name="date_modified" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Feedback" Relationship="FaithConnectModel.FK_Feedback_UserAccount1" FromRole="UserAccount" ToRole="Feedback" />
-          <NavigationProperty Name="Role1" Relationship="FaithConnectModel.FK_UserAccount_Role" FromRole="UserAccount" ToRole="Role" />
+          <NavigationProperty Name="Feedback" Relationship="Self.FK_Feedback_UserAccount1" FromRole="UserAccount" ToRole="Feedback" />
+          <NavigationProperty Name="Role1" Relationship="Self.FK_UserAccount_Role" FromRole="UserAccount" ToRole="Role" />
         </EntityType>
         <EntityType Name="UserInformation">
           <Key>
@@ -339,7 +312,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="status" Type="Int32" />
           <Property Name="bio" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Image" Relationship="FaithConnectModel.FK_Image_UserInformation" FromRole="UserInformation" ToRole="Image" />
+          <NavigationProperty Name="Image" Relationship="Self.FK_Image_UserInformation" FromRole="UserInformation" ToRole="Image" />
         </EntityType>
         <EntityType Name="vw_Role">
           <Key>
@@ -350,10 +323,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="roleName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Feedback_Event1">
-          <End Type="FaithConnectModel.Event" Role="Event" Multiplicity="0..1">
+          <End Role="Event" Type="Self.Event" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="FaithConnectModel.Feedback" Role="Feedback" Multiplicity="*" />
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Event">
               <PropertyRef Name="id" />
@@ -364,10 +337,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Feedback_UserAccount1">
-          <End Type="FaithConnectModel.UserAccount" Role="UserAccount" Multiplicity="0..1">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="FaithConnectModel.Feedback" Role="Feedback" Multiplicity="*" />
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="UserAccount">
               <PropertyRef Name="id" />
@@ -378,8 +351,8 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Image_UserInformation">
-          <End Type="FaithConnectModel.UserInformation" Role="UserInformation" Multiplicity="0..1" />
-          <End Type="FaithConnectModel.Image" Role="Image" Multiplicity="*" />
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1" />
+          <End Role="Image" Type="Self.Image" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="UserInformation">
               <PropertyRef Name="id" />
@@ -390,8 +363,8 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_UserAccount_Role">
-          <End Type="FaithConnectModel.Role" Role="Role" Multiplicity="0..1" />
-          <End Type="FaithConnectModel.UserAccount" Role="UserAccount" Multiplicity="*" />
+          <End Role="Role" Type="Self.Role" Multiplicity="0..1" />
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Role">
               <PropertyRef Name="roleId" />
@@ -401,127 +374,155 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        </Schema>
+        <EntityContainer Name="FaithConnectEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Content" EntityType="Self.Content" />
+          <EntitySet Name="Event" EntityType="Self.Event" />
+          <EntitySet Name="Feedback" EntityType="Self.Feedback" />
+          <EntitySet Name="Image" EntityType="Self.Image" />
+          <EntitySet Name="Role" EntityType="Self.Role" />
+          <EntitySet Name="Survey" EntityType="Self.Survey" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+          <EntitySet Name="UserAccount" EntityType="Self.UserAccount" />
+          <EntitySet Name="UserInformation" EntityType="Self.UserInformation" />
+          <EntitySet Name="vw_Role" EntityType="Self.vw_Role" />
+          <AssociationSet Name="FK_Feedback_Event1" Association="Self.FK_Feedback_Event1">
+            <End Role="Event" EntitySet="Event" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Feedback_UserAccount1" Association="Self.FK_Feedback_UserAccount1">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Image_UserInformation" Association="Self.FK_Image_UserInformation">
+            <End Role="UserInformation" EntitySet="UserInformation" />
+            <End Role="Image" EntitySet="Image" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserAccount_Role" Association="Self.FK_UserAccount_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="UserAccount" EntitySet="UserAccount" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="FaithConnectModelStoreContainer" CdmEntityContainer="FaithConnectEntities">
+        <EntityContainerMapping StorageEntityContainer="FaithConnectModelStoreContainer" CdmEntityContainer="FaithConnectEntities1">
           <EntitySetMapping Name="Content">
             <EntityTypeMapping TypeName="FaithConnectModel.Content">
               <MappingFragment StoreEntitySet="Content">
-                <ScalarProperty Name="Url" ColumnName="Url" />
-                <ScalarProperty Name="MediaType" ColumnName="MediaType" />
-                <ScalarProperty Name="Body" ColumnName="Body" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="ContentId" ColumnName="ContentId" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="ContentId" ColumnName="ContentId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="MediaType" ColumnName="MediaType" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Event">
             <EntityTypeMapping TypeName="FaithConnectModel.Event">
               <MappingFragment StoreEntitySet="Event">
-                <ScalarProperty Name="Organizer" ColumnName="Organizer" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="EventId" ColumnName="EventId" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Organizer" ColumnName="Organizer" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Feedback">
             <EntityTypeMapping TypeName="FaithConnectModel.Feedback">
               <MappingFragment StoreEntitySet="Feedback">
-                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
-                <ScalarProperty Name="Comments" ColumnName="Comments" />
-                <ScalarProperty Name="EventId" ColumnName="EventId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="FeedbackId" ColumnName="FeedbackId" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="FeedbackId" ColumnName="FeedbackId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Image">
             <EntityTypeMapping TypeName="FaithConnectModel.Image">
               <MappingFragment StoreEntitySet="Image">
-                <ScalarProperty Name="coverPhoto" ColumnName="coverPhoto" />
-                <ScalarProperty Name="imageFile" ColumnName="imageFile" />
-                <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="imageFile" ColumnName="imageFile" />
+                <ScalarProperty Name="coverPhoto" ColumnName="coverPhoto" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Role">
             <EntityTypeMapping TypeName="FaithConnectModel.Role">
               <MappingFragment StoreEntitySet="Role">
-                <ScalarProperty Name="roleName" ColumnName="roleName" />
                 <ScalarProperty Name="roleId" ColumnName="roleId" />
+                <ScalarProperty Name="roleName" ColumnName="roleName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Survey">
             <EntityTypeMapping TypeName="FaithConnectModel.Survey">
               <MappingFragment StoreEntitySet="Survey">
-                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="SurveyId" ColumnName="SurveyId" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="SurveyId" ColumnName="SurveyId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
             <EntityTypeMapping TypeName="FaithConnectModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="definition" ColumnName="definition" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
                 <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="UserAccount">
             <EntityTypeMapping TypeName="FaithConnectModel.UserAccount">
               <MappingFragment StoreEntitySet="UserAccount">
-                <ScalarProperty Name="date_modified" ColumnName="date_modified" />
-                <ScalarProperty Name="date_created" ColumnName="date_created" />
-                <ScalarProperty Name="vcode" ColumnName="vcode" />
-                <ScalarProperty Name="role" ColumnName="role" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="role" ColumnName="role" />
+                <ScalarProperty Name="vcode" ColumnName="vcode" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="date_modified" ColumnName="date_modified" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="UserInformation">
             <EntityTypeMapping TypeName="FaithConnectModel.UserInformation">
               <MappingFragment StoreEntitySet="UserInformation">
-                <ScalarProperty Name="date_created" ColumnName="date_created" />
-                <ScalarProperty Name="bio" ColumnName="bio" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="address" ColumnName="address" />
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="phone" ColumnName="phone" />
-                <ScalarProperty Name="first_name" ColumnName="first_name" />
-                <ScalarProperty Name="last_name" ColumnName="last_name" />
-                <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="last_name" ColumnName="last_name" />
+                <ScalarProperty Name="first_name" ColumnName="first_name" />
+                <ScalarProperty Name="phone" ColumnName="phone" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="bio" ColumnName="bio" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="vw_Role">
             <EntityTypeMapping TypeName="FaithConnectModel.vw_Role">
               <MappingFragment StoreEntitySet="vw_Role">
-                <ScalarProperty Name="roleName" ColumnName="roleName" />
-                <ScalarProperty Name="username" ColumnName="username" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="roleName" ColumnName="roleName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

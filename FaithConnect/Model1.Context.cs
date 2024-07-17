@@ -13,10 +13,10 @@ namespace FaithConnect
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class FaithConnectEntities : DbContext
+    public partial class FaithConnectEntities1 : DbContext
     {
-        public FaithConnectEntities()
-            : base("name=FaithConnectEntities")
+        public FaithConnectEntities1()
+            : base("name=FaithConnectEntities1")
         {
         }
     

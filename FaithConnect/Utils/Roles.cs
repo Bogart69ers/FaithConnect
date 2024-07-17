@@ -51,7 +51,7 @@ namespace FaithConnect.Utils
 
         public override string[] GetRolesForUser(string username)
         {
-            FaithConnectEntities db = new FaithConnectEntities();
+            FaithConnectEntities1 db = new FaithConnectEntities1();
             return db.vw_Role.Where(m => m.username == username).Select(m => m.roleName).ToArray();
 
         }

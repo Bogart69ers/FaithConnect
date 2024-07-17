@@ -17,7 +17,7 @@ namespace FaithConnect.Repository
 
         public BaseRepository()
         {
-            _db = new FaithConnectEntities();
+            _db = new FaithConnectEntities1();
             _table = _db.Set<T>();
         }
         public ErrorCode Create(T t, out string errorMsg)

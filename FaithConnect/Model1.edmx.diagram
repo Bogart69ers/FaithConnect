@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="0b990b882e0e4f73a505b6518700d7bf" Name="Diagram1">
+        <EntityTypeShape EntityType="FaithConnectModel.Content" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Event" Width="1.5" PointX="3" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Feedback" Width="1.5" PointX="5.25" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Image" Width="1.5" PointX="8" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Role" Width="1.5" PointX="0.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Survey" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserAccount" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserInformation" Width="1.5" PointX="5.75" PointY="6" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.vw_Role" Width="1.5" PointX="2.75" PointY="8.75" IsExpanded="true" />
+        <AssociationConnector Association="FaithConnectModel.FK_Feedback_Event1" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Feedback_UserAccount1" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Image_UserInformation" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_UserAccount_Role" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

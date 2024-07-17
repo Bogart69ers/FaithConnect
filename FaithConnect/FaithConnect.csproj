@@ -124,11 +124,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Groups\css\StyleGroup.css" />
     <Content Include="Assets\Index\css\main.css" />
     <Content Include="Assets\Index\css\style1.css" />
     <Content Include="Assets\signup\css\style2.css" />
     <Content Include="Assets\signup\js\address.js" />
     <Content Include="Assets\signup\js\preview.js" />
+    <Content Include="Model1.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Model1.edmx</DependentUpon>
+      <LastGenOutput>Model1.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Model1.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Model1.edmx</DependentUpon>
+      <LastGenOutput>Model1.cs</LastGenOutput>
+    </Content>
     <Content Include="UploadedFiles\default.png" />
     <Content Include="Assets\Index\js\main.js" />
     <Content Include="Assets\login\css\animate.css" />
@@ -145,22 +156,19 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
-    <Content Include="FaithConnect.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>FaithConnect.edmx</DependentUpon>
-      <LastGenOutput>FaithConnect.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="FaithConnect.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>FaithConnect.edmx</DependentUpon>
-      <LastGenOutput>FaithConnect.cs</LastGenOutput>
-    </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="scripts\ai.0.22.9-build00167.js" />
     <Content Include="scripts\ai.0.22.9-build00167.min.js" />
     <Content Include="scripts\bootstrap.js" />
     <Content Include="scripts\bootstrap.min.js" />
+    <EntityDeploy Include="Model1.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Model1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Model1.edmx.diagram">
+      <DependentUpon>Model1.edmx</DependentUpon>
+    </Content>
     <None Include="scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="scripts\jquery-1.10.2.js" />
     <Content Include="scripts\jquery-1.10.2.min.js" />
@@ -172,37 +180,37 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Content.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Event.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
-    </Compile>
-    <Compile Include="FaithConnect.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FaithConnect.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="FaithConnect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FaithConnect.tt</DependentUpon>
-    </Compile>
-    <Compile Include="FaithConnect.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FaithConnect.edmx</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Feedback.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Image.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model1.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\UserLogged.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -212,24 +220,24 @@
     <Compile Include="Repository\ImageManager.cs" />
     <Compile Include="Repository\MailManager.cs" />
     <Compile Include="Role.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Survey.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="sysdiagrams.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="UserAccount.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="UserInformation.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Utils\Roles.cs" />
     <Compile Include="Utils\Utilities.cs" />
     <Compile Include="vw_Role.cs">
-      <DependentUpon>FaithConnect.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -237,13 +245,6 @@
     <Content Include="packages.config" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <EntityDeploy Include="FaithConnect.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>FaithConnect.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="FaithConnect.edmx.diagram">
-      <DependentUpon>FaithConnect.edmx</DependentUpon>
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -266,6 +267,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Assets\Groups\img\" />
+    <Folder Include="Assets\Groups\js\" />
     <Folder Include="Assets\Index\img\" />
     <Folder Include="Assets\login\js\" />
     <Folder Include="Views\Admin\" />

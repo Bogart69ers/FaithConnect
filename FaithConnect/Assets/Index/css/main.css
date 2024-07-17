@@ -1,6 +1,9 @@
 ﻿.bg-gray {
   background-color: #f0f2f5;
 }
+.bg-colorbg {
+    background-color: #d6c4a7;
+}
 .fs-0 {
   font-size: 4rem;
 }
