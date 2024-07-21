@@ -11,20 +11,36 @@ namespace FaithConnect.Controllers
         // GET: Admin
         public ActionResult AdminDashboard()
         {
-            return View();
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
         }
         public ActionResult ManageAccount()
         {
-            return View();
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
         }
 
         public ActionResult Approval()
         {
-            return View();
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
         }
         public ActionResult Reports()
         {
-            return View();
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
         }
     }
 }
