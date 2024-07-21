@@ -587,6 +587,7 @@
     <Content Include="Views\Admin\ManageAccount.cshtml" />
     <Content Include="Views\Admin\Approval.cshtml" />
     <Content Include="Views\Admin\AdminDashboard.cshtml" />
+    <Content Include="Views\Admin\CreateGroup.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -42,5 +42,27 @@ namespace FaithConnect.Controllers
 
             return View(user);
         }
+
+
+        public ActionResult CreateGroup()
+        {
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            return View(user);
+        }
+
+        public ActionResult Edit()
+        {
+            return View();
+        }
+
+        public ActionResult Delete()
+        {
+            return View();
+        }
+
+        
     }
 }
