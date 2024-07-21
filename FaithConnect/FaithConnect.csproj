@@ -124,9 +124,51 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Admin\css\bootstrap.min.css" />
+    <Content Include="Assets\Admin\css\demo.css" />
+    <Content Include="Assets\Admin\css\fonts.css" />
+    <Content Include="Assets\Admin\css\fonts.min.css" />
+    <Content Include="Assets\Admin\css\kaiadmin.css" />
+    <Content Include="Assets\Admin\css\kaiadmin.min.css" />
+    <Content Include="Assets\Admin\css\plugins.css" />
+    <Content Include="Assets\Admin\css\plugins.min.css" />
+    <Content Include="Assets\Admin\img\arashmil.jpg" />
+    <Content Include="Assets\Admin\img\bg-404.jpeg" />
+    <Content Include="Assets\Admin\img\blogpost.jpg" />
+    <Content Include="Assets\Admin\img\chadengle.jpg" />
+    <Content Include="Assets\Admin\img\img-shadow.png" />
+    <Content Include="Assets\Admin\img\jm_denis.jpg" />
+    <Content Include="Assets\Admin\img\logoproduct.svg" />
+    <Content Include="Assets\Admin\img\logoproduct2.svg" />
+    <Content Include="Assets\Admin\img\logoproduct3.svg" />
+    <Content Include="Assets\Admin\img\mlane.jpg" />
+    <Content Include="Assets\Admin\img\profile.jpg" />
+    <Content Include="Assets\Admin\img\profile2.jpg" />
+    <Content Include="Assets\Admin\img\sauro.jpg" />
+    <Content Include="Assets\Admin\img\talha.jpg" />
+    <Content Include="Assets\Admin\img\visa.svg" />
+    <Content Include="Assets\Admin\js\core\bootstrap.min.js" />
+    <Content Include="Assets\Admin\js\core\jquery-3.7.1.min.js" />
+    <Content Include="Assets\Admin\js\core\popper.min.js" />
+    <Content Include="Assets\Admin\js\demo.js" />
+    <Content Include="Assets\Admin\js\kaiadmin.js" />
+    <Content Include="Assets\Admin\js\kaiadmin.min.js" />
+    <Content Include="Assets\Admin\js\plugin\jsvectormap\jsvectormap.min.js" />
+    <Content Include="Assets\Admin\js\plugin\jsvectormap\world.js" />
+    <Content Include="Assets\Admin\js\plugin\list.js\list.min.js" />
+    <Content Include="Assets\Admin\js\plugin\moment\moment.min.js" />
+    <Content Include="Assets\Admin\js\plugin\owl-carousel\ajax-loader.gif" />
+    <Content Include="Assets\Admin\js\plugin\owl-carousel\owl.carousel.min.js" />
+    <Content Include="Assets\Admin\js\plugin\owl-carousel\owl.video.play.png" />
+    <Content Include="Assets\Admin\js\plugin\select2\select2.full.min.js" />
+    <Content Include="Assets\Admin\js\plugin\sortable\sortable.min.js" />
+    <Content Include="Assets\Admin\js\setting-demo.js" />
+    <Content Include="Assets\Admin\js\setting-demo2.js" />
     <Content Include="Assets\Groups\css\StyleGroup.css" />
+    <Content Include="Assets\Groups\js\group.js" />
     <Content Include="Assets\Index\css\main.css" />
     <Content Include="Assets\Index\css\style1.css" />
+    <Content Include="Assets\Index\img\calendar.png" />
     <Content Include="Assets\signup\css\style2.css" />
     <Content Include="Assets\signup\js\address.js" />
     <Content Include="Assets\signup\js\preview.js" />
@@ -169,6 +211,9 @@
     <Content Include="Model1.edmx.diagram">
       <DependentUpon>Model1.edmx</DependentUpon>
     </Content>
+    <Content Include="Assets\Admin\css\demo.css.map" />
+    <Content Include="Assets\Admin\css\kaiadmin.css.map" />
+    <Content Include="Assets\Admin\css\plugins.css.map" />
     <None Include="scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="scripts\jquery-1.10.2.js" />
     <Content Include="scripts\jquery-1.10.2.min.js" />
@@ -258,6 +303,9 @@
     <Content Include="Views\Home\Signup.cshtml" />
     <Content Include="Views\Home\Verify.cshtml" />
     <Content Include="Views\Home\Group.cshtml" />
+    <Content Include="Views\Home\MyCalendar.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\Admin\AdminDashboard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -267,11 +315,33 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Assets\Admin\fonts\fontawesome\" />
+    <Folder Include="Assets\Admin\fonts\simple-line-icons\" />
+    <Folder Include="Assets\Admin\fonts\summernote\" />
+    <Folder Include="Assets\Admin\img\examples\" />
+    <Folder Include="Assets\Admin\img\flags\" />
+    <Folder Include="Assets\Admin\img\kaiadmin\" />
+    <Folder Include="Assets\Admin\img\undraw\" />
+    <Folder Include="Assets\Admin\js\plugin\bootstrap-notify\" />
+    <Folder Include="Assets\Admin\js\plugin\bootstrap-tagsinput\" />
+    <Folder Include="Assets\Admin\js\plugin\bootstrap-toggle\" />
+    <Folder Include="Assets\Admin\js\plugin\chart-circle\" />
+    <Folder Include="Assets\Admin\js\plugin\chart.js\" />
+    <Folder Include="Assets\Admin\js\plugin\datatables\" />
+    <Folder Include="Assets\Admin\js\plugin\datepicker\" />
+    <Folder Include="Assets\Admin\js\plugin\dropzone\" />
+    <Folder Include="Assets\Admin\js\plugin\fullcalendar\" />
+    <Folder Include="Assets\Admin\js\plugin\gmaps\" />
+    <Folder Include="Assets\Admin\js\plugin\jquery-scrollbar\" />
+    <Folder Include="Assets\Admin\js\plugin\jquery.magnific-popup\" />
+    <Folder Include="Assets\Admin\js\plugin\jquery.sparkline\" />
+    <Folder Include="Assets\Admin\js\plugin\jquery.validate\" />
+    <Folder Include="Assets\Admin\js\plugin\sticky-sidebar\" />
+    <Folder Include="Assets\Admin\js\plugin\summernote\" />
+    <Folder Include="Assets\Admin\js\plugin\sweetalert\" />
+    <Folder Include="Assets\Admin\js\plugin\webfont\" />
     <Folder Include="Assets\Groups\img\" />
-    <Folder Include="Assets\Groups\js\" />
-    <Folder Include="Assets\Index\img\" />
     <Folder Include="Assets\login\js\" />
-    <Folder Include="Views\Admin\" />
     <Folder Include="Views\Base\" />
   </ItemGroup>
   <ItemGroup>

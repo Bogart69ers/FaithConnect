@@ -1,69 +1,227 @@
-﻿@model FaithConnect.UserInformation
-
+﻿
 @{
     ViewBag.Title = "Group";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<br />
-<br />
-<br />
-<div class="container">
+
+<link rel="stylesheet" href="~/Assets/Groups/css/StyleGroup.css" />
+<div class="container mt-4">
     <div class="row">
-        <div class="col-md-3">
-            <div class="sidebar">
-                <h5>Groups</h5>
-                <div class="search-bar">
-                    <input type="text" class="form-control" placeholder="Search Groups">
-                </div>
-                <ul class="nav flex-column mt-3">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Discover</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">My Groups</a>
-                    </li>
-                </ul>
+        <div class="col-3">
+            <div class="groups-sidebar">
+                <input type="text" class="form-control mb-3" placeholder="Search Groups">
+                <button id="discoverBtn" class="groups-sidebar-button active">Discover</button>
+                <button id="myGroupsBtn" class="groups-sidebar-button">My Groups</button>
             </div>
         </div>
-        <div class="col-md-9">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="groups-section">
-                        <h5>All groups you've joined (20)</h5>
-                        <div class="row">
-                            @for (int i = 0; i < 20; i++)
-                            {
-                                <div class="col-md-6 mb-3">
-                                    <div class="group-card">
-                                        <img src="~/Assets/login/img/Logo.png" class="group-img" alt="Group image">
-                                        <div class="group-details">
-                                            <h6>Group name</h6>
-                                            <p>You joined on July 23, 2024</p>
-                                            <a href="#" class="btn view-group-btn">View Group</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
+        <div class="col-9">
+            <div id="discoverGroups" class="groups-content active">
+                <h4>Suggested for you</h4>
+                <div class="groups-grid">
+                    <!-- Repeat this block for each group -->
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
                         </div>
                     </div>
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
+                        </div>
+                    </div>
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
+                        </div>
+                    </div>
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
+                        </div>
+                    </div>
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
+                        </div>
+                    </div>
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
+                        </div>
+                    </div>
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
+                        </div>
+                    </div>
+                    <div class="group-card">
+                        <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                        <div class="group-info">
+                            <h5>Group name</h5>
+                            <p>100 Members</p>
+                            <button class="btn btn-primary">Join Group</button>
+                        </div>
+                    </div>
+                    <!-- End repeat -->
                 </div>
-                <div class="col-md-4">
-                    <div class="groups-section">
-                        <h5>Pending group requests (2)</h5>
-                        <div class="row">
-                            @for (int i = 0; i < 2; i++)
-                            {
-                                <div class="col-12 mb-3">
-                                    <div class="group-card">
-                                        <img src="~/Assets/login/img/Logo.png" class="group-img" alt="Pending group image">
-                                        <div class="group-details">
-                                            <h6>Group name</h6>
-                                            <p>You requested on July 23, 2024</p>
-                                            <a href="#" class="btn view-group-btn">View Group</a>
-                                        </div>
-                                    </div>
+            </div>
+            <div id="myGroups" class="groups-content">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>All groups you've joined (8)</h4>
+
+                        <div class="groups-grid">
+                            <!-- Repeat this block for each group -->
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
                                 </div>
-                            }
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You joined on July 23, 2024</p>
+                                    <button class="btn btn-primary">View Group</button>
+                                </div>
+                            </div>
+                            <!-- End repeat -->
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Pending group requests (2)</h4>
+                        <div class="groups-grid">
+                            <!-- Repeat this block for each pending group -->
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You requested on July 23, 2024</p>
+                                    <button class="btn btn-secondary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You requested on July 23, 2024</p>
+                                    <button class="btn btn-secondary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You requested on July 23, 2024</p>
+                                    <button class="btn btn-secondary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You requested on July 23, 2024</p>
+                                    <button class="btn btn-secondary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You requested on July 23, 2024</p>
+                                    <button class="btn btn-secondary">View Group</button>
+                                </div>
+                            </div>
+                            <div class="group-card">
+                                <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
+                                <div class="group-info">
+                                    <h5>Group name</h5>
+                                    <p>You requested on July 23, 2024</p>
+                                    <button class="btn btn-secondary">View Group</button>
+                                </div>
+                            </div>
+                        
+                            <!-- End repeat -->
                         </div>
                     </div>
                 </div>
@@ -71,68 +229,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .container {
-        padding: 20px;
-    }
-
-    .sidebar {
-        background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 5px;
-    }
-
-    .search-bar {
-        margin-bottom: 20px;
-    }
-
-    .groups-section {
-        margin-bottom: 20px;
-    }
-
-    .group-card {
-        display: flex;
-        align-items: center;
-        background-color: #f5f5f5;
-        padding: 10px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .group-img {
-        width: 80px;
-        height: 80px;
-        border-radius: 10px;
-        object-fit: cover;
-        margin-right: 10px;
-    }
-
-    .group-details {
-        flex-grow: 1;
-    }
-
-        .group-details h6 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .group-details p {
-            margin: 5px 0;
-            font-size: 12px;
-            color: #666;
-        }
-
-    .btn.view-group-btn {
-        background-color: #d3b185;
-        border: none;
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 5px;
-    }
-
-    .nav-link :active {
-        background-color: #d3b185;
-    }
-</style>
+<script src="~/Assets/Groups/js/group.js"></script>

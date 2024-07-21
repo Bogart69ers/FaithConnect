@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "MyCalendar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="calendar-container bg-white p-4 shadow-sm border-rad20" >
+                <div class="d-flex justify-content-between align-items-center">
+                    <button class="btn btn-light border-rad10" id="prevMonth">&lt;</button>
+                    <h4 id="currentMonth" class="mb-0">July 2024</h4>
+                    <button class="btn btn-light border-rad10" id="nextMonth">&gt;</button>
+                </div>
+                <table class="table table-borderless mt-3">
+                    <thead>
+                        <tr>
+                            <th>Sun</th>
+                            <th>Mon</th>
+                            <th>Tue</th>
+                            <th>Wed</th>
+                            <th>Thu</th>
+                            <th>Fri</th>
+                            <th>Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Calendar days will be dynamically populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="events-container bg-white p-4 shadow-sm border-rad20" >
+                <div class="event-buttons">
+                    <button id="upcomingEventsBtn" class="event-button active">Upcoming Events</button>
+                    <button id="recentEventsBtn" class="event-button">Recent Events</button>
+                </div>
+                <div id="upcomingEvents">
+                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
+                        <div class="event-date me-3 text-center">
+                            <div class="event-day mb-1">12</div>
+                            <div class="event-time">00:00 PM</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-day-of-week mb-1">Thursday</div>
+                            <div class="event-title mb-1">Prayer Meeting</div>
+                            <div class="event-description">Prayer Meeting with Jesus</div>
+                        </div>
+                    </div>
+                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-13">
+                        <div class="event-date me-3 text-center">
+                            <div class="event-day mb-1">13</div>
+                            <div class="event-time">00:00 PM</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-day-of-week mb-1">Tuesday</div>
+                            <div class="event-title mb-1">Prayer Meeting</div>
+                            <div class="event-description">Prayer Meeting with Jesus</div>
+                        </div>
+                    </div>
+                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-27">
+                        <div class="event-date me-3 text-center">
+                            <div class="event-day mb-1">27</div>
+                            <div class="event-time">00:00 PM</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-day-of-week mb-1">Friday</div>
+                            <div class="event-title mb-1">Prayer Meeting</div>
+                            <div class="event-description">Prayer Meeting with Jesus</div>
+                        </div>
+                    </div>      
+                </div>
+                <div id="recentEvents" class="d-none">
+                    <!-- Recent events will be populated similarly to upcoming events -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript code for calendar functionality and event toggling
+</script>

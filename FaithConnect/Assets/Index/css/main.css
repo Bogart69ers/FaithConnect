@@ -121,3 +121,115 @@
     width: 100%;
   }
 }
+
+
+
+/* Ensure content is not hidden behind the navbar */
+.container {
+    margin-top: 6%; /* Adjust based on the height of your navbar */
+}
+
+
+.border-rad20{
+    border-radius: 20px;
+}
+.border-rad10{
+    border-radius: 10px;
+}
+
+.calendar-container {
+    max-width: 100%;
+    overflow-x: auto;
+}
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    font-size: 1rem; /* Neutral font size */
+    font-weight: normal; /* Neutral font weight */
+    width: 40px; /* Fixed width */
+    height: 40px; /* Fixed height */
+    position: relative; /* For positioning the red dot */
+}
+.table td.event-day {
+    background-color: #d6c4a7; /* Change this to the color you prefer */
+    color: white;
+    border-radius: 15px; /* More curved edges */
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.event-list .event-item {
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+.event-list .event-item:hover {
+    background-color: #f0f2f5;
+}
+.event-date {
+    text-align: center;
+    min-width: 60px;
+}
+.event-day {
+    font-size: 1.25rem;
+    font-weight: bolder;
+}
+.event-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+.event-details {
+    flex-grow: 1;
+}
+.event-day-of-week {
+    font-size: 1rem;
+    font-weight: bolder;
+}
+.event-title {
+    font-size: 1.25rem;
+    font-weight: normal;
+    color: #343a40;
+}
+.event-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.event-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+.event-button {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #343a40;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding-bottom: 5px;
+}
+.event-button.active {
+    border-bottom: 4px solid #d6c4a7; /* Brown underline */
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    .calendar-container, .events-container {
+        margin-bottom: 20px;
+    }
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
