@@ -36,6 +36,29 @@ namespace FaithConnect.Repository
         {
             return _userAcc._table.FirstOrDefault(m => m.email == email);
         }
+        public ErrorCode DeleteUser(int id, ref string errMsg)
+        {
+            try
+            {
+                var user = GetUserById(id);
+                if (user == null)
+                {
+                    errMsg = "User not found";
+                    return ErrorCode.Error;
+                }
+                return _userAcc.Delete(id, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                errMsg = $"An error occurred: {ex.Message}";
+                return ErrorCode.Error;
+            }
+        }
+
+        public List<UserAccount> GetAllUsers()
+        {
+            return _userAcc.GetAll();
+        }
 
         public ErrorCode SignIn(string username, string password, ref string errMsg)
         {

@@ -546,6 +546,7 @@
     <Compile Include="Repository\IBaseRepository.cs" />
     <Compile Include="Repository\ImageManager.cs" />
     <Compile Include="Repository\MailManager.cs" />
+    <Compile Include="Repository\ManageAccountViewModel.cs" />
     <Compile Include="Role.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

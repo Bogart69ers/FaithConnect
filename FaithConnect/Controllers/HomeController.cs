@@ -100,7 +100,7 @@ namespace FaithConnect.Controllers
                 switch (user.Role1.roleName)
                 {
                     case Constant.Role_Admin:
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("AdminDashboard", "Admin");
                     case Constant.Role_User:
                         return RedirectToAction("Index", "Home");
                     case Constant.Role_Spiritual:

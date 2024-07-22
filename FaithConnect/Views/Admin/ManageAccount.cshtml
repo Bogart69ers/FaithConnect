@@ -1,5 +1,6 @@
-﻿@{
-    ViewBag.Title = "ManageAccount";
+﻿@model FaithConnect.Repository.ManageAccountViewModel
+@{
+    ViewBag.Title = "Manage Account";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
@@ -7,7 +8,6 @@
     <div class="page-inner">
         <div class="page-header">
             <h4 class="page-title">Manage Account</h4>
-           
         </div>
 
         <div class="row">
@@ -18,59 +18,100 @@
                         <div class="card-title">Add Account</div>
                     </div>
                     <div class="card-body">
-                        <form action="/Admin/ManageAccount/Create" method="post">
+                        @using (Html.BeginForm("Create", "Admin", FormMethod.Post))
+                        {
+                            <div class="form-group">
+                                <label for="firstname">First Name</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fa fa-user"></i></span>
+                                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname">Last Name</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fa fa-user"></i></span>
+                                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fas fa-phone"></i></span>
+                                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fas fa-map-marked-alt"></i></span>
+                                    <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label for="username">Username</label>
                                 <div class="input-icon">
                                     <span class="input-icon-addon"><i class="fa fa-user"></i></span>
                                     <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                                    @Html.ValidationMessageFor(model => model.UserAccount.username, "", new { @class = "text-danger" })
                                 </div>
-                            </div>                          
+                            </div>
                             <div class="form-group">
-                                <label for="username">Password</label>
+                                <label for="password">Password</label>
                                 <div class="input-icon">
-                                    <span class="input-icon-addon"><i class="fas fa-lock"></i></span>
-                                    <input type="text" class="form-control" id="password" name="password" placeholder="Password" required>
+                                    <span class="input-icon-addon"><i class="fas fa-eye-slash"></i></span>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                    @Html.ValidationMessageFor(model => model.UserAccount.password, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="ConfirmPass">Confirm Password</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fas fa-eye-slash"></i></span>
+                                    <input type="password" class="form-control" id="ConfirmPass" name="ConfirmPass" placeholder="Confirm Password" required>
+                                    @Html.ValidationMessageFor(model => model.UserAccount.password, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <div class="input-icon">
                                     <span class="input-icon-addon"><i class="fas fa-envelope"></i></span>
-                                    <input type="email" class="form-control" id="email2" name="email" placeholder="E-Mail" required>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="E-Mail" required>
+                                    @Html.ValidationMessageFor(model => model.UserAccount.email, "", new { @class = "text-danger" })
                                 </div>
-                            </div>                      
+                            </div>
                             <div class="form-group">
                                 <label for="role">Role</label>
                                 <div class="input-icon">
                                     <span class="input-icon-addon"><i class="fas fa-clipboard-check"></i></span>
                                     <select class="form-control" id="role" name="role" required>
-                                        <option value="Administrator">Administrator</option>
-                                        <option value="Spiritual Leader">Spiritual Leader</option>
-                                        <option value="User">User</option>
+                                        <option value="2">Administrator</option>
+                                        <option value="3">Spiritual Leader</option>
+                                        <option value="1">User</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div>  
                             <div class="form-group">
                                 <label for="status">Status</label>
                                 <div class="input-icon">
                                     <span class="input-icon-addon"><i class="far fa-flag"></i></span>
                                     <select class="form-control" id="status" name="status" required>
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> 
                             <button type="submit" class="btn btn-primary">Add Account</button>
-                        </form>
+                        }
                     </div>
                 </div>
             </div>
+
             <!-- Account List -->
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">Account List</div>
+                        <div class="card-title">Active Account List</div>
                     </div>
                     <div class="card-body">
                         <table id="accountTable" class="table table-striped table-hover">
@@ -85,23 +126,68 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @* Example row, replace with dynamic data *@
+                                @foreach (var item in Model.UserAccounts.Where(u => u.status == 1))
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.username)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.email)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.role)</td>
+                                        <td><span class="badge badge-success">Active</span></td>
+                                        <td>
+                                            <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="@Url.Action("Delete", new { id = item.id })" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <div class="card-title">Inactive Account List</div>
+                    </div>
+                    <div class="card-body">
+                        <table id="inactiveAccountTable" class="table table-striped table-hover">
+                            <thead>
                                 <tr>
-                                    <td>1</td>
-                                    <td>admin</td>
-                                    <td>admin@example.com</td>
-                                    <td>Administrator</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                    <td>
-                                        <a href="/Admin/ManageAccount/Edit/1" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a href="/Admin/ManageAccount/Delete/1" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </a>
-                                    </td>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
-                                @* Repeat for each account *@
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.UserAccounts.Where(u => u.status == 0))
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.username)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.email)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.role)</td>
+                                        <td><span class="badge badge-secondary">Inactive</span></td>
+                                        <td>
+                                            <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="@Url.Action("Delete", new { id = item.id })" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -111,7 +197,60 @@
     </div>
 </div>
 
-<!-- DataTables initialization -->
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Edit", "Admin", FormMethod.Post, new { id = "editUserForm" }))
+                {
+                    @Html.Hidden("id")
+                    <div class="form-group">
+                        <label for="editUsername">Username</label>
+                        <input type="text" class="form-control" id="editUsername" name="username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPassword">Password</label>
+                        <input type="password" class="form-control" id="editPassword" name="password" placeholder="Password">
+                    </div>
+                    <div class="form-group">
+                        <label for="editConfirmPassword">Confirm Password</label>
+                        <input type="password" class="form-control" id="editConfirmPassword" name="ConfirmPass" placeholder="Confirm Password">
+                    </div>
+                    <div class="form-group">
+                        <label for="editRole">Role</label>
+                        <select class="form-control" id="editRole" name="role" required>
+                            <option value="2">Administrator</option>
+                            <option value="3">Spiritual Leader</option>
+                            <option value="1">User</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Status</label>
+                        <select class="form-control" id="editStatus" name="status" required>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#accountTable').DataTable({
@@ -123,5 +262,44 @@
             "autoWidth": false,
             "responsive": true,
         });
+
+        $('#editUserForm').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '@Url.Action("Edit", "Admin")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = '@Url.Action("ManageAccount", "Admin")'; // Redirect to ManageAccount
+                    } else {
+                        // Handle validation errors here
+                        alert('Failed to save changes: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while processing your request.');
+                }
+            });
+        });
     });
+
+    function openEditModal(userId) {
+        $.ajax({
+            url: '@Url.Action("GetUser", "Admin")/' + userId,
+            type: 'GET',
+            success: function (data) {
+                $('#editUserForm #editUsername').val(data.username);
+                $('#editUserForm #editEmail').val(data.email);
+                $('#editUserForm #editRole').val(data.role);
+                $('#editUserForm #editStatus').val(data.status);
+                $('#editUserForm input[name="id"]').val(data.id);
+                $('#editUserForm #editPassword').val(''); // Clear password fields
+                $('#editUserForm #editConfirmPassword').val('');
+                $('#editUserModal').modal('show');
+            }
+        });
+    }
 </script>
+
+
