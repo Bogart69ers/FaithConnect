@@ -4,19 +4,37 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="e71c2f15c1c74c64ba8de79a0d5f2d40" Name="Diagram1">
-        <EntityTypeShape EntityType="FaithConnectModel.Content" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.Event" Width="1.5" PointX="3" PointY="5.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.Feedback" Width="1.5" PointX="5.25" PointY="1.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.Image" Width="1.5" PointX="8" PointY="6.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.Role" Width="1.5" PointX="0.75" PointY="1.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.Survey" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.UserAccount" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.UserInformation" Width="1.5" PointX="5.75" PointY="6" IsExpanded="true" />
-        <EntityTypeShape EntityType="FaithConnectModel.vw_Role" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
+      <Diagram DiagramId="bdb9a35b209948efa998605ca792cdbf" Name="Diagram1" ZoomLevel="74">
+        <EntityTypeShape EntityType="FaithConnectModel.Content" Width="1.5" PointX="2.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Event" Width="1.5" PointX="7.5" PointY="14.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Feedback" Width="1.5" PointX="9.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Forum" Width="1.5" PointX="10.5" PointY="14.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.GroupMembership" Width="1.5" PointX="2.25" PointY="17.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Groups" Width="1.5" PointX="5.25" PointY="20.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Image" Width="1.5" PointX="3" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Media" Width="1.5" PointX="12.75" PointY="16.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Post" Width="1.5" PointX="10.5" PointY="18.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Role" Width="1.5" PointX="0.75" PointY="9.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.Survey" Width="1.5" PointX="4.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.sysdiagrams" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserAccount" Width="1.5" PointX="3" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserInformation" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="FaithConnectModel.vw_Role" Width="1.5" PointX="6.75" PointY="3.75" IsExpanded="true" />
+        <AssociationConnector Association="FaithConnectModel.FK_Event_Groups" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Event_UserAccount" ManuallyRouted="false" />
         <AssociationConnector Association="FaithConnectModel.FK_Feedback_Event1" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Media_Event" ManuallyRouted="false" />
         <AssociationConnector Association="FaithConnectModel.FK_Feedback_UserAccount1" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Forum_Groups" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Forum_UserAccount" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Media_Forum" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_GroupMembership_Groups" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_GroupMembership_UserAccount" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Groups_UserAccount" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Post_Groups" ManuallyRouted="false" />
         <AssociationConnector Association="FaithConnectModel.FK_Image_UserInformation" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Media_Post" ManuallyRouted="false" />
+        <AssociationConnector Association="FaithConnectModel.FK_Post_UserAccount" ManuallyRouted="false" />
         <AssociationConnector Association="FaithConnectModel.FK_UserAccount_Role" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>

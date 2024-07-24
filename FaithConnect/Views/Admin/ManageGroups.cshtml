@@ -1,0 +1,96 @@
+﻿@model FaithConnect.Repository.ManageAccountViewModel
+@{
+    ViewBag.Title = "Manage Groups";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="content">
+    <div class="page-inner">
+        <div class="page-header">
+            <h4 class="page-title">Manage Groups</h4>
+        </div>
+
+        <div class="row">
+            <!-- Add Group Form -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Add Group</div>
+                    </div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("CreateGroup", "Admin", FormMethod.Post))
+                        {
+
+                            <div class="form-group">
+                                <label for="groupName">Group Name</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fa fa-users"></i></span>
+                                    <input type="text" class="form-control" id="groupName" name="groupName" placeholder="Group Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Group Admin</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fa fa-user"></i></span>
+                                    <input class="form-control" id="description" name="createdBy" placeholder="Group Admin" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fa fa-info-circle"></i></span>
+                                    <textarea class="form-control" id="description" name="description" placeholder="Description" required></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Group</button>
+                        }                        
+                    </div>
+                </div>
+              </div>
+                <!-- Group List -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Group List</div>
+                        </div>
+                        <div class="card-body">
+                            <table id="groupTable" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Group Name</th>
+                                        <th>Description</th>
+                                        <th>Created By</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Groups)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.groupName)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.description)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.createdBy)</td>
+                                            <td>
+                                                <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <form action="@Url.Action("DeleteGroup", new { id = item.id })" method="post" style="display:inline;">
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

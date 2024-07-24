@@ -7,6 +7,7 @@ using FaithConnect.Utils;
 using System.Web.Security;
 using System.IO;
 using FaithConnect.Repository;
+using FaithConnect.ViewModel;
 
 namespace FaithConnect.Controllers
 {
@@ -19,9 +20,7 @@ namespace FaithConnect.Controllers
 
             IsUserLoggedSession();
             var username = User.Identity.Name;
-
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-
             return View(user);
         }
 
@@ -377,22 +376,72 @@ namespace FaithConnect.Controllers
                 return View(ua);
             }
         }
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Group()
         {
-
             IsUserLoggedSession();
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var userId = user.id;
 
-            return View(user);
+            var groupManager = new GroupManager();
+            var viewModel = new GroupViewModel
+            {
+                UserInformation = user,
+                Groups = groupManager.GetAllGroups(),
+                JoinedGroups = groupManager.GetJoinedGroups(userId),
+                PendingGroups = groupManager.GetPendingGroups(userId)
+            };
+
+            return View(viewModel);
         }
+
+
         [HttpPost]
-        public ActionResult Group(Event ev)
+        public ActionResult JoinGroup(int groupId)
         {
-            return View();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var membership = _groupManager.GetJoinedGroups(user.id).FirstOrDefault(m => m.id == groupId);
+
+            if (membership == null)
+            {
+                TempData["ErrorMessage"] = "Membership not found.";
+                return RedirectToAction("Group");
+            }
+
+            if (_groupManager.RemoveGroupMembership(membership.id, ref ErrorMessage) != ErrorCode.Success)
+            {
+                TempData["ErrorMessage"] = ErrorMessage;
+                return RedirectToAction("Group");
+            }
+
+            TempData["SuccessMessage"] = "Left group successfully.";
+            return RedirectToAction("Group");
         }
 
+        [HttpPost]
+        public ActionResult LeaveGroup(int groupId)
+        {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var membership = _groupManager.GetAllGroupMemberships().FirstOrDefault(m => m.groupId == groupId && m.userId == user.id);
+
+            if (membership == null)
+            {
+                TempData["ErrorMessage"] = "Membership not found.";
+                return RedirectToAction("Group");
+            }
+
+            if (_groupManager.RemoveGroupMembership(membership.id, ref ErrorMessage) != ErrorCode.Success)
+            {
+                TempData["ErrorMessage"] = ErrorMessage;
+                return RedirectToAction("Group");
+            }
+
+            TempData["SuccessMessage"] = "Left group successfully.";
+            return RedirectToAction("Group");
+        }
         [Authorize]
         public ActionResult MyCalendar()
         {
@@ -405,7 +454,10 @@ namespace FaithConnect.Controllers
         [HttpPost]
         public ActionResult MyCalendar(Event ev)
         {
-            return View();
+            IsUserLoggedSession();
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            return View(user);
         }
 
         public ActionResult Events()

@@ -1,6 +1,6 @@
-﻿@using FaithConnect.Models
-@model UserInformation
+﻿@model FaithConnect.UserInformation
 @{
+
     string profileImage = string.IsNullOrEmpty(Model.Image.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + Model.Image.FirstOrDefault()?.imageFile);
 }
 <!DOCTYPE html>

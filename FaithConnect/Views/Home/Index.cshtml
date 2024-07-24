@@ -1,8 +1,4 @@
-﻿@using FaithConnect.Models
-@model UserInformation
-@{
-    string profileImage = string.IsNullOrEmpty(Model.Image.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + Model.Image.FirstOrDefault()?.imageFile);
-}
+﻿
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";

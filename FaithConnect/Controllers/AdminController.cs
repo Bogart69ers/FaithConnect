@@ -5,10 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using FaithConnect.Utils;
 using FaithConnect.Repository;
+using FaithConnect.ViewModel;
 
 namespace FaithConnect.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : BaseController
     {
         // GET: Admin
@@ -26,7 +27,7 @@ namespace FaithConnect.Controllers
 
             return View(model);
         }
-       
+
 
         public ActionResult Approval()
         {
@@ -58,20 +59,70 @@ namespace FaithConnect.Controllers
         }
 
 
-        public ActionResult CreateGroup()
+        public ActionResult ManageGroups()
         {
             var username = User.Identity.Name;
             var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var groups = _groupManager.GetAllGroups();
 
-            var accounts = _AccManager.GetAllUsers();
             var model = new ManageAccountViewModel
             {
                 UserInformation = userInfo,
-                UserAccounts = accounts
+                Groups = groups,
+                Group = new Groups()
             };
 
             return View(model);
         }
+        [HttpPost]
+        public ActionResult CreateGroup(Groups group)
+        {
+            try
+            {
+                var currentUser = _AccManager.GetUserByUsername(User.Identity.Name);
+                if (currentUser == null)
+                {
+                    ModelState.AddModelError(string.Empty, "User not found.");
+                    var model = PrepareManageAccountViewModel();
+                    return View("ManageGroups", model);
+                }
+
+                group.groupId = Utilities.gUid;
+                group.date_created = DateTime.Now;
+
+                if (_groupManager.CreateGroup(group, ref ErrorMessage) != ErrorCode.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ErrorMessage);
+                    var model = PrepareManageAccountViewModel();
+                    return View("ManageGroups", model);
+                }
+
+                TempData["SuccessMessage"] = "Group created successfully.";
+                return RedirectToAction("ManageGroups");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                var model = PrepareManageAccountViewModel();
+                return View("ManageGroups", model);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteGroup(int id)
+        {
+            var result = _groupManager.DeleteGroup(id, ref ErrorMessage);
+            if (result == ErrorCode.Success)
+            {
+                return RedirectToAction("ManageGroups");
+            }
+
+            ModelState.AddModelError("", ErrorMessage);
+            var model = PrepareManageAccountViewModel();
+            return View("ManageGroups", model);
+        }
+
+        
         public ActionResult ManageAccount()
         {
             var username = User.Identity.Name;
@@ -160,7 +211,7 @@ namespace FaithConnect.Controllers
         }
 
 
-       
+
 
         public ActionResult Edit(int id)
         {
@@ -255,12 +306,17 @@ namespace FaithConnect.Controllers
             var username = User.Identity.Name;
             var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var accounts = _AccManager.GetAllUsers();
+            var groups = _groupManager.GetAllGroups();
             return new ManageAccountViewModel
             {
                 UserInformation = userInfo,
                 UserAccounts = accounts,
-                UserAccount = new UserAccount()
+                UserAccount = new UserAccount(),
+                Groups = groups,
+                Group = new Groups()
             };
         }
+        
+
     }
 }

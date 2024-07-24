@@ -17,15 +17,22 @@ namespace FaithConnect
         public Event()
         {
             this.Feedback = new HashSet<Feedback>();
+            this.Media = new HashSet<Media>();
         }
     
         public int id { get; set; }
-        public string EventId { get; set; }
-        public string Title { get; set; }
-        public Nullable<System.DateTime> Date { get; set; }
-        public string Description { get; set; }
-        public string Organizer { get; set; }
+        public string eventId { get; set; }
+        public Nullable<int> groupId { get; set; }
+        public Nullable<System.DateTime> event_date { get; set; }
+        public Nullable<System.DateTime> date_created { get; set; }
+        public Nullable<int> status { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public Nullable<int> createdBy { get; set; }
     
+        public virtual Groups Groups { get; set; }
+        public virtual UserAccount UserAccount { get; set; }
         public virtual ICollection<Feedback> Feedback { get; set; }
+        public virtual ICollection<Media> Media { get; set; }
     }
 }

@@ -9,6 +9,13 @@ using FaithConnect.Repository;
 
 namespace FaithConnect.Utils
 {
+    public enum MembershipStatus
+    {
+        Joined,
+        Pending,
+        Rejected
+    }
+
     public enum ErrorCode
     {
         Success,

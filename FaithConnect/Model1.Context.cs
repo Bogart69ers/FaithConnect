@@ -28,9 +28,15 @@ namespace FaithConnect
         public DbSet<Content> Content { get; set; }
         public DbSet<Event> Event { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
+        public DbSet<Forum> Forum { get; set; }
+        public DbSet<GroupMembership> GroupMembership { get; set; }
+        public DbSet<Groups> Groups { get; set; }
         public DbSet<Image> Image { get; set; }
+        public DbSet<Media> Media { get; set; }
+        public DbSet<Post> Post { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<Survey> Survey { get; set; }
+        public DbSet<sysdiagrams> sysdiagrams { get; set; }
         public DbSet<UserAccount> UserAccount { get; set; }
         public DbSet<UserInformation> UserInformation { get; set; }
         public DbSet<vw_Role> vw_Role { get; set; }

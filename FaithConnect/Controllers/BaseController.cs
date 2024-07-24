@@ -11,6 +11,7 @@ namespace FaithConnect.Controllers
         public BaseRepository<UserAccount> _UserAcc;
         public AccountManager _AccManager;
         public ImageManager _imgMgr;
+        public GroupManager _groupManager;
 
         public String Username { get { return User.Identity.Name; } }
         public String UserId { get { return _AccManager.GetUserByUsername(Username).userId; } }
@@ -20,6 +21,7 @@ namespace FaithConnect.Controllers
             _UserAcc = new BaseRepository<UserAccount>();
             _AccManager = new AccountManager();
             _imgMgr = new ImageManager();
+            _groupManager = new GroupManager();
         }
 
         public void IsUserLoggedSession()

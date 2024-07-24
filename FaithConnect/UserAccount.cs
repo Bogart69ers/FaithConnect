@@ -16,7 +16,12 @@ namespace FaithConnect
     {
         public UserAccount()
         {
+            this.Event = new HashSet<Event>();
             this.Feedback = new HashSet<Feedback>();
+            this.Forum = new HashSet<Forum>();
+            this.GroupMembership = new HashSet<GroupMembership>();
+            this.Groups = new HashSet<Groups>();
+            this.Post = new HashSet<Post>();
         }
     
         public int id { get; set; }
@@ -30,7 +35,12 @@ namespace FaithConnect
         public Nullable<System.DateTime> date_created { get; set; }
         public Nullable<System.DateTime> date_modified { get; set; }
     
+        public virtual ICollection<Event> Event { get; set; }
         public virtual ICollection<Feedback> Feedback { get; set; }
+        public virtual ICollection<Forum> Forum { get; set; }
+        public virtual ICollection<GroupMembership> GroupMembership { get; set; }
+        public virtual ICollection<Groups> Groups { get; set; }
+        public virtual ICollection<Post> Post { get; set; }
         public virtual Role Role1 { get; set; }
     }
 }
