@@ -169,7 +169,7 @@ namespace FaithConnect.Controllers
 
                 var ui = new UserInformation
                 {
-                    userId = ua.userId,
+                    userId = ua.id,
                     first_name = firstname,
                     last_name = lastname,
                     phone = phone,

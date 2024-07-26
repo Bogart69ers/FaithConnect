@@ -160,7 +160,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="userId" Type="nvarchar(max)" />
+          <Property Name="userId" Type="int" />
           <Property Name="last_name" Type="nvarchar" MaxLength="255" />
           <Property Name="first_name" Type="nvarchar" MaxLength="255" />
           <Property Name="phone" Type="nvarchar" MaxLength="255" />
@@ -295,7 +295,9 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Image_UserInformation">
-          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1" />
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Image" Type="Self.Image" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="UserInformation">
@@ -379,6 +381,20 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Principal>
             <Dependent Role="UserAccount">
               <PropertyRef Name="role" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserInformation_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserInformation">
+              <PropertyRef Name="userId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -467,6 +483,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_UserAccount_Role" Association="Self.FK_UserAccount_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="UserAccount" EntitySet="UserAccount" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserInformation_UserAccount" Association="Self.FK_UserInformation_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="UserInformation" EntitySet="UserInformation" />
           </AssociationSet>
         </EntityContainer>
       </Schema>
@@ -654,13 +674,14 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Groups" Relationship="Self.FK_Groups_UserAccount" FromRole="UserAccount" ToRole="Groups" />
           <NavigationProperty Name="Post" Relationship="Self.FK_Post_UserAccount" FromRole="UserAccount" ToRole="Post" />
           <NavigationProperty Name="Role1" Relationship="Self.FK_UserAccount_Role" FromRole="UserAccount" ToRole="Role" />
+          <NavigationProperty Name="UserInformation" Relationship="Self.FK_UserInformation_UserAccount" FromRole="UserAccount" ToRole="UserInformation" />
         </EntityType>
         <EntityType Name="UserInformation">
           <Key>
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="userId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="userId" Type="Int32" />
           <Property Name="last_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="first_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="phone" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
@@ -670,6 +691,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="bio" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Image" Relationship="Self.FK_Image_UserInformation" FromRole="UserInformation" ToRole="Image" />
+          <NavigationProperty Name="UserAccount" Relationship="Self.FK_UserInformation_UserAccount" FromRole="UserInformation" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="vw_Role">
           <Key>
@@ -830,7 +852,9 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Image_UserInformation">
-          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1" />
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Image" Type="Self.Image" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="UserInformation">
@@ -878,6 +902,20 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Principal>
             <Dependent Role="UserAccount">
               <PropertyRef Name="role" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserInformation_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserInformation">
+              <PropertyRef Name="userId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -960,6 +998,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_UserAccount_Role" Association="Self.FK_UserAccount_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="UserAccount" EntitySet="UserAccount" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserInformation_UserAccount" Association="Self.FK_UserInformation_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="UserInformation" EntitySet="UserInformation" />
           </AssociationSet>
         </EntityContainer>
       </Schema>

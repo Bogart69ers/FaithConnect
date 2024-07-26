@@ -20,6 +20,11 @@ namespace FaithConnect.Repository
         {
             return _groupRepo.GetAll();
         }
+
+        public List<GroupMembership> ListGroupsJoinedByUserId(int id)
+        {
+            return _membershipRepo._table.Where(m => m.userId == id).ToList();
+        }
         public List<GroupMembership> GetAllGroupMemberships()
         {
             return _membershipRepo.GetAll();

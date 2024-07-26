@@ -22,9 +22,9 @@ namespace FaithConnect.Repository
             return _userAcc.Get(Id);
         }
 
-        public UserAccount GetUserByUserId(string userId)
+        public UserAccount GetUserByUserId(int userId)
         {
-            return _userAcc._table.FirstOrDefault(m => m.userId == userId);
+            return _userAcc._table.FirstOrDefault(m => m.id == userId);
         }
 
         public UserAccount GetUserByUsername(string username)
@@ -137,10 +137,10 @@ namespace FaithConnect.Repository
             {
                 return null;
             }
-            return _userInfo._table.FirstOrDefault(m => m.userId == userAcc.userId);
+            return _userInfo._table.FirstOrDefault(m => m.userId == userAcc.id);
         }
 
-        public UserInformation GetUserInfoByUserId(string userId)
+        public UserInformation GetUserInfoByUserId(int userId)
         {
             return _userInfo._table.FirstOrDefault(m => m.userId == userId);
         }
@@ -158,14 +158,14 @@ namespace FaithConnect.Repository
                 return null;
             }
 
-            var userInfo = GetUserInfoByUserId(user.userId);
+            var userInfo = GetUserInfoByUserId(user.id);
             if (userInfo != null)
             {
                 return userInfo;
             }
 
             userInfo = new UserInformation();
-            userInfo.userId = user.userId;
+            userInfo.userId = user.id;
             userInfo.email = user.email;
             userInfo.status = (int)Status.Active;
             userInfo.date_created = DateTime.Now;
@@ -177,7 +177,7 @@ namespace FaithConnect.Repository
             }
             _userInfo.Create(userInfo, out err);
 
-            return GetUserInfoByUserId(user.userId);
+            return GetUserInfoByUserId(user.id);
         }
 
         public UserAccount Retrieve(int id, ref string err)
@@ -189,7 +189,7 @@ namespace FaithConnect.Repository
                 return null;
             }
 
-            return GetUserByUserId(user.userId);
+            return GetUserByUserId(user.id);
         }
     }
 }

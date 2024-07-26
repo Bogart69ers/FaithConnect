@@ -1,0 +1,149 @@
+﻿body {
+    font-family: Arial, sans-serif;
+}
+
+.newsfeed {
+    max-width: 800px; /* Increased the max-width for wider posts */
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.post {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    padding: 30px; /* Increased padding for a more spacious look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.group-icon {
+    width: 50px; /* Increased icon size */
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.group-info {
+    flex-grow: 1;
+}
+
+.group-name {
+    font-weight: bold;
+}
+
+.post-time {
+    color: #777;
+    font-size: 12px;
+}
+
+.post-options {
+    position: relative;
+}
+
+.options-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.options-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.options-menu a {
+    display: block;
+    padding: 15px;
+    width: 200px;
+    text-decoration: none;
+    color: #333;
+}
+
+.post-options:hover .options-menu {
+    display: block;
+}
+
+.post-content {
+    margin-top: 10px;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 10px;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    padding: 5px 0px 5px 0px;
+
+}
+
+.action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #c2b19d;
+}
+
+.post-interact {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    color: #777;
+}
+
+.user-icon {
+    width: 40px; /* Increased user icon size */
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.comment-input {
+    flex-grow: 1;
+    padding: 5px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    .newsfeed {
+        padding: 5px;
+    }
+
+    .post {
+        padding: 10px;
+    }
+
+    .post-actions {
+        flex-direction: column;
+    }
+
+    .action-button {
+        margin-bottom: 5px;
+    }
+
+    .user-icon {
+        width: 30px;
+        height: 30px;
+    }
+}

@@ -450,6 +450,7 @@
     <Content Include="Assets\Groups\js\group.js" />
     <Content Include="Assets\Index\css\main.css" />
     <Content Include="Assets\Index\css\style1.css" />
+    <Content Include="Assets\Index\css\Style2.css" />
     <Content Include="Assets\Index\img\calendar.png" />
     <Content Include="Assets\signup\css\style2.css" />
     <Content Include="Assets\signup\js\address.js" />
@@ -562,8 +563,6 @@
     <Compile Include="Repository\IBaseRepository.cs" />
     <Compile Include="Repository\ImageManager.cs" />
     <Compile Include="Repository\MailManager.cs" />
-    <Compile Include="ViewModel\GroupViewModel.cs" />
-    <Compile Include="ViewModel\ManageAccountViewModel.cs" />
     <Compile Include="Role.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -579,6 +578,8 @@
     <Compile Include="UserInformation.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\GroupViewModel.cs" />
+    <Compile Include="ViewModel\ManageAccountViewModel.cs" />
     <Compile Include="Utils\Roles.cs" />
     <Compile Include="Utils\Utilities.cs" />
     <Compile Include="vw_Role.cs">

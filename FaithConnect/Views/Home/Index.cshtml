@@ -1,5 +1,78 @@
-﻿
+﻿@model dynamic
+@{
+    string profileImage = Url.Content("~/UploadedFiles/default.png");
+    string userName = "User";
+
+    if (Model is FaithConnect.UserInformation)
+    {
+        var userInfo = Model as FaithConnect.UserInformation;
+        var images = userInfo.Image.ToList();
+        profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
+        userName = userInfo.first_name + " " + userInfo.last_name;
+    }
+    else if (Model is FaithConnect.ViewModel.GroupViewModel)
+    {
+        var groupViewModel = Model as FaithConnect.ViewModel.GroupViewModel;
+        var userInfo = groupViewModel.UserInformation;
+        var images = userInfo.Image.ToList();
+        profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
+        userName = userInfo.first_name + " " + userInfo.last_name;
+    }
+}
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+
+    <div class="newsfeed">    
+        @for (int i = 0; i <= 100; i++)
+        {
+            <div class="post">
+       
+                <div class="post-header">
+                    <img src="path/to/unknown-group-icon.png" alt="Group Icon" class="group-icon">
+                    <div class="group-info">
+                        <div class="group-name">Unknown Group</div>
+                        <div class="post-time">1 min ago</div>
+                    </div>
+                    <div class="post-options">
+                        <button class="options-button">...</button>
+                        <div class="options-menu">
+                            <a href="#">Hide Post</a>
+                            <a href="#">Leave group</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Accusamus minima delectus nemo unde quae recusandae assumenda</p>
+                </div>
+                <div class="post-actions">
+                    <button class="action-button" onclick="toggleLike(this)"><span class="input-icon-addon"><i class="far fa-heart"></i></span> Like</button>
+                    <button class="action-button"><span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact</button>
+                    <button class="action-button"><span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost</button>
+                </div>
+                <div class="post-interact">
+                    <img src="@profileImage" alt="User Icon" class="user-icon">
+                    <input type="text" placeholder="Interact as @User.Identity.Name" class="comment-input">
+                </div>
+            </div>
+        }
+    </div>
+
+<script>
+        function toggleLike(button) {
+            const icon = button.querySelector('.input-icon-addon i');
+            const isLiked = icon.classList.contains('fas');
+
+            if (isLiked) {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.innerHTML = '<span class="input-icon-addon"><i class="far fa-heart"></i></span> Like';
+            } else {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.innerHTML = '<span class="input-icon-addon"><i class="fas fa-heart"></i></span> Liked';
+            }
+        }
+</script>

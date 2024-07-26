@@ -159,7 +159,7 @@ namespace FaithConnect.Controllers
             // Now add the user information to the UserInformation table
             var ui = new UserInformation
             {
-                userId = user.userId,
+                userId = user.id,
                 email = user.email,
                 first_name = TempData["firstname"]?.ToString(),
                 last_name = TempData["lastname"]?.ToString(),
@@ -202,7 +202,7 @@ namespace FaithConnect.Controllers
             IsUserLoggedSession();
             if (ModelState.IsValid)
             {
-                var user = _AccManager.GetUserByUserId(userInf.userId);
+                var user = _AccManager.GetUserByUserId((Int32)userInf.userId);
                 if (user == null)
                 {
                     TempData["ErrorMessage"] = "Error updating profile: User not found.";
@@ -376,24 +376,31 @@ namespace FaithConnect.Controllers
                 return View(ua);
             }
         }
+
         [Authorize]
         public ActionResult Group()
         {
             IsUserLoggedSession();
             var username = User.Identity.Name;
-            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var userId = user.id;
+            var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
 
-            var groupManager = new GroupManager();
-            var viewModel = new GroupViewModel
+            if (userInformation == null)
             {
-                UserInformation = user,
-                Groups = groupManager.GetAllGroups(),
-                JoinedGroups = groupManager.GetJoinedGroups(userId),
-                PendingGroups = groupManager.GetPendingGroups(userId)
+                TempData["ErrorMessage"] = ErrorMessage;
+                return RedirectToAction("Index");
+            }
+
+            var groupjoined = _groupManager.ListGroupsJoinedByUserId((Int32)userInformation.userId);
+            var allGroups = _groupManager.GetAllGroups(); // Fetch all groups from the database
+
+            var model = new GroupViewModel
+            {
+                UserInformation = userInformation,
+                GroupMemberships = groupjoined,
+                AllGroups = allGroups
             };
 
-            return View(viewModel);
+            return View(model);
         }
 
 
@@ -402,21 +409,22 @@ namespace FaithConnect.Controllers
         {
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var membership = _groupManager.GetJoinedGroups(user.id).FirstOrDefault(m => m.id == groupId);
-
-            if (membership == null)
+            var groupManager = new GroupManager();
+            var membership = new GroupMembership
             {
-                TempData["ErrorMessage"] = "Membership not found.";
-                return RedirectToAction("Group");
-            }
+                groupId = groupId,
+                userId = user.id,
+                status = 0, // Pending status
+                dateJoined = DateTime.Now
+            };
 
-            if (_groupManager.RemoveGroupMembership(membership.id, ref ErrorMessage) != ErrorCode.Success)
+            if (groupManager.AddGroupMembership(membership, ref ErrorMessage) != ErrorCode.Success)
             {
                 TempData["ErrorMessage"] = ErrorMessage;
                 return RedirectToAction("Group");
             }
 
-            TempData["SuccessMessage"] = "Left group successfully.";
+            TempData["SuccessMessage"] = "Join request sent successfully.";
             return RedirectToAction("Group");
         }
 
@@ -425,7 +433,8 @@ namespace FaithConnect.Controllers
         {
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var membership = _groupManager.GetAllGroupMemberships().FirstOrDefault(m => m.groupId == groupId && m.userId == user.id);
+            var groupManager = new GroupManager();
+            var membership = groupManager.GetAllGroupMemberships().FirstOrDefault(m => m.groupId == groupId && m.userId == user.id);
 
             if (membership == null)
             {
@@ -433,7 +442,7 @@ namespace FaithConnect.Controllers
                 return RedirectToAction("Group");
             }
 
-            if (_groupManager.RemoveGroupMembership(membership.id, ref ErrorMessage) != ErrorCode.Success)
+            if (groupManager.RemoveGroupMembership(membership.id, ref ErrorMessage) != ErrorCode.Success)
             {
                 TempData["ErrorMessage"] = ErrorMessage;
                 return RedirectToAction("Group");

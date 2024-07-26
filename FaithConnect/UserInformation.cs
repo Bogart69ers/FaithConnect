@@ -20,7 +20,7 @@ namespace FaithConnect
         }
     
         public int id { get; set; }
-        public string userId { get; set; }
+        public Nullable<int> userId { get; set; }
         public string last_name { get; set; }
         public string first_name { get; set; }
         public string phone { get; set; }
@@ -31,5 +31,6 @@ namespace FaithConnect
         public Nullable<System.DateTime> date_created { get; set; }
     
         public virtual ICollection<Image> Image { get; set; }
+        public virtual UserAccount UserAccount { get; set; }
     }
 }

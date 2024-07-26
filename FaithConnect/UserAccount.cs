@@ -22,6 +22,7 @@ namespace FaithConnect
             this.GroupMembership = new HashSet<GroupMembership>();
             this.Groups = new HashSet<Groups>();
             this.Post = new HashSet<Post>();
+            this.UserInformation = new HashSet<UserInformation>();
         }
     
         public int id { get; set; }
@@ -42,5 +43,6 @@ namespace FaithConnect
         public virtual ICollection<Groups> Groups { get; set; }
         public virtual ICollection<Post> Post { get; set; }
         public virtual Role Role1 { get; set; }
+        public virtual ICollection<UserInformation> UserInformation { get; set; }
     }
 }

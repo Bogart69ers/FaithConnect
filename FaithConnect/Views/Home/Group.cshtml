@@ -9,25 +9,25 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-3">
-            <div class="groups-sidebar">
-                <input type="text" class="form-control mb-3" placeholder="Search Groups">
-                <button id="discoverBtn" class="groups-sidebar-button active">Discover</button>
-                <button id="myGroupsBtn" class="groups-sidebar-button">My Groups</button>
+            <div class="groups-sidebar">               
+                    <input type="text" class="form-control mb-3" placeholder="Search Groups">                
+                <button id="discoverBtn" class="groups-sidebar-button active"><span class="input-icon-addon"><i class="fa fa-search"></i></span> Discover</button>
+                <button id="myGroupsBtn" class="groups-sidebar-button"><span class="input-icon-addon"><i class="fa fa-users"></i></span> My Groups</button>
             </div>
         </div>
         <div class="col-9">
             <div id="discoverGroups" class="groups-content active">
                 <h4>Suggested for you</h4>
                 <div class="groups-grid">
-                    @foreach (var group in Model.Groups)
+                    @foreach (var group in Model.AllGroups)
                     {
                         <div class="group-card">
                             <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
                             <div class="group-info">
                                 <h5>@group.groupName</h5>
-                                <p>Members: @group.GroupMembership.Count</p>
+                                <p>Members: @group.GroupMembership.Count()</p>
                                 <form action="@Url.Action("JoinGroup", "Home")" method="post">
-                                    <input type="hidden" name="groupId" value="@group.id" />
+                                    <input type="text" name="groupId" value="@group.id" />
                                     <button type="submit" class="btn btn-primary">Join Group</button>
                                 </form>
                             </div>
@@ -38,15 +38,15 @@
             <div id="myGroups" class="groups-content">
                 <div class="row">
                     <div class="col-md-8">
-                        <h4>All groups you've joined (@Model.JoinedGroups.Count)</h4>
+                        <h4>All groups you've joined</h4>
                         <div class="groups-grid">
-                            @foreach (var group in Model.JoinedGroups)
+                            @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1))
                             {
                                 <div class="group-card">
                                     <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
                                     <div class="group-info">
-                                        <h5>@group.groupName</h5>
-                                        <p>You joined on @group.GroupMembership.FirstOrDefault(m => m.userId == Model.UserAccount.id)?.dateJoined?.ToString("MMMM dd, yyyy")</p>
+                                        <h5>@item.Groups.groupName</h5>
+                                        <p>You joined on @item.dateJoined?.ToString("MMMM dd, yyyy")</p>
                                         <button class="btn btn-primary">View Group</button>
                                     </div>
                                 </div>
@@ -54,15 +54,15 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <h4>Pending group requests (@Model.PendingGroups.Count)</h4>
+                        <h4>Pending group requests (@Model.GroupMemberships.Count(m => m.status == 2))</h4>
                         <div class="groups-grid">
-                            @foreach (var group in Model.PendingGroups)
+                            @foreach (var group in Model.GroupMemberships.Where(m => m.status == 2))
                             {
                                 <div class="group-card">
                                     <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
                                     <div class="group-info">
-                                        <h5>@group.groupName</h5>
-                                        <p>You requested on @group.GroupMembership.FirstOrDefault(m => m.userId == Model.UserAccount.id)?.dateJoined?.ToString("MMMM dd, yyyy")</p>
+                                        <h5>@group.Groups.groupName</h5>
+                                        <p>You requested on @group.dateJoined?.ToString("MMMM dd, yyyy")</p>
                                         <button class="btn btn-secondary">View Group</button>
                                     </div>
                                 </div>
