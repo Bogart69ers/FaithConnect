@@ -9,6 +9,7 @@ using FaithConnect.Repository;
 
 namespace FaithConnect.Utils
 {
+
     public enum MembershipStatus
     {
         Joined,
@@ -26,6 +27,7 @@ namespace FaithConnect.Utils
     {
         User,
         Admin,
+        SpiritualLeader
     }
     
     public enum Status

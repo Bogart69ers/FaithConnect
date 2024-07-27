@@ -26,7 +26,7 @@ namespace FaithConnect
         public string groupId { get; set; }
         public string groupName { get; set; }
         public string description { get; set; }
-        public Nullable<int> createdBy { get; set; }
+        public Nullable<int> groupAdmin { get; set; }
         public Nullable<System.DateTime> date_created { get; set; }
         public Nullable<int> status { get; set; }
     

@@ -25,9 +25,9 @@
                             <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
                             <div class="group-info">
                                 <h5>@group.groupName</h5>
-                                <p>Members: @group.GroupMembership.Count()</p>
+                                <p>Members @group.GroupMembership.Count()</p>
                                 <form action="@Url.Action("JoinGroup", "Home")" method="post">
-                                    <input type="text" name="groupId" value="@group.id" />
+                                    <input type="text" name="groupId" value="@group.id" hidden/>
                                     <button type="submit" class="btn btn-primary">Join Group</button>
                                 </form>
                             </div>

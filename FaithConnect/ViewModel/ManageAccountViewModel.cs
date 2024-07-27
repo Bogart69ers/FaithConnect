@@ -13,6 +13,9 @@ namespace FaithConnect.Repository
         public UserAccount UserAccount { get; set; }
         public Groups Group { get; set; }
         public IEnumerable<Groups> Groups { get; set; }
+        public IEnumerable<UserAccount> UserAccountIE { get; set; }
+
+
 
     }
 }

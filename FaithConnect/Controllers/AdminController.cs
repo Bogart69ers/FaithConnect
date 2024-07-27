@@ -64,18 +64,22 @@ namespace FaithConnect.Controllers
             var username = User.Identity.Name;
             var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var groups = _groupManager.GetAllGroups();
+            var accounts = _AccManager.GetAllUsers();
 
             var model = new ManageAccountViewModel
             {
                 UserInformation = userInfo,
                 Groups = groups,
-                Group = new Groups()
+                Group = new Groups(),
+                UserAccounts = accounts,           
+                UserAccount = new UserAccount()
+
             };
 
             return View(model);
         }
         [HttpPost]
-        public ActionResult CreateGroup(Groups group)
+        public ActionResult CreateGroup(Groups group, String groupName,String description, int groupAdmin )
         {
             try
             {
@@ -87,6 +91,10 @@ namespace FaithConnect.Controllers
                     return View("ManageGroups", model);
                 }
 
+                group.groupAdmin = groupAdmin;
+                group.status = (int)Status.Active;
+                group.groupName = groupName;
+                group.description = description;
                 group.groupId = Utilities.gUid;
                 group.date_created = DateTime.Now;
 
@@ -131,7 +139,7 @@ namespace FaithConnect.Controllers
             var model = new ManageAccountViewModel
             {
                 UserInformation = userInfo,
-                UserAccounts = accounts,
+                UserAccounts = accounts,              
                 UserAccount = new UserAccount()
             };
             return View(model);

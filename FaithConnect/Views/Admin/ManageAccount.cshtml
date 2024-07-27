@@ -2,6 +2,13 @@
 @{
     ViewBag.Title = "Manage Account";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var roleNames = new Dictionary<int, string>
+    {
+        { 1, "User" },
+        { 2, "Admin" },
+        { 3, "Spiritual Leader" }
+    };
 }
 
 <div class="content">
@@ -90,7 +97,7 @@
                                         <option value="1">User</option>
                                     </select>
                                 </div>
-                            </div>  
+                            </div>
                             <div class="form-group">
                                 <label for="status">Status</label>
                                 <div class="input-icon">
@@ -100,7 +107,7 @@
                                         <option value="0">Inactive</option>
                                     </select>
                                 </div>
-                            </div> 
+                            </div>
                             <button type="submit" class="btn btn-primary">Add Account</button>
                         }
                     </div>
@@ -128,11 +135,12 @@
                             <tbody>
                                 @foreach (var item in Model.UserAccounts.Where(u => u.status == 1))
                                 {
+
                                     <tr>
                                         <td>@Html.DisplayFor(modelItem => item.id)</td>
                                         <td>@Html.DisplayFor(modelItem => item.username)</td>
                                         <td>@Html.DisplayFor(modelItem => item.email)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.role)</td>
+                                        <td>@roleNames[item.role.GetValueOrDefault()]</td>
                                         <td><span class="badge badge-success">Active</span></td>
                                         <td>
                                             <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
@@ -174,7 +182,7 @@
                                         <td>@Html.DisplayFor(modelItem => item.id)</td>
                                         <td>@Html.DisplayFor(modelItem => item.username)</td>
                                         <td>@Html.DisplayFor(modelItem => item.email)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.role)</td>
+                                        <td>@roleNames[item.role.GetValueOrDefault()]</td>
                                         <td><span class="badge badge-secondary">Inactive</span></td>
                                         <td>
                                             <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
@@ -263,6 +271,16 @@
             "responsive": true,
         });
 
+        $('#inactiveAccountTable').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+
         $('#editUserForm').submit(function (e) {
             e.preventDefault();
             $.ajax({
@@ -301,5 +319,3 @@
         });
     }
 </script>
-
-

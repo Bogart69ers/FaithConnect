@@ -22,7 +22,5 @@ namespace FaithConnect
     
         public virtual Groups Groups { get; set; }
         public virtual UserAccount UserAccount { get; set; }
-        public virtual UserInformation UserInformation { get; set; }
-
     }
 }

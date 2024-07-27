@@ -32,7 +32,7 @@
                                 <label for="description">Group Admin</label>
                                 <div class="input-icon">
                                     <span class="input-icon-addon"><i class="fa fa-user"></i></span>
-                                    <input class="form-control" id="description" name="createdBy" placeholder="Group Admin" required>
+                                    <input type="number" class="form-control" id="description" name="groupAdmin" placeholder="Group Admin" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -71,7 +71,7 @@
                                             <td>@Html.DisplayFor(modelItem => item.id)</td>
                                             <td>@Html.DisplayFor(modelItem => item.groupName)</td>
                                             <td>@Html.DisplayFor(modelItem => item.description)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.createdBy)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.groupAdmin)</td>
                                             <td>
                                                 <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
                                                     <i class="fas fa-edit"></i> Edit
@@ -88,9 +88,60 @@
                             </table>
                         </div>
                     </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Spiritual Leader List</div>
+                        </div>
+                        <div class="card-body">
+                          
+                                <table id="userTable" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Username</th>
+                                            <th>Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                @foreach (var item in Model.UserAccounts.Where(u => u.role == 3))
+                                {
+                                            <tr>
+                                                <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.username)</td>
+                                                <td>Spiritual Leader</td>
+                                            </tr>
+                                }                                  
+                                    </tbody>
+                                </table>
+                                
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#groupTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+            $('#userTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+        });
+    </script>
