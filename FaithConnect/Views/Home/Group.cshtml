@@ -3,16 +3,40 @@
 @{
     ViewBag.Title = "Group";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 
 <link rel="stylesheet" href="~/Assets/Groups/css/StyleGroup.css" />
+
+<style>
+
+    .btn-custom {
+        background-color: #d6c4a7;
+        color: white;
+        border: none;
+        width: 100%;
+        text-align: center;
+        padding: 5px 0;
+    }
+
+        .btn-custom:hover {
+            background-color: #b8a58a;
+            color: white;
+        }
+
+    
+</style>
 <div class="container mt-4">
     <div class="row">
         <div class="col-3">
-            <div class="groups-sidebar">               
-                    <input type="text" class="form-control mb-3" placeholder="Search Groups">                
-                <button id="discoverBtn" class="groups-sidebar-button active"><span class="input-icon-addon"><i class="fa fa-search"></i></span> Discover</button>
-                <button id="myGroupsBtn" class="groups-sidebar-button"><span class="input-icon-addon"><i class="fa fa-users"></i></span> My Groups</button>
+            <div class="groups-sidebar">
+                <input type="text" class="form-control mb-3" placeholder="Search Groups">
+                <button id="discoverBtn" class="groups-sidebar-button active">
+                    <span class="input-icon-addon"><i class="fa fa-search"></i></span> Discover
+                </button>
+                <button id="myGroupsBtn" class="groups-sidebar-button">
+                    <span class="input-icon-addon"><i class="fa fa-users"></i></span> My Groups
+                </button>
             </div>
         </div>
         <div class="col-9">
@@ -21,14 +45,15 @@
                 <div class="groups-grid">
                     @foreach (var group in Model.AllGroups)
                     {
+                        var memberCount = Model.GroupMemberships.Count(m => m.groupId == group.id && m.status == 1); // Count members only with joined status
                         <div class="group-card">
                             <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
                             <div class="group-info">
-                                <h5>@group.groupName</h5>
-                                <p>Members @group.GroupMembership.Count()</p>
+                                <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = group.id })" style="color: black; font-weight: bold; text-decoration: none;">@group.groupName</a></h5>
+                                <p>Members @memberCount</p>
                                 <form action="@Url.Action("JoinGroup", "Home")" method="post">
-                                    <input type="text" name="groupId" value="@group.id" hidden/>
-                                    <button type="submit" class="btn btn-primary">Join Group</button>
+                                    <input type="hidden" name="groupId" value="@group.id" />
+                                    <button type="submit" class="btn btn-custom">Join Group</button>
                                 </form>
                             </div>
                         </div>
@@ -40,30 +65,40 @@
                     <div class="col-md-8">
                         <h4>All groups you've joined</h4>
                         <div class="groups-grid">
-                            @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1))
+                            @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1 && m.userId == Model.UserInformation.id))
                             {
+                                var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.groupId && m.status == 1); // Count members only with joined status
                                 <div class="group-card">
                                     <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
                                     <div class="group-info">
-                                        <h5>@item.Groups.groupName</h5>
-                                        <p>You joined on @item.dateJoined?.ToString("MMMM dd, yyyy")</p>
-                                        <button class="btn btn-primary">View Group</button>
+                                        <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = item.groupId })" style="color: black; font-weight: bold; text-decoration: none;">@item.Groups.groupName</a></h5>
+                                        <p>Members @memberCount</p>
+                                        <p>You joined on @(item.dateJoined.HasValue ? item.dateJoined.Value.ToString("MMMM dd, yyyy") : "No date available")</p>
+                                        <form action="@Url.Action("GroupDetail", "Home", new { groupId = item.groupId })" method="get">
+                                            <input type="hidden" name="groupId" value="@item.groupId" />
+                                            <button type="submit" class="btn btn-custom">View Group</button>
+                                        </form>
                                     </div>
                                 </div>
                             }
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <h4>Pending group requests (@Model.GroupMemberships.Count(m => m.status == 2))</h4>
+                        <h4>Pending group requests (@Model.GroupMemberships.Count(m => m.status == 0))</h4>
                         <div class="groups-grid">
-                            @foreach (var group in Model.GroupMemberships.Where(m => m.status == 2))
+                            @foreach (var group in Model.GroupMemberships.Where(m => m.status == 0 && m.userId == Model.UserInformation.id))
                             {
+                                var memberCount = Model.GroupMemberships.Count(m => m.groupId == group.groupId && m.status == 1); // Count members only with joined status
                                 <div class="group-card">
                                     <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
                                     <div class="group-info">
-                                        <h5>@group.Groups.groupName</h5>
-                                        <p>You requested on @group.dateJoined?.ToString("MMMM dd, yyyy")</p>
-                                        <button class="btn btn-secondary">View Group</button>
+                                        <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = group.groupId })" style="color: black; font-weight: bold; text-decoration: none;">@group.Groups.groupName</a></h5>
+                                        <p>Members @memberCount</p>
+                                        <p>You requested on @(group.dateJoined.HasValue ? group.dateJoined.Value.ToString("MMMM dd, yyyy") : "No date available")</p>
+                                        <form action="@Url.Action("GroupDetail", "Home", new { groupId = group.groupId })" method="get">
+                                            <input type="hidden" name="groupId" value="@group.groupId" />
+                                            <button type="submit" class="btn btn-custom">View Group</button>
+                                        </form>
                                     </div>
                                 </div>
                             }
@@ -74,5 +109,4 @@
         </div>
     </div>
 </div>
-
 <script src="~/Assets/Groups/js/group.js"></script>

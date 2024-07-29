@@ -6,19 +6,19 @@
     <edmx:Diagrams>
       <Diagram DiagramId="c6e3875e9e56434e87e7a60d04823481" Name="Diagram1" ZoomLevel="83">
         <EntityTypeShape EntityType="FaithConnectModel.Content" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="FaithConnectModel.Event" Width="1.5" PointX="10.5" PointY="15.5" />
-        <EntityTypeShape EntityType="FaithConnectModel.Feedback" Width="1.5" PointX="12.75" PointY="13.5" />
-        <EntityTypeShape EntityType="FaithConnectModel.Forum" Width="1.5" PointX="7.5" PointY="19.625" />
-        <EntityTypeShape EntityType="FaithConnectModel.GroupMembership" Width="1.5" PointX="7.5" PointY="16" />
-        <EntityTypeShape EntityType="FaithConnectModel.Groups" Width="1.5" PointX="5.25" PointY="20.5" />
-        <EntityTypeShape EntityType="FaithConnectModel.Image" Width="1.5" PointX="7.5" PointY="25.25" />
-        <EntityTypeShape EntityType="FaithConnectModel.Media" Width="1.5" PointX="12.75" PointY="17.625" />
-        <EntityTypeShape EntityType="FaithConnectModel.Post" Width="1.5" PointX="7.5" PointY="11.625" />
+        <EntityTypeShape EntityType="FaithConnectModel.Event" Width="1.5" PointX="10.5" PointY="16" />
+        <EntityTypeShape EntityType="FaithConnectModel.Feedback" Width="1.5" PointX="12.75" PointY="13.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.Forum" Width="1.5" PointX="7.5" PointY="13.25" />
+        <EntityTypeShape EntityType="FaithConnectModel.GroupMembership" Width="1.5" PointX="7.5" PointY="20.875" />
+        <EntityTypeShape EntityType="FaithConnectModel.Groups" Width="1.5" PointX="5.25" PointY="21.5" />
+        <EntityTypeShape EntityType="FaithConnectModel.Image" Width="1.5" PointX="7.5" PointY="18" />
+        <EntityTypeShape EntityType="FaithConnectModel.Media" Width="1.5" PointX="12.75" PointY="18.125" />
+        <EntityTypeShape EntityType="FaithConnectModel.Post" Width="1.5" PointX="10.5" PointY="21.25" />
         <EntityTypeShape EntityType="FaithConnectModel.Role" Width="1.5" PointX="0.75" PointY="12.125" />
         <EntityTypeShape EntityType="FaithConnectModel.Survey" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="FaithConnectModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="3.75" />
-        <EntityTypeShape EntityType="FaithConnectModel.UserAccount" Width="1.5" PointX="3" PointY="10.625" />
-        <EntityTypeShape EntityType="FaithConnectModel.UserInformation" Width="1.5" PointX="5.25" PointY="24.5" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserAccount" Width="1.5" PointX="3" PointY="10.75" />
+        <EntityTypeShape EntityType="FaithConnectModel.UserInformation" Width="1.5" PointX="5.25" PointY="17.25" />
         <EntityTypeShape EntityType="FaithConnectModel.vw_Role" Width="1.5" PointX="2.75" PointY="3.75" />
         <AssociationConnector Association="FaithConnectModel.FK_Event_Groups" />
         <AssociationConnector Association="FaithConnectModel.FK_Event_UserAccount" />

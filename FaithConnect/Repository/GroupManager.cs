@@ -25,6 +25,7 @@ namespace FaithConnect.Repository
         {
             return _membershipRepo._table.Where(m => m.userId == id).ToList();
         }
+
         public List<GroupMembership> GetAllGroupMemberships()
         {
             return _membershipRepo.GetAll();
@@ -75,6 +76,16 @@ namespace FaithConnect.Repository
         public ErrorCode RemoveGroupMembership(int membershipId, ref string errMsg)
         {
             return _membershipRepo.Delete(membershipId, out errMsg);
+        }
+
+        public GroupMembership GetGroupMembershipByGroupIdAndUserId(int groupId, int userId)
+        {
+            return _membershipRepo._table.FirstOrDefault(m => m.groupId == groupId && m.userId == userId);
+        }
+
+        public ErrorCode UpdateGroupMembership(GroupMembership membership, ref string errMsg)
+        {
+            return _membershipRepo.Update(membership.id, membership, out errMsg);
         }
     }
 }

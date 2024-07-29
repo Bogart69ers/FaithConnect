@@ -21,6 +21,6 @@ namespace FaithConnect
         public Nullable<System.DateTime> dateJoined { get; set; }
     
         public virtual Groups Groups { get; set; }
-        public virtual UserAccount UserAccount { get; set; }
+        public virtual UserInformation UserInformation { get; set; }
     }
 }

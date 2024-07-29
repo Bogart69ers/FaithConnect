@@ -11,9 +11,9 @@ namespace FaithConnect.Utils
 {
 
     public enum MembershipStatus
-    {
-        Joined,
+    {       
         Pending,
+        Joined,
         Rejected
     }
 

@@ -376,7 +376,7 @@ namespace FaithConnect.Controllers
                 return View(ua);
             }
         }
-
+        
         [Authorize]
         public ActionResult Group()
         {
@@ -390,14 +390,19 @@ namespace FaithConnect.Controllers
                 return RedirectToAction("Index");
             }
 
-            var groupjoined = _groupManager.ListGroupsJoinedByUserId((Int32)userInformation.userId);
-            var allGroups = _groupManager.GetAllGroups(); // Fetch all groups from the database
+            var groupMemberships = _groupManager.GetAllGroupMemberships(); // Fetch all group memberships
+            var allGroups = _groupManager.GetAllGroups();
+
+            // Filter out groups that the user has joined or has pending requests for
+            var userGroupMemberships = groupMemberships.Where(m => m.userId == userInformation.id).ToList();
+            var joinedOrPendingGroupIds = userGroupMemberships.Select(m => m.groupId).ToList();
+            var discoverGroups = allGroups.Where(g => !joinedOrPendingGroupIds.Contains(g.id)).ToList();
 
             var model = new GroupViewModel
             {
                 UserInformation = userInformation,
-                GroupMemberships = groupjoined,
-                AllGroups = allGroups
+                GroupMemberships = groupMemberships,
+                AllGroups = discoverGroups
             };
 
             return View(model);
@@ -409,7 +414,6 @@ namespace FaithConnect.Controllers
         {
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var groupManager = new GroupManager();
             var membership = new GroupMembership
             {
                 groupId = groupId,
@@ -418,7 +422,7 @@ namespace FaithConnect.Controllers
                 dateJoined = DateTime.Now
             };
 
-            if (groupManager.AddGroupMembership(membership, ref ErrorMessage) != ErrorCode.Success)
+            if (_groupManager.AddGroupMembership(membership, ref ErrorMessage) != ErrorCode.Success)
             {
                 TempData["ErrorMessage"] = ErrorMessage;
                 return RedirectToAction("Group");
@@ -426,6 +430,25 @@ namespace FaithConnect.Controllers
 
             TempData["SuccessMessage"] = "Join request sent successfully.";
             return RedirectToAction("Group");
+        }
+        public ActionResult GroupDetail(int groupId)
+        {
+            var group = _groupManager.GetGroupById(groupId);
+            if (group == null)
+            {
+                TempData["ErrorMessage"] = "Group not found.";
+                return RedirectToAction("Group");
+            }
+
+            var model = new GroupDetailViewModel
+            {
+                Group = group,
+                Events = _eventManager.GetEventsByGroupId(groupId),
+                Posts = _postManager.GetPostsByGroupId(groupId),
+                Forums = _forumManager.GetForumsByGroupId(groupId)
+            };
+
+            return View(model);
         }
 
         [HttpPost]
@@ -451,6 +474,28 @@ namespace FaithConnect.Controllers
             TempData["SuccessMessage"] = "Left group successfully.";
             return RedirectToAction("Group");
         }
+
+        [HttpPost]
+        public ActionResult ApproveGroupMembership(int groupId, int userId)
+        {
+            var membership = _groupManager.GetGroupMembershipByGroupIdAndUserId(groupId, userId);
+            if (membership == null)
+            {
+                TempData["ErrorMessage"] = "Group membership not found.";
+                return RedirectToAction("Group");
+            }
+
+            membership.status = 1; // Approved status
+            if (_groupManager.UpdateGroupMembership(membership, ref ErrorMessage) != ErrorCode.Success)
+            {
+                TempData["ErrorMessage"] = ErrorMessage;
+                return RedirectToAction("Group");
+            }
+
+            TempData["SuccessMessage"] = "Group membership approved successfully.";
+            return RedirectToAction("Group");
+        }
+
         [Authorize]
         public ActionResult MyCalendar()
         {

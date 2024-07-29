@@ -12,6 +12,10 @@ namespace FaithConnect.Controllers
         public AccountManager _AccManager;
         public ImageManager _imgMgr;
         public GroupManager _groupManager;
+        public EventManager _eventManager;
+        public PostManager _postManager;
+        public ForumManager _forumManager;
+
 
         public String Username { get { return User.Identity.Name; } }
         public String UserId { get { return _AccManager.GetUserByUsername(Username).userId; } }
@@ -22,6 +26,10 @@ namespace FaithConnect.Controllers
             _AccManager = new AccountManager();
             _imgMgr = new ImageManager();
             _groupManager = new GroupManager();
+            _postManager = new PostManager();
+            _eventManager = new EventManager();
+            _forumManager = new ForumManager();
+
         }
 
         public void IsUserLoggedSession()

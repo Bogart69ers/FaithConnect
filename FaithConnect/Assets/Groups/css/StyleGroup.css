@@ -1,56 +1,86 @@
-﻿.groups-sidebar {
-    display: flex;
-    flex-direction: column;
-}
-.groups-sidebar-button {
-    background: none;
-    border: none;
-    text-align: left;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-}
-.groups-sidebar-button.active {
-    background-color: #d6c4a7;
-    border-radius: 8px;
-}
-.groups-content {
-    display: none;
-}
-.groups-content.active {
-    display: block;
-}
-.groups-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-.group-card {
-    width: 100%;
-    max-width: 200px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.group-card img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-}
-.group-info {
-    padding: 10px;
-}
-.group-info h5 {
-    font-size: 1rem;
-    margin: 0;
-}
-.group-info p {
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-.group-info button {
-    width: 100%;
-    padding: 5px 0;
-}
+﻿ .groups-sidebar {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .groups-sidebar-button {
+        background: none;
+        border: none;
+        text-align: left;
+        padding: 10px 20px;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+        .groups-sidebar-button.active {
+            background-color: #d6c4a7;
+            border-radius: 8px;
+        }
+
+    .groups-content {
+        display: none;
+    }
+
+        .groups-content.active {
+            display: block;
+        }
+
+    .groups-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .group-card {
+        width: 100%;
+        max-width: 200px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+        .group-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+    .group-info {
+        padding: 10px;
+    }
+
+        .group-info h5 {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .group-info p {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+    .btn-custom {
+        background-color: #d6c4a7;
+        color: white;
+        border: none;
+        width: 100%;
+        text-align: center;
+        padding: 5px 0;
+    }
+
+        .btn-custom:hover {
+            background-color: #b8a58a;
+            color: white;
+        }
+
+    .group-info a {
+        color: black;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .group-info a:hover {
+            text-decoration: underline;
+        }

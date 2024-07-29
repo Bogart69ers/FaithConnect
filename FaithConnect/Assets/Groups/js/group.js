@@ -21,5 +21,4 @@
         myGroups.classList.add('active');
         discoverGroups.classList.remove('active');
     });
-
 });
