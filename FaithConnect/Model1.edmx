@@ -130,16 +130,6 @@
           <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="DateCreated" Type="datetime" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
         <EntityType Name="UserAccount">
           <Key>
             <PropertyRef Name="id" />
@@ -257,7 +247,9 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_GroupMembership_Groups">
-          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1" />
+          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="GroupMembership" Type="Self.GroupMembership" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Groups">
@@ -265,18 +257,6 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Principal>
             <Dependent Role="GroupMembership">
               <PropertyRef Name="groupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GroupMembership_UserAccount">
-          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1" />
-          <End Role="GroupMembership" Type="Self.GroupMembership" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="UserInformation">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="GroupMembership">
-              <PropertyRef Name="userId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -410,7 +390,6 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserAccount" EntityType="Self.UserAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserInformation" EntityType="Self.UserInformation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="vw_Role" EntityType="Self.vw_Role" store:Type="Views" store:Schema="dbo">
@@ -446,10 +425,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </AssociationSet>
           <AssociationSet Name="FK_GroupMembership_Groups" Association="Self.FK_GroupMembership_Groups">
             <End Role="Groups" EntitySet="Groups" />
-            <End Role="GroupMembership" EntitySet="GroupMembership" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GroupMembership_UserAccount" Association="Self.FK_GroupMembership_UserAccount">
-            <End Role="UserInformation" EntitySet="UserInformation" />
             <End Role="GroupMembership" EntitySet="GroupMembership" />
           </AssociationSet>
           <AssociationSet Name="FK_Groups_UserAccount" Association="Self.FK_Groups_UserAccount">
@@ -505,7 +480,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySet Name="Post" EntityType="FaithConnectModel.Post" />
           <EntitySet Name="Role" EntityType="FaithConnectModel.Role" />
           <EntitySet Name="Survey" EntityType="FaithConnectModel.Survey" />
-          <EntitySet Name="sysdiagrams" EntityType="FaithConnectModel.sysdiagrams" />
           <EntitySet Name="UserAccount" EntityType="FaithConnectModel.UserAccount" />
           <EntitySet Name="UserInformation" EntityType="FaithConnectModel.UserInformation" />
           <EntitySet Name="vw_Role" EntityType="FaithConnectModel.vw_Role" />
@@ -543,10 +517,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </AssociationSet>
           <AssociationSet Name="FK_GroupMembership_Groups" Association="FaithConnectModel.FK_GroupMembership_Groups">
             <End Role="Groups" EntitySet="Groups" />
-            <End Role="GroupMembership" EntitySet="GroupMembership" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GroupMembership_UserAccount" Association="FaithConnectModel.FK_GroupMembership_UserAccount">
-            <End Role="UserInformation" EntitySet="UserInformation" />
             <End Role="GroupMembership" EntitySet="GroupMembership" />
           </AssociationSet>
           <AssociationSet Name="FK_Groups_UserAccount" Association="FaithConnectModel.FK_Groups_UserAccount">
@@ -647,7 +617,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="status" Type="Int32" />
           <Property Name="dateJoined" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Groups" Relationship="FaithConnectModel.FK_GroupMembership_Groups" FromRole="GroupMembership" ToRole="Groups" />
-          <NavigationProperty Name="UserInformation" Relationship="FaithConnectModel.FK_GroupMembership_UserAccount" FromRole="GroupMembership" ToRole="UserInformation" />
         </EntityType>
         <EntityType Name="Groups">
           <Key>
@@ -727,16 +696,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DateCreated" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-        </EntityType>
         <EntityType Name="UserAccount">
           <Key>
             <PropertyRef Name="id" />
@@ -773,7 +732,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="status" Type="Int32" />
           <Property Name="bio" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="GroupMembership" Relationship="FaithConnectModel.FK_GroupMembership_UserAccount" FromRole="UserInformation" ToRole="GroupMembership" />
           <NavigationProperty Name="Image" Relationship="FaithConnectModel.FK_Image_UserInformation" FromRole="UserInformation" ToRole="Image" />
           <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_UserInformation_UserAccount" FromRole="UserInformation" ToRole="UserAccount" />
         </EntityType>
@@ -886,7 +844,9 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_GroupMembership_Groups">
-          <End Type="FaithConnectModel.Groups" Role="Groups" Multiplicity="0..1" />
+          <End Type="FaithConnectModel.Groups" Role="Groups" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="FaithConnectModel.GroupMembership" Role="GroupMembership" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Groups">
@@ -894,18 +854,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Principal>
             <Dependent Role="GroupMembership">
               <PropertyRef Name="groupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GroupMembership_UserAccount">
-          <End Type="FaithConnectModel.UserInformation" Role="UserInformation" Multiplicity="0..1" />
-          <End Type="FaithConnectModel.GroupMembership" Role="GroupMembership" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="UserInformation">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="GroupMembership">
-              <PropertyRef Name="userId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1142,17 +1090,6 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="SurveyId" ColumnName="SurveyId" />
                 <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="FaithConnectModel.sysdiagrams">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="definition" ColumnName="definition" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

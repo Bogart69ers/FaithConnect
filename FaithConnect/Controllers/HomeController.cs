@@ -11,15 +11,14 @@ using FaithConnect.ViewModel;
 
 namespace FaithConnect.Controllers
 {
-    [Authorize(Roles = "Admin, User")]
+    [Authorize(Roles = "Admin, User, Spiritual Leader")]
     public class HomeController : BaseController
     {
         [Authorize]
         public ActionResult Index()
         {
-
-            IsUserLoggedSession();
             var username = User.Identity.Name;
+            IsUserLoggedSession();
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             return View(user);
         }
@@ -141,6 +140,7 @@ namespace FaithConnect.Controllers
             TempData["username"] = username;
 
             var user = _AccManager.GetUserByUsername(username);
+            var userinfo = _AccManager.GetUserInfoByUsername(username);
             if (user == null)
             {
                 TempData["error"] = "User not found.";
@@ -154,31 +154,13 @@ namespace FaithConnect.Controllers
             }
 
             user.status = (int)Status.Active;
+            userinfo.status = (int)Status.Active;
             _AccManager.UpdateUser(user, ref ErrorMessage);
+            _AccManager.UpdateUserInformation(userinfo, ref ErrorMessage);
 
-            // Now add the user information to the UserInformation table
-            var ui = new UserInformation
-            {
-                userId = user.id,
-                email = user.email,
-                first_name = TempData["firstname"]?.ToString(),
-                last_name = TempData["lastname"]?.ToString(),
-                phone = TempData["phone"]?.ToString(),
-                status = (int)Status.Active,
-                date_created = user.date_created,
-                address = TempData["address"]?.ToString()
-
-
-            };
-
-            if (_AccManager.CreateUserInformation(ui, ref ErrorMessage) != ErrorCode.Success)
-            {
-                TempData["error"] = ErrorMessage;
-                return View();
-            }
 
             TempData["SuccessMessage"] = "Account verified successfully.";
-            return RedirectToAction("Login");
+            return RedirectToAction("Index");
         }
 
 
@@ -306,7 +288,7 @@ namespace FaithConnect.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult SignUp(UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address)
+        public ActionResult SignUp(UserInformation ui, UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address)
         {
             try
             {
@@ -318,14 +300,6 @@ namespace FaithConnect.Controllers
                     ViewBag.Role = roleList;
                     return View(ua);
                 }
-
-                var ui = new UserInformation
-                {
-                    first_name = firstname,
-                    last_name = lastname,
-                    phone = phone,
-                    address = address
-                };
 
                 if (!ModelState.IsValid)
                 {
@@ -342,6 +316,9 @@ namespace FaithConnect.Controllers
                     return View(ua);
                 }
 
+                var userInfo = _AccManager.UserInfoSignup(ua.username,firstname,lastname,phone,address, ref ErrorMessage);
+
+
                 var user = _AccManager.GetUserByEmail(ua.email);
                 string verificationCode = ua.vcode;
 
@@ -357,12 +334,7 @@ namespace FaithConnect.Controllers
                     ViewBag.Role = Utilities.ListRole;
                     return View(ua);
                 }
-
                 TempData["username"] = ua.username;
-                TempData["firstname"] = firstname;
-                TempData["lastname"] = lastname;
-                TempData["phone"] = phone;
-                TempData["address"] = address;
 
                 TempData["SuccessMessage"] = "Account created successfully. Please enter the OTP sent to your email.";
                 return RedirectToAction("Verify");
@@ -433,6 +405,11 @@ namespace FaithConnect.Controllers
         }
         public ActionResult GroupDetail(int groupId)
         {
+            var username = User.Identity.Name;
+            var user = _AccManager.GetUserByUsername(username);
+
+            ViewBag.CurrentUserId = user.id;
+
             var group = _groupManager.GetGroupById(groupId);
             if (group == null)
             {
@@ -440,16 +417,23 @@ namespace FaithConnect.Controllers
                 return RedirectToAction("Group");
             }
 
+            // Assuming GetMembershipsByGroupId is a method in GroupManager
+            var memberships = _groupManager.GetMembershipsByGroupId(groupId) ?? new List<GroupMembership>();
+
             var model = new GroupDetailViewModel
             {
                 Group = group,
-                Events = _eventManager.GetEventsByGroupId(groupId),
-                Posts = _postManager.GetPostsByGroupId(groupId),
-                Forums = _forumManager.GetForumsByGroupId(groupId)
+                Events = _eventManager.GetEventsByGroupId(groupId) ?? new List<Event>(),
+                Posts = _postManager.GetPostsByGroupId(groupId) ?? new List<Post>(),
+                Forums = _forumManager.GetForumsByGroupId(groupId) ?? new List<Forum>(),
+                GroupMemberships = memberships,
+                AllGroups = _groupManager.GetAllGroups() ?? new List<Groups>()
             };
 
             return View(model);
         }
+
+
 
         [HttpPost]
         public ActionResult LeaveGroup(int groupId)

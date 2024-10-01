@@ -129,7 +129,36 @@ namespace FaithConnect.Repository
             return _userInfo.Update(userinf.id, userinf, out errMsg);
         }
 
+        public UserInformation UserInfoSignup(string username,string firstname, string lastname, string phone, string address, ref String err)
+        {
+            var user = GetUserByUsername(username);
 
+            var userInfo = GetUserInfoByUserId(user.id);
+            if (userInfo != null)
+            {
+                return userInfo;
+            }
+
+            userInfo = new UserInformation();
+            userInfo.userId = user.id;
+            userInfo.email = user.email;
+            userInfo.status = (int)Status.InActive;
+            userInfo.date_created = DateTime.Now;
+            userInfo.first_name = firstname;
+            userInfo.last_name = lastname;
+            userInfo.address = address;
+            userInfo.phone = phone;
+
+            var userEmail = user.email;
+            if (userEmail != null)
+            {
+                userInfo.email = userEmail;
+            }
+
+            _userInfo.Create(userInfo, out err);
+
+            return GetUserInfoByUserId(user.id);
+        }
         public UserInformation GetUserInfoByUsername(string username)
         {
             var userAcc = GetUserByUsername(username);
@@ -168,7 +197,8 @@ namespace FaithConnect.Repository
             userInfo.userId = user.id;
             userInfo.email = user.email;
             userInfo.status = (int)Status.Active;
-            userInfo.date_created = DateTime.Now;
+            userInfo.date_created = DateTime.Now;          
+
 
             var userEmail = user.email;
             if (userEmail != null)
@@ -179,6 +209,7 @@ namespace FaithConnect.Repository
 
             return GetUserInfoByUserId(user.id);
         }
+
 
         public UserAccount Retrieve(int id, ref string err)
         {

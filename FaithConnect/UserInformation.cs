@@ -16,7 +16,6 @@ namespace FaithConnect
     {
         public UserInformation()
         {
-            this.GroupMembership = new HashSet<GroupMembership>();
             this.Image = new HashSet<Image>();
         }
     
@@ -31,7 +30,6 @@ namespace FaithConnect
         public string bio { get; set; }
         public Nullable<System.DateTime> date_created { get; set; }
     
-        public virtual ICollection<GroupMembership> GroupMembership { get; set; }
         public virtual ICollection<Image> Image { get; set; }
         public virtual UserAccount UserAccount { get; set; }
     }

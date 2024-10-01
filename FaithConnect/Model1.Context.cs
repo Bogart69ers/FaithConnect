@@ -36,7 +36,6 @@ namespace FaithConnect
         public DbSet<Post> Post { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<Survey> Survey { get; set; }
-        public DbSet<sysdiagrams> sysdiagrams { get; set; }
         public DbSet<UserAccount> UserAccount { get; set; }
         public DbSet<UserInformation> UserInformation { get; set; }
         public DbSet<vw_Role> vw_Role { get; set; }

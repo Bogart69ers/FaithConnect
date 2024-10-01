@@ -7,8 +7,8 @@ namespace FaithConnect.Repository
 {
     public class GroupManager
     {
-        private BaseRepository<Groups> _groupRepo;
-        private BaseRepository<GroupMembership> _membershipRepo;
+        private readonly BaseRepository<Groups> _groupRepo;
+        private readonly BaseRepository<GroupMembership> _membershipRepo;
 
         public GroupManager()
         {
@@ -31,26 +31,32 @@ namespace FaithConnect.Repository
             return _membershipRepo.GetAll();
         }
 
+        private List<int> GetGroupIdsByStatus(int userId, MembershipStatus status)
+        {
+            return _membershipRepo.GetAll()
+                                  .Where(m => m.userId == userId && m.status == (int)status && m.groupId.HasValue) // Filter out nulls
+                                  .Select(m => m.groupId.Value) // Convert int? to int
+                                  .ToList();
+        }
+
+
         public List<Groups> GetJoinedGroups(int userId)
         {
-            var joinedGroupIds = _membershipRepo.GetAll()
-                                                 .Where(m => m.userId == userId && m.status == (Int32)MembershipStatus.Joined)
-                                                 .Select(m => m.groupId)
-                                                 .ToList();
-            return _groupRepo.GetAll()
-                              .Where(g => joinedGroupIds.Contains(g.id))
-                              .ToList();
+            var joinedGroupIds = GetGroupIdsByStatus(userId, MembershipStatus.Joined);
+            return _groupRepo.GetAll().Where(g => joinedGroupIds.Contains(g.id)).ToList();
         }
 
         public List<Groups> GetPendingGroups(int userId)
         {
-            var pendingGroupIds = _membershipRepo.GetAll()
-                                                  .Where(m => m.userId == userId && m.status == (Int32)MembershipStatus.Pending)
-                                                  .Select(m => m.groupId)
-                                                  .ToList();
-            return _groupRepo.GetAll()
-                              .Where(g => pendingGroupIds.Contains(g.id))
-                              .ToList();
+            var pendingGroupIds = GetGroupIdsByStatus(userId, MembershipStatus.Pending);
+            return _groupRepo.GetAll().Where(g => pendingGroupIds.Contains(g.id)).ToList();
+        }
+
+        public List<GroupMembership> GetMembershipsByGroupId(int groupId)
+        {
+            return _membershipRepo.GetAll()
+                                  .Where(m => m.groupId == groupId && m.status == 1)
+                                  .ToList(); // Get all group memberships with status = 1
         }
 
         public Groups GetGroupById(int id)
@@ -58,9 +64,20 @@ namespace FaithConnect.Repository
             return _groupRepo.Get(id);
         }
 
+        
         public ErrorCode CreateGroup(Groups group, ref string errMsg)
         {
-            return _groupRepo.Create(group, out errMsg);
+            try
+            {
+                return _groupRepo.Create(group, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                // Log error
+                // logger.LogError(ex, "Error creating group");
+                errMsg = ex.Message;
+                return ErrorCode.Error;
+            }
         }
 
         public ErrorCode DeleteGroup(int id, ref string errMsg)

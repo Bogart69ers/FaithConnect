@@ -1,77 +1,71 @@
-﻿.group-header {
-    position: relative;
-    overflow: hidden;
-}
-
-.group-header img {
+﻿.group-banner {
     width: 100%;
-    height: auto;
+    height: 300px;
+    object-fit: cover;
 }
 
 .group-info {
-    position: absolute;
-    bottom: 10px;
-    left: 20px;
     color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 
-@media (max-width: 768px) {
-    .group-info {
-        bottom: 5px;
-        left: 10px;
-    }
-}
-
-.card {
+.btn-custom {
+    background-color: #d6c4a7;
+    padding: 10px 20px;
     border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
 }
 
-.card-body {
-    padding: 1.5rem;
-}
-
-.card img {
-    border-radius: 10px;
-}
-
-.nav-tabs .nav-link {
-    border: none;
-    border-bottom: 2px solid transparent;
-}
-
-.nav-tabs .nav-link.active {
-    border-bottom: 2px solid #007bff;
-}
-
-.forum-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-}
-
-.forum-header {
+.group-navigation ul {
+    list-style: none;
     display: flex;
-    align-items: center;
+    justify-content: center;
+    background-color: #f7f6f3;
+    padding: 10px;
+    margin: 0;
 }
 
-.forum-info {
-    margin-left: 10px;
+.group-navigation ul li {
+    margin: 0 20px;
 }
 
-.forum-content {
-    margin-top: 10px;
+.group-navigation ul li a {
+    color: #333;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: block;
 }
 
-.forum-footer {
+.group-navigation ul li.active a {
+    border-bottom: 2px solid #d6c4a7;
+}
+
+.upcoming-events {
+    background-color: #f7f6f3;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.event {
     display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
-    .forum-footer {
-        flex-direction: column;
-    }
+.event-date {
+    background-color: #d6c4a7;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.event-details h5 {
+    font-weight: bold;
+}
+
+.event-details p {
+    margin-top: 5px;
 }
