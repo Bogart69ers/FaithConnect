@@ -355,6 +355,8 @@ namespace FaithConnect.Controllers
             IsUserLoggedSession();
             var username = User.Identity.Name;
             var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var groups = _groupManager.GetAllGroups();
+            var accounts = _AccManager.GetAllUsers();
 
             if (userInformation == null)
             {
@@ -480,6 +482,7 @@ namespace FaithConnect.Controllers
             return RedirectToAction("Group");
         }
 
+
         [Authorize]
         public ActionResult MyCalendar()
         {
@@ -512,6 +515,74 @@ namespace FaithConnect.Controllers
 
         //public ActionResult 
 
+        [HttpPost]
+        public ActionResult CreateGroup(Groups group, String privacy, String groupName, String description, int groupAdmin)
+        {
+            try
+            {
+                var currentUser = _AccManager.GetUserByUsername(User.Identity.Name);
+                var userInfo = _AccManager.GetUserInfoByUsername(currentUser.username);
+                if (currentUser == null)
+                {
+                    ModelState.AddModelError(string.Empty, "User not found.");
+                    var model = PrepareManageAccountViewModel();
+                    return View("Group", model);
+                }
+                group.privacy = privacy;
+                group.groupAdmin = groupAdmin;
+                group.status = (int)Status.Active;
+                group.groupName = groupName;
+                group.description = description;
+                group.groupId = Utilities.gUid;
+                group.date_created = DateTime.Now;
+
+                if (_groupManager.CreateGroup(group, ref ErrorMessage) != ErrorCode.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ErrorMessage);
+                    var model = PrepareManageAccountViewModel();
+                    return View("Group", model);
+                }
+
+                var groupMembership = new GroupMembership
+                {
+                    userId = userInfo.id,
+                    groupId = group.id,
+                    status = 1, // Assuming '1' represents 'joined' status
+                    dateJoined = DateTime.Now
+                };
+
+                if (_groupManager.AddGroupMembership(groupMembership, ref ErrorMessage) != ErrorCode.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ErrorMessage);
+                    var model = PrepareManageAccountViewModel();
+                    return View("Group", model);
+                }
+
+                TempData["SuccessMessage"] = "Group created successfully.";
+                return RedirectToAction("Group");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                var model = PrepareManageAccountViewModel();
+                return View("Group", model);
+            }
+        }
+        private ManageAccountViewModel PrepareManageAccountViewModel()
+        {
+            var username = User.Identity.Name;
+            var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var accounts = _AccManager.GetAllUsers();
+            var groups = _groupManager.GetAllGroups();
+            return new ManageAccountViewModel
+            {
+                UserInformation = userInfo,
+                UserAccounts = accounts,
+                UserAccount = new UserAccount(),
+                Groups = groups,
+                Group = new Groups()
+            };
+        }
     }
     
 }

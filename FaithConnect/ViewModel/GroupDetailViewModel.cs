@@ -9,6 +9,8 @@ namespace FaithConnect.ViewModel
     {
         public UserInformation UserInformation { get; set; }
         public List<UserInformation> UserInformations { get; set; }
+        public GroupMembership Groupmembership { get; set; }
+
         public Groups Group { get; set; }
         public IEnumerable<Event> Events { get; set; } = new List<Event>(); // Initialize to avoid null
         public IEnumerable<Forum> Forums { get; set; } = new List<Forum>(); // Initialize to avoid null

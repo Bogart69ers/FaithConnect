@@ -29,6 +29,7 @@ namespace FaithConnect
         public Nullable<int> groupAdmin { get; set; }
         public Nullable<System.DateTime> date_created { get; set; }
         public Nullable<int> status { get; set; }
+        public string privacy { get; set; }
     
         public virtual ICollection<Event> Event { get; set; }
         public virtual ICollection<Forum> Forum { get; set; }

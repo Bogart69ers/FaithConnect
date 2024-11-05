@@ -7,6 +7,7 @@ namespace FaithConnect.ViewModel
 {
     public class GroupViewModel
     {
+        public UserAccount UserAcc { get; set; }
         public UserInformation UserInformation { get; set; }
         public GroupMembership GroupMembership { get; set; }
         public List<GroupMembership> GroupMemberships { get; set; }

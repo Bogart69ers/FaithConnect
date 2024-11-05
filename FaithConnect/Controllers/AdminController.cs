@@ -79,7 +79,7 @@ namespace FaithConnect.Controllers
             return View(model);
         }
         [HttpPost]
-        public ActionResult CreateGroup(Groups group, String groupName,String description, int groupAdmin )
+        public ActionResult CreateGroup(Groups group, String priv ,String groupName,String description, int groupAdmin )
         {
             try
             {
@@ -90,7 +90,7 @@ namespace FaithConnect.Controllers
                     var model = PrepareManageAccountViewModel();
                     return View("ManageGroups", model);
                 }
-
+                group.privacy = priv;
                 group.groupAdmin = groupAdmin;
                 group.status = (int)Status.Active;
                 group.groupName = groupName;

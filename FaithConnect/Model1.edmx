@@ -76,6 +76,7 @@
           <Property Name="groupAdmin" Type="int" />
           <Property Name="date_created" Type="datetime" />
           <Property Name="status" Type="int" />
+          <Property Name="privacy" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Image">
           <Key>
@@ -629,6 +630,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="groupAdmin" Type="Int32" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
           <Property Name="status" Type="Int32" />
+          <Property Name="privacy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Event" Relationship="FaithConnectModel.FK_Event_Groups" FromRole="Groups" ToRole="Event" />
           <NavigationProperty Name="Forum" Relationship="FaithConnectModel.FK_Forum_Groups" FromRole="Groups" ToRole="Forum" />
           <NavigationProperty Name="GroupMembership" Relationship="FaithConnectModel.FK_GroupMembership_Groups" FromRole="Groups" ToRole="GroupMembership" />
@@ -1025,6 +1027,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySetMapping Name="Groups">
             <EntityTypeMapping TypeName="FaithConnectModel.Groups">
               <MappingFragment StoreEntitySet="Groups">
+                <ScalarProperty Name="privacy" ColumnName="privacy" />
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="date_created" ColumnName="date_created" />
                 <ScalarProperty Name="groupAdmin" ColumnName="groupAdmin" />

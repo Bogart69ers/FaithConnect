@@ -22,10 +22,17 @@
                     {
                         <a href="@Url.Action("EditGroup", "Group", new { id = Model.Group.id })" class="btn btn-custom">Edit Group</a>
                     }
-                    else
+                    else if(Model.Groupmembership.userId == currentUserId && Model.Groupmembership.status == 1)
                     {
                         <!-- If the user is not the admin, show the "Join Group" button -->
+                        <button class="btn btn-custom">Invite</button>
+                        <button class="btn btn-custom">Leave</button>
+
+                    }
+                    else
+                    {
                         <button class="btn btn-custom">Join Group</button>
+
                     }
                 </div>
             </div>

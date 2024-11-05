@@ -18,6 +18,16 @@
         text-align: center;
         padding: 5px 0;
     }
+    .btn-add {
+        background-color: #d6c4a7;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        width: 10%;
+        text-align: center;
+        margin-top: 10px;
+        padding: 10px 0;
+    }
 
         .btn-custom:hover {
             background-color: #b8a58a;
@@ -36,6 +46,9 @@
                 </button>
                 <button id="myGroupsBtn" class="groups-sidebar-button">
                     <span class="input-icon-addon"><i class="fa fa-users"></i></span> My Groups
+                </button>
+                <button id="createGroupBtn" class="groups-sidebar-button">
+                    <span class="input-icon-addon"><i class="fa fa-plus-circle"></i></span> Create Group
                 </button>
             </div>
         </div>
@@ -63,11 +76,11 @@
             <div id="myGroups" class="groups-content">
                 <div class="row">
                     <div class="col-md-8">
-                        <h4>All groups you've joined</h4>
+                        <h4>My Groups</h4>
                         <div class="groups-grid">
-                            @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1 && m.userId == Model.UserInformation.id))
+                            @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1 && m.userId == Model.UserInformation.id || m.Groups.groupAdmin == Model.UserInformation.userId))
                             {
-                                var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.groupId && m.status == 1); // Count members only with joined status
+                                var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.groupId && m.status == 1 ); // Count members only with joined status
                                 <div class="group-card">
                                     <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
                                     <div class="group-info">
@@ -106,7 +119,102 @@
                     </div>
                 </div>
             </div>
+            <div id="createGroup" class="groups-content">
+                <h4>Create Group</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            @using (Html.BeginForm("CreateGroup", "Home", FormMethod.Post))
+                            {
+
+                                <div class="form-group">
+                                    <label for="groupName">Group Name</label>
+                                    <div class="input-icon">
+                                        <span class="input-icon-addon"><i class="fa fa-users"></i></span>
+                                        <input type="text" class="form-control" id="groupName" name="groupName" placeholder="Group Name" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="privacy">Choose privacy</label>
+                                    <select class="form-control" id="privacy" name="privacy">
+                                        <option value="public">
+                                            Public
+                                        </option>
+                                        <option value="private">
+                                            Private
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" hidden>
+                                    <label for="groupAdmin">Group Admin (ID number)</label>
+                                    <input type="number" class="form-control" id="groupAdmin" name="groupAdmin"
+                                           value="@Model.UserInformation.userId"
+                                           readonly
+                                           style="background-color: #e9ecef; color: #495057;">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <div class="input-icon">
+                                        <span class="input-icon-addon"><i class="fa fa-info-circle"></i></span>
+                                        <textarea class="form-control" id="description" name="description" placeholder="Description" required></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-add">Create</button>
+                            }
+                        </div>
+                    </div>
+            </div>
         </div>
     </div>
 </div>
-<script src="~/Assets/Groups/js/group.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const discoverBtn = document.getElementById('discoverBtn');
+        const myGroupsBtn = document.getElementById('myGroupsBtn');
+        const discoverGroups = document.getElementById('discoverGroups');
+        const myGroups = document.getElementById('myGroups');
+        const createGroup = document.getElementById('createGroup');
+        const createGroupBtn = document.getElementById('createGroupBtn');
+
+
+
+
+        // Set the initial active tab and content
+        discoverBtn.classList.add('active');
+        discoverGroups.classList.add('active');
+
+        discoverBtn.addEventListener('click', function () {
+            discoverBtn.classList.add('active');
+            myGroupsBtn.classList.remove('active');
+            createGroupBtn.classList.remove('active');
+            discoverGroups.classList.add('active');
+            myGroups.classList.remove('active');
+            createGroup.classList.remove('active');
+
+
+        });
+
+        myGroupsBtn.addEventListener('click', function () {
+            myGroupsBtn.classList.add('active');
+            discoverBtn.classList.remove('active');
+            createGroupBtn.classList.remove('active');
+            myGroups.classList.add('active');
+            discoverGroups.classList.remove('active');
+            createGroup.classList.remove('active');
+
+        });
+
+        createGroupBtn.addEventListener('click', function () {
+            myGroupsBtn.classList.remove('active');
+            discoverBtn.classList.remove('active');
+            createGroupBtn.classList.add('active');
+            myGroups.classList.remove('active');
+            discoverGroups.classList.remove('active');
+            createGroup.classList.add('active');
+
+        });
+    });
+
+</script>
