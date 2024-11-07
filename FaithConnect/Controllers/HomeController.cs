@@ -407,10 +407,14 @@ namespace FaithConnect.Controllers
         }
         public ActionResult GroupDetail(int groupId)
         {
+
             var username = User.Identity.Name;
+            var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var user = _AccManager.GetUserByUsername(username);
+            var userinfo = _AccManager.GetUserInfoByUsername(username);
 
             ViewBag.CurrentUserId = user.id;
+            ViewBag.CurrentUserInfoId = userinfo.id;
 
             var group = _groupManager.GetGroupById(groupId);
             if (group == null)
@@ -419,8 +423,20 @@ namespace FaithConnect.Controllers
                 return RedirectToAction("Group");
             }
 
+            ViewBag.Currentgroup = group.id;
+
             // Assuming GetMembershipsByGroupId is a method in GroupManager
             var memberships = _groupManager.GetMembershipsByGroupId(groupId) ?? new List<GroupMembership>();
+
+            var userMembershipsDetails = memberships
+                .Join(_AccManager.GetAllUserInfo(),
+                      m => m.userId,
+                      u => u.userId,
+                      (m, u) => new UserMembershipDetail
+                      {
+                          Membership = m,
+                          User = u
+                      }).ToList();
 
             var model = new GroupDetailViewModel
             {
@@ -429,7 +445,8 @@ namespace FaithConnect.Controllers
                 Posts = _postManager.GetPostsByGroupId(groupId) ?? new List<Post>(),
                 Forums = _forumManager.GetForumsByGroupId(groupId) ?? new List<Forum>(),
                 GroupMemberships = memberships,
-                AllGroups = _groupManager.GetAllGroups() ?? new List<Groups>()
+                AllGroups = _groupManager.GetAllGroups() ?? new List<Groups>(),
+                UserMembership = memberships.FirstOrDefault(m => m.userId == userinfo.id) // You may not need this if it's in the new list
             };
 
             return View(model);

@@ -78,7 +78,7 @@
                     <div class="col-md-8">
                         <h4>My Groups</h4>
                         <div class="groups-grid">
-                            @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1 && m.userId == Model.UserInformation.id || m.Groups.groupAdmin == Model.UserInformation.userId))
+                            @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1 && m.userId == Model.UserInformation.id))
                             {
                                 var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.groupId && m.status == 1 ); // Count members only with joined status
                                 <div class="group-card">
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <h4>Pending group requests (@Model.GroupMemberships.Count(m => m.status == 0))</h4>
+                        <h4>Pending group requests (@Model.GroupMemberships.Count(m => m.status == 0 && m.userId == Model.UserInformation.id))</h4>
                         <div class="groups-grid">
                             @foreach (var group in Model.GroupMemberships.Where(m => m.status == 0 && m.userId == Model.UserInformation.id))
                             {

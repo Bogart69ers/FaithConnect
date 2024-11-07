@@ -59,6 +59,10 @@ namespace FaithConnect.Repository
         {
             return _userAcc.GetAll();
         }
+        public List<UserInformation> GetAllUserInfo()
+        {
+            return _userInfo.GetAll();
+        }
 
         public ErrorCode SignIn(string username, string password, ref string errMsg)
         {

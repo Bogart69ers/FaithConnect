@@ -449,6 +449,7 @@
     <Content Include="Assets\Groups\css\GroupDetail.css" />
     <Content Include="Assets\Groups\css\StyleGroup.css" />
     <Content Include="Assets\Groups\js\group.js" />
+    <Content Include="Assets\Groups\js\groupdetail.js" />
     <Content Include="Assets\Index\css\main.css" />
     <Content Include="Assets\Index\css\style1.css" />
     <Content Include="Assets\Index\css\Style2.css" />
