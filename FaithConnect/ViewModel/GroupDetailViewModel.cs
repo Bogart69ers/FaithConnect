@@ -19,7 +19,7 @@ namespace FaithConnect.ViewModel
         public GroupMembership UserMembership { get; set; }
         public List<UserMembershipDetail> GroupMembership { get; set; } = new List<UserMembershipDetail>(); // Modified to use UserMembershipDetail
 
-        public virtual ICollection<Image> Image { get; set; }
+        public virtual ICollection<Image> Images { get; set; }
 
     }
     public class UserMembershipDetail

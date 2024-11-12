@@ -409,11 +409,11 @@ namespace FaithConnect.Controllers
         {
 
             var username = User.Identity.Name;
-            var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var user = _AccManager.GetUserByUsername(username);
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var useracc = _AccManager.GetUserByUsername(username);
             var userinfo = _AccManager.GetUserInfoByUsername(username);
 
-            ViewBag.CurrentUserId = user.id;
+            ViewBag.CurrentUserId = useracc.id;
             ViewBag.CurrentUserInfoId = userinfo.id;
 
             var group = _groupManager.GetGroupById(groupId);

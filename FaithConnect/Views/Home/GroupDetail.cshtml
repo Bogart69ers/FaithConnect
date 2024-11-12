@@ -221,35 +221,37 @@
 
     @if (currentUserId == Model.Group.groupAdmin)
     {
-        <div id="manage" class="tab-pane">
-            <h2>Manage Group</h2>
-            <p>Group Management.</p>
-            <div class="row">
-                <!-- Content Approval List -->
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Pending Members</div>
-                        </div>
-                        <div class="card-body">
-                            <table id="contentApprovalTable" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Date Requested</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.GroupMemberships.Where(item => item.groupId == currentGroupId))//di pa mo gana boshet
-                                    {
+        @using (Html.BeginForm("MyProfile", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div id="manage" class="tab-pane">
+                <h2>Manage Group</h2>
+                <p>Group Management.</p>
+                <div class="row">
+                    <!-- Content Approval List -->
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Pending Members</div>
+                            </div>
+                            <div class="card-body">
+                                <table id="contentApprovalTable" class="table table-striped table-hover">
+                                    <thead>
                                         <tr>
-                                            @*<td>@item.userId</td>
-                                            <td>@item.dateJoined</td>
-                                            <td>@item.status</td>
-                                            <td>@item.groupId</td>*@
-                                            <td>@item.userId</td>
+                                            <th>Name</th>
+                                            <th>Date Requested</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.GroupMemberships.Where(item => item.groupId == currentGroupId && item.status == 0))//di pa mo gana boshet
+                                        {
+                                            <tr>
+                                                @*<td>@item.userId</td>
+                                                    <td>@item.dateJoined</td>
+                                                    <td>@item.status</td>
+                                                    <td>@item.groupId</td>*@
+                                                <td>@item.userId</td>
                                                 <td>@item.dateJoined</td>
                                                 <td><span class="badge badge-warning">Pending</span></td>
                                                 <td>
@@ -261,15 +263,17 @@
                                                     </a>
 
                                                 </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+
     }
                 
             </div>
