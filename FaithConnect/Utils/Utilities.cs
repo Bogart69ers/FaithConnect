@@ -21,6 +21,7 @@ namespace FaithConnect.Utils
     {
         Success,
         Error,
+        NotFound
     }
 
     public enum RoleType

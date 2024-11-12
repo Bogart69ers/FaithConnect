@@ -407,7 +407,6 @@ namespace FaithConnect.Controllers
         }
         public ActionResult GroupDetail(int groupId)
         {
-
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var useracc = _AccManager.GetUserByUsername(username);
@@ -425,11 +424,12 @@ namespace FaithConnect.Controllers
 
             ViewBag.Currentgroup = group.id;
 
-            // Assuming GetMembershipsByGroupId is a method in GroupManager
+            // Retrieve and join memberships with user information for full details
             var memberships = _groupManager.GetMembershipsByGroupId(groupId) ?? new List<GroupMembership>();
+            var allUserInfos = _AccManager.GetAllUserInfo();
 
-            var userMembershipsDetails = memberships
-                .Join(_AccManager.GetAllUserInfo(),
+            var userMembershipDetails = memberships
+                .Join(allUserInfos,
                       m => m.userId,
                       u => u.userId,
                       (m, u) => new UserMembershipDetail
@@ -446,12 +446,30 @@ namespace FaithConnect.Controllers
                 Forums = _forumManager.GetForumsByGroupId(groupId) ?? new List<Forum>(),
                 GroupMemberships = memberships,
                 AllGroups = _groupManager.GetAllGroups() ?? new List<Groups>(),
-                UserMembership = memberships.FirstOrDefault(m => m.userId == userinfo.id) // You may not need this if it's in the new list
+                UserMembership = memberships.FirstOrDefault(m => m.userId == userinfo.id),
+                GroupMembership = userMembershipDetails, // Added to populate UserMembershipDetail list
+                UserInformations = allUserInfos // Added to ensure UserInformations is populated
             };
 
             return View(model);
         }
 
+
+        [HttpPost]
+        public ActionResult UpdateMembershipStatus(int id, int status, int groupId)
+        {
+            var result = _groupManager.UpdateMembershipStatus(id, groupId, status, ref ErrorMessage);
+
+            if (result == ErrorCode.Success)
+            {
+                return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "manage" });
+            }
+            else
+            {
+                ViewBag.ErrorMessage = ErrorMessage;
+                return View("Error");
+            }
+        }
 
 
         [HttpPost]
@@ -498,7 +516,6 @@ namespace FaithConnect.Controllers
             TempData["SuccessMessage"] = "Group membership approved successfully.";
             return RedirectToAction("Group");
         }
-
 
         [Authorize]
         public ActionResult MyCalendar()

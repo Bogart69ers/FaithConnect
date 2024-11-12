@@ -105,5 +105,31 @@ namespace FaithConnect.Repository
         {
             return _membershipRepo.Update(membership.id, membership, out errMsg);
         }
+        public ErrorCode UpdateMembershipStatus(int id, int groupId, int status, ref string errMsg)
+        {
+            try
+            {
+                // Retrieve the membership record by its ID
+                var membership = _membershipRepo._table.FirstOrDefault(m => m.id == id);
+                if (membership != null)
+                {
+                    // Update the membership status
+                    membership.status = status;
+                    return _membershipRepo.Update(id, membership, out errMsg);
+                }
+                else
+                {
+                    errMsg = "Membership not found.";
+                    return ErrorCode.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log exception if necessary
+                errMsg = ex.Message;
+                return ErrorCode.Error;
+            }
+        }
+
     }
 }

@@ -26,13 +26,26 @@
         targetContent.classList.add("active");
     }
 
-    // Initialize the first tab as active
-    if (tabLinks.length > 0) {
-        tabLinks[0].classList.add("active");
-        const firstTabContent = document.getElementById(tabLinks[0].getAttribute("data-target"));
-        if (firstTabContent) {
-            firstTabContent.classList.add("show");
-            firstTabContent.classList.add("active");
+    // Check for the activeTab parameter in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTab = urlParams.get('activeTab');
+
+    // Determine the tab to activate initially
+    let initialTabLink;
+    if (activeTab) {
+        initialTabLink = Array.from(tabLinks).find(link => link.getAttribute("data-target") === activeTab);
+    }
+    if (!initialTabLink) {
+        initialTabLink = tabLinks[0]; // Default to the first tab if no activeTab is specified or found
+    }
+
+    // Activate the initial tab
+    if (initialTabLink) {
+        initialTabLink.classList.add("active");
+        const initialTabContent = document.getElementById(initialTabLink.getAttribute("data-target"));
+        if (initialTabContent) {
+            initialTabContent.classList.add("show");
+            initialTabContent.classList.add("active");
         }
     }
 

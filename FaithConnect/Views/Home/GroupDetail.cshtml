@@ -221,8 +221,6 @@
 
     @if (currentUserId == Model.Group.groupAdmin)
     {
-        @using (Html.BeginForm("MyProfile", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
             <div id="manage" class="tab-pane">
                 <h2>Manage Group</h2>
                 <p>Group Management.</p>
@@ -244,24 +242,39 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in Model.GroupMemberships.Where(item => item.groupId == currentGroupId && item.status == 0))//di pa mo gana boshet
+                                        @foreach (var item in Model.GroupMemberships.Where(item => item.groupId == currentGroupId && item.status == 0))
                                         {
-                                            <tr>
-                                                @*<td>@item.userId</td>
-                                                    <td>@item.dateJoined</td>
-                                                    <td>@item.status</td>
-                                                    <td>@item.groupId</td>*@
-                                                <td>@item.userId</td>
-                                                <td>@item.dateJoined</td>
-                                                <td><span class="badge badge-warning">Pending</span></td>
-                                                <td>
-                                                    <a href="/Admin/Approval/Approve/1" class="btn btn-success btn-sm">
-                                                        <i class="fas fa-check"></i> Approve
-                                                    </a>
-                                                    <a href="/Admin/Approval/Reject/1" class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-times"></i> Reject
-                                                    </a>
 
+                                            <tr>
+                                               
+                                                <td>
+                                                    @{
+                                                        var user = Model.UserInformations.FirstOrDefault(u => u.id == item.userId);
+                                                        string fullName = user != null ? $"{user.first_name} {user.last_name}" : "Unknown";
+                                                    }
+                                                    @fullName
+                                                </td>                                                <td>@item.dateJoined</td>
+                                                <td><span class="badge badge-warning" style="color:red">Pending</span></td>
+                                                <td>
+
+                                                    <form action="@Url.Action("UpdateMembershipStatus", "Home")" method="post" style="display: inline;">
+                                                        <input type="hidden" name="groupId" value="@item.groupId" />
+                                                        <input type="hidden" name="id" value="@item.id" />
+                                                        <input type="hidden" name="status" value="1" />
+                                                        <button type="submit" class="btn btn-success btn-sm">
+                                                            <i class="fas fa-check"></i> Approve
+                                                        </button>
+                                                    </form>
+                                                    
+                                                    <form action="@Url.Action("UpdateMembershipStatus", "Home")" method="post" style="display: inline;">
+                                                        <input type="hidden" name="groupId" value="@item.groupId" />
+                                                        <input type="hidden" name="id" value="@item.id" />
+                                                        <input type="hidden" name="status" value="2" />
+                                                        <button type="submit" class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-times"></i> Reject
+                                                        </button>
+                                                    </form>
+                                                        
                                                 </td>
                                             </tr>
                                         }
@@ -272,10 +285,7 @@
                     </div>
                 </div>
             </div>
-        }
-
-    }
-                
+        }             
             </div>
 </div>
 
@@ -284,17 +294,22 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-pjaaA8dDz/UmAGHEmpNMI0HHLmV7xI5a2zVzt95Z5CjoFQ7p1rR/YL2cw6K9/6Nf" crossorigin="anonymous"></script>
 <script src="~/Assets/Groups/js/groupdetail.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#contentApprovalTable').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
+    $(document).ready(function () {
+        if ($.fn.DataTable) {
+            $('#contentApprovalTable').DataTable({
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                responsive: true
+            });
+        } else {
+            console.warn("DataTable plugin not loaded.");
+        }
     });
+
 </script>
 
 
