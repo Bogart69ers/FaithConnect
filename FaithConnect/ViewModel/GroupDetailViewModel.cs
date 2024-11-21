@@ -9,6 +9,7 @@ namespace FaithConnect.ViewModel
     {
         public List<UserInformation> UserInformations { get; set; } = new List<UserInformation>();
         public UserInformation UserInformation { get; set; }
+        public UserAccount UserAcc { get; set; }
 
         public Groups Group { get; set; }
         public IEnumerable<Event> Events { get; set; } = new List<Event>(); // Initialize to avoid null
@@ -16,10 +17,14 @@ namespace FaithConnect.ViewModel
         public IEnumerable<Post> Posts { get; set; } = new List<Post>(); // Initialize to avoid null
         public List<Groups> AllGroups { get; set; } = new List<Groups>(); // Initialize to avoid null
         public List<GroupMembership> GroupMemberships { get; set; } = new List<GroupMembership>(); // Initialize to avoid null
-        public GroupMembership UserMembership { get; set; }
-        public List<UserMembershipDetail> GroupMembership { get; set; } = new List<UserMembershipDetail>(); // Modified to use UserMembershipDetail
+        public List<GroupMembership> MemberManagements { get; set; } = new List<GroupMembership>(); // Initialize to avoid null
 
-        public virtual ICollection<Image> Images { get; set; }
+        public GroupMembership UserMembership { get; set; }
+        public List<UserMembershipDetail> GroupMembership { get; set; } = new List<UserMembershipDetail>();
+        public List<UserMembershipDetail> MemberManagement { get; set; } = new List<UserMembershipDetail>(); // Modified to use UserMembershipDetail
+        public List<Groups> AllGroupMembers { get; set; }
+
+        public virtual ICollection<Image> Image { get; set; }
 
     }
     public class UserMembershipDetail

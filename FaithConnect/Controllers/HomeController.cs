@@ -407,10 +407,12 @@ namespace FaithConnect.Controllers
         }
         public ActionResult GroupDetail(int groupId)
         {
+            IsUserLoggedSession();
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var useracc = _AccManager.GetUserByUsername(username);
             var userinfo = _AccManager.GetUserInfoByUsername(username);
+            var allGroups = _groupManager.GetAllGroups();
 
             ViewBag.CurrentUserId = useracc.id;
             ViewBag.CurrentUserInfoId = userinfo.id;
@@ -425,10 +427,26 @@ namespace FaithConnect.Controllers
             ViewBag.Currentgroup = group.id;
 
             // Retrieve and join memberships with user information for full details
+            var membership = _groupManager.GetMembershipsByGroup(groupId) ?? new List<GroupMembership>();
             var memberships = _groupManager.GetMembershipsByGroupId(groupId) ?? new List<GroupMembership>();
+
             var allUserInfos = _AccManager.GetAllUserInfo();
+            var groupMemberships = _groupManager.GetAllGroupMemberships(); // Fetch all group memberships
+            var userGroupMemberships = groupMemberships.Where(m => m.userId == userinfo.id).ToList();
+            var joinedOrPendingGroupIds = userGroupMemberships.Select(m => m.groupId).ToList();
+            var discoverGroups = allGroups.Where(g => !joinedOrPendingGroupIds.Contains(g.id)).ToList();
 
             var userMembershipDetails = memberships
+                .Join(allUserInfos,
+                      m => m.userId,
+                      u => u.userId,
+                      (m, u) => new UserMembershipDetail
+                      {
+                          Membership = m,
+                          User = u
+                      }).ToList();
+
+            var userMember = membership
                 .Join(allUserInfos,
                       m => m.userId,
                       u => u.userId,
@@ -441,13 +459,17 @@ namespace FaithConnect.Controllers
             var model = new GroupDetailViewModel
             {
                 Group = group,
+                UserInformation = user,
                 Events = _eventManager.GetEventsByGroupId(groupId) ?? new List<Event>(),
                 Posts = _postManager.GetPostsByGroupId(groupId) ?? new List<Post>(),
                 Forums = _forumManager.GetForumsByGroupId(groupId) ?? new List<Forum>(),
                 GroupMemberships = memberships,
+                MemberManagements = membership,
+                AllGroupMembers = discoverGroups,
                 AllGroups = _groupManager.GetAllGroups() ?? new List<Groups>(),
                 UserMembership = memberships.FirstOrDefault(m => m.userId == userinfo.id),
-                GroupMembership = userMembershipDetails, // Added to populate UserMembershipDetail list
+                GroupMembership = userMembershipDetails,
+                MemberManagement =  userMember,
                 UserInformations = allUserInfos // Added to ensure UserInformations is populated
             };
 
@@ -549,6 +571,43 @@ namespace FaithConnect.Controllers
 
         //public ActionResult 
 
+
+        [HttpPost]
+        public ActionResult CreateEvent(Event ev,String title, String description, int groupId)
+        {
+            try
+            {
+                var user = _AccManager.GetUserByUsername(User.Identity.Name);
+                var userInfo = _AccManager.GetUserInfoByUsername(user.username);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "User not found.");
+                    var model = PrepareManageAccountViewModel();
+                    return View("GroupDetail", new { groupId = groupId, activeTab = "events" });
+                }
+                ev.createdBy = user.id;
+                ev.groupId = groupId;
+                ev.description = description;
+                ev.title = title;
+
+                if (_eventManager.CreateEvent(ev, ref ErrorMessage) != ErrorCode.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ErrorMessage);
+                    var model = PrepareManageAccountViewModel();
+                    return View("Group", model);
+                }
+
+
+                return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                var model = PrepareManageAccountViewModel();
+                return View("GroupDetail", model);
+            }
+        }
         [HttpPost]
         public ActionResult CreateGroup(Groups group, String privacy, String groupName, String description, int groupAdmin)
         {

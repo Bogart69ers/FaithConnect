@@ -1,12 +1,31 @@
-﻿@model FaithConnect.ViewModel.GroupDetailViewModel
+﻿@model dynamic
 @{
-    ViewBag.Title = Model.Group.groupName;
-    Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var memberCount = Model.GroupMemberships.Count(m => m.groupId == Model.Group.id && m.status == 1);
+    string profileImage = Url.Content("~/UploadedFiles/default.png");
+    string userName = "User";
+    var groupView = Model as FaithConnect.ViewModel.GroupDetailViewModel;
     var currentUserId = ViewBag.CurrentUserId;
     var currentUserInfoId = ViewBag.CurrentUserInfoId;
     var currentGroupId = ViewBag.Currentgroup;
+    var memberCount = groupView.GroupMemberships.Count(m => m.groupId == groupView.Group.id && m.status == 1);
+    var group = groupView.AllGroupMembers;
+
+    if (Model is FaithConnect.ViewModel.GroupDetailViewModel)
+    {
+        var groupViewModel = Model as FaithConnect.ViewModel.GroupDetailViewModel;
+        var userInfo = groupViewModel.UserInformation;
+        var images = userInfo.Image.ToList();
+        profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
+        userName = userInfo.first_name + " " + userInfo.last_name;
+
+
+
+    }
+
+    ViewBag.Title = Model.Group.groupName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
 }
 
 <link rel="stylesheet" href="~/Assets/Groups/css/GroupDetail.css" />
@@ -19,13 +38,27 @@
                 <img src="~/Assets/Groups/img/group1.jpg" alt="Group Header" class="img-fluid group-banner">
                 <div class="group-info" style="position: absolute; bottom: 30px; left: 30px;">
                     <h2>@Model.Group.groupName</h2>
-                    <p>@memberCount members</p>
+                    
+                    <p>@{
+                        var member = groupView.GroupMemberships.Count(m => m.groupId == currentGroupId  && m.status == 1);
+                        var members = " ";
+                        if(member <= 1)
+                        {
+                            members = "member";
+                        }// Count members only with joined status
+                        else if (member > 1)
+                        {
+                            members = "members";
+                        }
+                    }
+                    
+                    @member @members</p>
                     <!-- If the logged-in user is the group admin, show the "Edit Group" button -->
                     @if (Model.Group.groupAdmin == currentUserId)
                     {
                         <a href="@Url.Action("EditGroup", "Group", new { id = Model.Group.id })" class="btn btn-custom">Edit Group</a>
                     }
-                    else if (Model.GroupMemberships.Any(m => m.userId == currentUserInfoId && m.status == 1))
+                    else if (groupView.GroupMemberships.Any(m => m.userId == currentUserInfoId && m.status == 1))
                     {
                         <button class="btn btn-custom">Invite</button>
                         <button class="btn btn-custom">Leave</button>
@@ -41,7 +74,7 @@
 
     <div class="group-navigation">
         <ul>
-            <li><a href="#" class="nav-link active" data-target="contents">Contents</a></li>
+            <li><a href="#" class="nav-link" data-target="contents">Contents</a></li>
             <li><a href="#" class="nav-link" data-target="events">Events</a></li>
             <li><a href="#" class="nav-link" data-target="forums">Forums</a></li>
             <li><a href="#" class="nav-link" data-target="manage">Member Management</a></li>
@@ -51,9 +84,45 @@
 
     
     <div class="tab-content">
-        <div id="contents" class="tab-pane active show">
+        <div id="contents" class="tab-pane">
             <h2>Group Contents</h2>
             <p>This is the content section for the group.</p>
+            <div class="newsfeed">
+                @for (int i = 0; i <= 100; i++)
+                {
+                    <div class="post">
+
+                        <div class="post-header">
+                            <img src="path/to/unknown-group-icon.png" alt="Group Icon" class="group-icon">
+                            <div class="group-info">
+                                <div class="group-name">Unknown Group</div>
+                                <div class="post-time">1 min ago</div>
+                            </div>
+                            <div class="post-options">
+                                <button class="options-button">...</button>
+                                <div class="options-menu">
+                                    <a href="#">Hide Post</a>
+                                    <a href="#">Save post</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Accusamus minima delectus nemo unde quae recusandae assumenda</p>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-button" onclick="toggleLike(this)"><span class="input-icon-addon"><i class="far fa-heart"></i></span> Like</button>
+                            <button class="action-button"><span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact</button>
+                            <button class="action-button"><span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost</button>
+                        </div>
+                        <div class="post-interact">
+                            <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
+                            <input type="text" placeholder="Interact as @User.Identity.Name" class="comment-input">
+                        </div>
+                    </div>
+                }
+            </div>
+
+            
         </div>
         @if (currentUserId == Model.Group.groupAdmin)
         {
@@ -109,26 +178,33 @@
                     <div class="col-md-6">
                         <div class="calendar-container bg-white p-4 shadow-sm border-rad20">
                             <h5>Create Event</h5>
-                            <div class="form-group mt-3">
-                                <label>Event Name</label>
-                                <input type="text" class="form-control" placeholder="Event / Meeting Name">
-                            </div>
-                            <div class="form-group mt-3">
-                                <label>Start Date</label>
-                                <input type="date" class="form-control">
-                            </div>
-                            <div class="form-group mt-3">
-                                <label>Start Time</label>
-                                <input type="time" class="form-control">
-                            </div>
-                            <div class="form-group mt-3">
-                                <textarea class="form-control" placeholder="Event / Meeting Details"></textarea>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="inviteAll">
-                                <label class="form-check-label" for="inviteAll">Invite all group members</label>
-                            </div>
-                            <button class="btn btn-custom">Create Event</button>
+                            <!--event time still not functional and invite all group members-->
+                            <form action="@Url.Action("CreateEvent", "Home")" method="post" style="display: inline;"> 
+
+                                <input type="hidden" name="groupId" value="@currentGroupId" />
+                                <input type="hidden" name="userId" value="@currentUserId" />
+
+                                <div class="form-group mt-3">
+                                    <label>Event Name</label>
+                                    <input type="text" name="title" class="form-control" placeholder="Event / Meeting Name">
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label>Start Date</label>
+                                    <input type="date" name="event_date" class="form-control">
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label>Start Time</label>
+                                    <input type="time" name="event_time" class="form-control">
+                                </div>
+                                <div class="form-group mt-3">
+                                    <textarea class="form-control" name="description" placeholder="Event / Meeting Details"></textarea>
+                                </div>
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input" id="inviteAll">
+                                    <label class="form-check-label" for="inviteAll">Invite all group members</label>
+                                </div>
+                                <button type="submit" class="btn btn-custom">Create Event</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -242,18 +318,19 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in Model.GroupMemberships.Where(item => item.groupId == currentGroupId && item.status == 0))
+                                        @foreach (var item in groupView.MemberManagements.Where(item => item.groupId == currentGroupId && item.status == 0))
                                         {
 
                                             <tr>
                                                
                                                 <td>
                                                     @{
-                                                        var user = Model.UserInformations.FirstOrDefault(u => u.id == item.userId);
+                                                        var user = groupView.UserInformations.FirstOrDefault(u => u.id == item.userId);
                                                         string fullName = user != null ? $"{user.first_name} {user.last_name}" : "Unknown";
                                                     }
                                                     @fullName
-                                                </td>                                                <td>@item.dateJoined</td>
+                                                </td>                                                
+                                                <td>@item.dateJoined</td>
                                                 <td><span class="badge badge-warning" style="color:red">Pending</span></td>
                                                 <td>
 
@@ -312,7 +389,22 @@
 
 </script>
 
+<script>
+        function toggleLike(button) {
+            const icon = button.querySelector('.input-icon-addon i');
+            const isLiked = icon.classList.contains('fas');
 
+            if (isLiked) {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.innerHTML = '<span class="input-icon-addon"><i class="far fa-heart"></i></span> Like';
+            } else {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.innerHTML = '<span class="input-icon-addon"><i class="fas fa-heart"></i></span> Liked';
+            }
+        }
+</script>
 <script src="~/Assets/Admin/js/core/jquery-3.7.1.min.js"></script>
 <script src="~/Assets/Admin/js/core/popper.min.js"></script>
 <script src="~/Assets/Admin/js/core/bootstrap.min.js"></script>

@@ -56,6 +56,13 @@ namespace FaithConnect.Repository
         public List<GroupMembership> GetMembershipsByGroupId(int groupId)
         {
             return _membershipRepo.GetAll()
+                                  .Where(m => m.groupId == groupId && m.status == 1)
+                                  .ToList(); // Get all group memberships with status = 1
+        }
+
+        public List<GroupMembership> GetMembershipsByGroup(int groupId)
+        {
+            return _membershipRepo.GetAll()
                                   .Where(m => m.groupId == groupId && m.status == 0)
                                   .ToList(); // Get all group memberships with status = 1
         }

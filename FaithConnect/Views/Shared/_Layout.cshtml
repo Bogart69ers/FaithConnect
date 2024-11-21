@@ -18,14 +18,15 @@
         profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
         userName = userInfo.first_name + " " + userInfo.last_name;
     }
-    //else if(Model is FaithConnect.ViewModel.GroupDetailViewModel)
-    //{
-    //    var groupDetailModel = Model as FaithConnect.ViewModel.GroupDetailViewModel;
-    //    var userInfo = groupDetailModel.UserInformation;
-    //    var images = userInfo.Image.ToList();
-    //    profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~UploadedFiles/" + images.FirstOrDefault()?.imageFile);
-    //    userName = userInfo.first_name + " " + userInfo.last_name;
-    //}
+    else if (Model is FaithConnect.ViewModel.GroupDetailViewModel)
+    {
+        var groupDetailModel = Model as FaithConnect.ViewModel.GroupDetailViewModel;
+        var userInfo = groupDetailModel.UserInformation;
+        var images = userInfo.Image.ToList();
+        profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
+        userName = userInfo.first_name + " " + userInfo.last_name;
+    }
+
     string currentPath = Request.Path;
 }
 
