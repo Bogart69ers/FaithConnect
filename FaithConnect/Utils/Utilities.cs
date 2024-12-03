@@ -16,6 +16,13 @@ namespace FaithConnect.Utils
         Joined,
         Rejected
     }
+    
+    public enum PostStatus
+    {
+        Pending,
+        Valid,
+        Rejected
+    }
 
     public enum ErrorCode
     {

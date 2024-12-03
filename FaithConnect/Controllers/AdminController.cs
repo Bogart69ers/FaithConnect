@@ -78,6 +78,9 @@ namespace FaithConnect.Controllers
 
             return View(model);
         }
+
+        
+
         [HttpPost]
         public ActionResult CreateGroup(Groups group, String priv ,String groupName,String description, int groupAdmin )
         {

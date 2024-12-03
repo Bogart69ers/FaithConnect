@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using FaithConnect.Utils;
 
 namespace FaithConnect.Repository
 {
@@ -16,12 +17,30 @@ namespace FaithConnect.Repository
 
         public IEnumerable<Post> GetPostsByGroupId(int groupId)
         {
-            return _postRepository._table.Where(p => p.groupId == groupId).ToList();
+            return _postRepository._table.Where(p => p.groupId == groupId).OrderByDescending(p => p.date_created).ToList();
         }
 
-        public void AddPost(Post post, ref string errorMsg)
+        public ErrorCode AddPost(Post post, ref string errorMsg)
         {
-            _postRepository.Create(post, out errorMsg);
+            try
+            {
+                post.postId = Utilities.gUid;
+                post.date_created = DateTime.Now;
+                post.status = 0;
+                return _postRepository.Create(post, out errorMsg);
+
+            }
+            catch (Exception ex)
+            {
+                errorMsg = ex.Message;
+                return ErrorCode.Error;
+            }
+        }
+        public List<Post> GetPostByGroup(int groupId)
+        {
+            return _postRepository.GetAll()
+                                  .Where(m => m.groupId == groupId && m.status == 0).OrderByDescending(p => p.date_created)
+                                  .ToList(); // Get all group memberships with status = 1
         }
     }
 }

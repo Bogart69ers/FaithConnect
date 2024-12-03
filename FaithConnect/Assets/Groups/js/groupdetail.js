@@ -44,7 +44,7 @@
         initialTabLink.classList.add("active");
         const initialTabContent = document.getElementById(initialTabLink.getAttribute("data-target"));
         if (initialTabContent) {
-            initialTabContent.classList.add("show");
+            initialTabContent.classList.add("show");    
             initialTabContent.classList.add("active");
         }
     }

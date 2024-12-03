@@ -24,6 +24,90 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<div class="container mt--5 pt--5">
+    <div class="row" style="flex-wrap:nowrap">
+        <div class="col-md-8">
+            
+            @for (int i = 0; i <= 100; i++)
+            {
+                <div class="post col-md-20">
+
+                    <div class="post-header">
+                        <img src="path/to/unknown-group-icon.png" alt="Group Icon" class="group-icon">
+                        <div class="group-info">
+                            <div class="group-name">Unknown Group</div>
+                            <div class="post-time">1 min ago</div>
+                        </div>
+                        <div class="post-options">
+                            <button class="options-button">...</button>
+                            <div class="options-menu">
+                                <a href="#">Hide Post</a>
+                                <a href="#">Save post</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Accusamus minima delectus nemo unde quae recusandae assumenda</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="action-button" onclick="toggleLike(this)"><span class="input-icon-addon"><i class="far fa-heart"></i></span> Like</button>
+                        <button class="action-button"><span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact</button>
+                        <button class="action-button"><span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost</button>
+                    </div>
+                    <div class="post-interact">
+                        <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
+                        <input type="text" placeholder="Interact as @User.Identity.Name" class="comment-input">
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-4">
+            <div class="events-container bg-white p-4 shadow-sm border-rad20" style="position:sticky; top:10%;">
+                <div class="event-buttons">
+                    <button id="upcomingEventsBtn" class="event-button active">Upcoming Events</button>
+                </div>
+                <div id="upcomingEvents">
+                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
+                        <div class="event-date me-3 text-center">
+                            <div class="event-day mb-1">12</div>
+                            <div class="event-time">00:00 PM</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-day-of-week mb-1">Thursday</div>
+                            <div class="event-title mb-1">Prayer Meeting</div>
+                            <div class="event-description">Prayer Meeting with Jesus</div>
+                        </div>
+                    </div>
+                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-13">
+                        <div class="event-date me-3 text-center">
+                            <div class="event-day mb-1">13</div>
+                            <div class="event-time">00:00 PM</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-day-of-week mb-1">Tuesday</div>
+                            <div class="event-title mb-1">Prayer Meeting</div>
+                            <div class="event-description">Prayer Meeting with Jesus</div>
+                        </div>
+                    </div>
+                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-27">
+                        <div class="event-date me-3 text-center">
+                            <div class="event-day mb-1">27</div>
+                            <div class="event-time">00:00 PM</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-day-of-week mb-1">Friday</div>
+                            <div class="event-title mb-1">Prayer Meeting</div>
+                            <div class="event-description">Prayer Meeting with Jesus</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="recentEvents" class="d-none">
+                    <!-- Recent events will be populated similarly to upcoming events -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <div class="newsfeed">    
         @for (int i = 0; i <= 100; i++)

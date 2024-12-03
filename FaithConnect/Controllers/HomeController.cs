@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -20,6 +21,10 @@ namespace FaithConnect.Controllers
             var username = User.Identity.Name;
             IsUserLoggedSession();
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var useracc = _AccManager.GetUserByUsername(username);
+
+            ViewBag.CurrentUserId = useracc.id;
+
             return View(user);
         }
 
@@ -413,6 +418,7 @@ namespace FaithConnect.Controllers
             var useracc = _AccManager.GetUserByUsername(username);
             var userinfo = _AccManager.GetUserInfoByUsername(username);
             var allGroups = _groupManager.GetAllGroups();
+            var post = _postManager.GetPostsByGroupId(groupId);
 
             ViewBag.CurrentUserId = useracc.id;
             ViewBag.CurrentUserInfoId = userinfo.id;
@@ -429,6 +435,8 @@ namespace FaithConnect.Controllers
             // Retrieve and join memberships with user information for full details
             var membership = _groupManager.GetMembershipsByGroup(groupId) ?? new List<GroupMembership>();
             var memberships = _groupManager.GetMembershipsByGroupId(groupId) ?? new List<GroupMembership>();
+            var posts = _postManager.GetPostByGroup(groupId) ?? new List<Post>();
+
 
             var allUserInfos = _AccManager.GetAllUserInfo();
             var groupMemberships = _groupManager.GetAllGroupMemberships(); // Fetch all group memberships
@@ -465,6 +473,7 @@ namespace FaithConnect.Controllers
                 Forums = _forumManager.GetForumsByGroupId(groupId) ?? new List<Forum>(),
                 GroupMemberships = memberships,
                 MemberManagements = membership,
+                PostManage = posts,
                 AllGroupMembers = discoverGroups,
                 AllGroups = _groupManager.GetAllGroups() ?? new List<Groups>(),
                 UserMembership = memberships.FirstOrDefault(m => m.userId == userinfo.id),
@@ -571,9 +580,44 @@ namespace FaithConnect.Controllers
 
         //public ActionResult 
 
+        [HttpPost]
+        public ActionResult Post(Post post, int groupId, int createdBy, String content)
+        {
+            try
+            {
+                var currentUser = _AccManager.GetUserByUsername(User.Identity.Name);
+                if (currentUser == null)
+                {
+                    ModelState.AddModelError(string.Empty, "User not found.");
+                    var model = PrepareManageAccountViewModel();
+                    return View("GroupDetail", model);
+                }
+
+                post.content = content;
+                post.createdBy = createdBy;
+                post.groupId = groupId;
+                post.title = content;
+
+                if (_postManager.AddPost(post, ref ErrorMessage) != ErrorCode.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ErrorMessage);
+                    var model = PrepareManageAccountViewModel();
+                    return View("ManageGroups", model);
+                }
+                TempData["SuccessMessage"] = "Post Uploaded.";
+                return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "contents" });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                var model = PrepareManageAccountViewModel();
+                return View("GroupDetail", model);
+            }
+
+        }
 
         [HttpPost]
-        public ActionResult CreateEvent(Event ev,String title, String description, int groupId)
+        public ActionResult CreateEvent(Event ev, string title, string description, int groupId, string event_date, string event_time)
         {
             try
             {
@@ -585,21 +629,29 @@ namespace FaithConnect.Controllers
                     var model = PrepareManageAccountViewModel();
                     return View("GroupDetail", new { groupId = groupId, activeTab = "events" });
                 }
+
+                // Combine event_date and event_time into a DateTime
+                DateTime parsedDate = DateTime.ParseExact(event_date, "yyyy-MM-dd", null);
+                TimeSpan parsedTime = TimeSpan.Parse(event_time);
+
+                DateTime eventDateTime = parsedDate.Date.Add(parsedTime);
+
+                // Set additional event properties
                 ev.createdBy = user.id;
                 ev.groupId = groupId;
                 ev.description = description;
                 ev.title = title;
+                ev.event_date = eventDateTime;
 
+                // Save the event using the manager
                 if (_eventManager.CreateEvent(ev, ref ErrorMessage) != ErrorCode.Success)
                 {
                     ModelState.AddModelError(string.Empty, ErrorMessage);
                     var model = PrepareManageAccountViewModel();
-                    return View("Group", model);
+                    return View("GroupDetail", model);
                 }
 
-
                 return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
-
             }
             catch (Exception ex)
             {
@@ -608,6 +660,7 @@ namespace FaithConnect.Controllers
                 return View("GroupDetail", model);
             }
         }
+
         [HttpPost]
         public ActionResult CreateGroup(Groups group, String privacy, String groupName, String description, int groupAdmin)
         {
