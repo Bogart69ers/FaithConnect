@@ -436,6 +436,7 @@ namespace FaithConnect.Controllers
             var membership = _groupManager.GetMembershipsByGroup(groupId) ?? new List<GroupMembership>();
             var memberships = _groupManager.GetMembershipsByGroupId(groupId) ?? new List<GroupMembership>();
             var posts = _postManager.GetPostByGroup(groupId) ?? new List<Post>();
+            var forum = _forumManager.GetForumByGroup(groupId) ?? new List<Forum>();
 
 
             var allUserInfos = _AccManager.GetAllUserInfo();
@@ -474,6 +475,7 @@ namespace FaithConnect.Controllers
                 GroupMemberships = memberships,
                 MemberManagements = membership,
                 PostManage = posts,
+                ForumManage = forum,
                 AllGroupMembers = discoverGroups,
                 AllGroups = _groupManager.GetAllGroups() ?? new List<Groups>(),
                 UserMembership = memberships.FirstOrDefault(m => m.userId == userinfo.id),
@@ -606,6 +608,41 @@ namespace FaithConnect.Controllers
                 }
                 TempData["SuccessMessage"] = "Post Uploaded.";
                 return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "contents" });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                var model = PrepareManageAccountViewModel();
+                return View("GroupDetail", model);
+            }
+
+        }
+        [HttpPost]
+        public ActionResult Forum(Forum fo, int groupId, int createdBy, String content)
+        {
+            try
+            {
+                var currentUser = _AccManager.GetUserByUsername(User.Identity.Name);
+                if (currentUser == null)
+                {
+                    ModelState.AddModelError(string.Empty, "User not found.");
+                    var model = PrepareManageAccountViewModel();
+                    return View("GroupDetail", model);
+                }
+                
+                fo.content = content;
+                fo.createdBy = createdBy;
+                fo.groupId = groupId;
+                fo.title = content;
+
+                if (_forumManager.AddForum(fo, ref ErrorMessage) != ErrorCode.Success)
+                {
+                    ModelState.AddModelError(string.Empty, ErrorMessage);
+                    var model = PrepareManageAccountViewModel();
+                    return View("ManageGroups", model);
+                }
+                TempData["SuccessMessage"] = "Post Uploaded.";
+                return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "forums" });
             }
             catch (Exception ex)
             {

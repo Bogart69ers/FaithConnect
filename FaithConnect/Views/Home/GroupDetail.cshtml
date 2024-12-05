@@ -33,7 +33,7 @@
 
 
 <div class="container-fluid mt-4">
-    <div class="row" style="position:sticky; top:4.6%;">
+    <div class="row" style="position:sticky; top:10px;">
         <div class="col-12">
             <!-- Group Banner Section -->
             <div class="group-header" >
@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <div class="group-navigation" style="position:sticky; top:37%;">
+    <div class="group-navigation" style="position:sticky; top:310px;">
         <ul>
             <li><a href="#" class="nav-link" data-target="contents">Contents</a></li>
             <li><a href="#" class="nav-link" data-target="events">Events</a></li>
@@ -149,10 +149,10 @@
                     }
                 </div>
                 <div class="col-lg-4">
-                    <div class="events-container bg-white p-4 shadow-sm border-rad20" style="position:sticky; top:45%;">
+                    <div class="events-container bg-white p-4 shadow-sm border-rad20" style="position:static; top:380px;">
                         <div class="event-buttons">
                             <button id="upcomingEventsBtn" class="event-button active">Upcoming Events</button>
-                            <button id="recentEventsBtn" class="event-button">Recent Events</button>
+                            @*<button id="recentEventsBtn" class="event-button">Recent Events</button>*@
                         </div>
                         <div id="upcomingEvents">
                             @foreach (var events in groupView.Events.Where(g => g.groupId == currentGroupId && g.status == 0).OrderByDescending(g => g.event_date))
@@ -165,7 +165,7 @@
                                         <div class="event-time">@(events.event_date.HasValue ? events.event_date.Value.ToString("hh:mm tt") : "N/A")</div>
                                     </div>
                                     <div class="event-details">
-                                        <div class="event-day-of-week mb-1">@events.event_date.Value.ToString("dddd")</div>
+                                        <div class="event-day-of-week mb-1">@events.event_date.Value.ToString("MMMM dddd")</div>
                                         <div class="event-title mb-1">@events.title</div>
                                         <div class="event-description">@events.description</div>
                                     </div>
@@ -197,10 +197,14 @@
                                 {
                                     <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
                                         <div class="event-date me-3 text-center">
+                                            <div class="event-day mb-1" style="color:black; text-shadow">
+                                                @events.event_date.Value.ToString("MMM")
+                                            </div>
                                             <div class="event-day mb-1">
                                                 @(events.event_date.HasValue ? events.event_date.Value.ToString("dd") : "N/A")
                                             </div>                                            
                                             <div class="event-time">@(events.event_date.HasValue ? events.event_date.Value.ToString("hh:mm tt") : "N/A")</div>
+
                                         </div>
                                         <div class="event-details">
                                             <div class="event-day-of-week mb-1">@events.event_date.Value.ToString("dddd")</div>
@@ -330,11 +334,77 @@
                 </div>
             </div>
         }
-                <div id="forums" class="tab-pane">
-                    <h2>Forums</h2>
-                    <p>Discussion forums for the group.</p>
-                </div>
+                        <div id="forums" class="tab-pane container pt--5" style="margin-top:3%;">
+                            <div class="row" style="flex-wrap:nowrap">
+                                <div class="col-md-12">
+                                    
+                                        <div class="post col-md-20">
+                                            <div class="post-interact">
+                                                <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
+                                                <input data-toggle="modal" data-target="#createForumModal" type="text" placeholder="Post Something" class="comment-input">
+                                            </div>
+                                            <div class="post-actions">
+                                                <button data-toggle="modal" data-target="#createForumModal" class="action-button"><span class="input-icon-addon"><i class="fas fa-calendar"></i></span> Create Event</button>
+                                                <button data-toggle="modal" data-target="#createForumModal" class="action-button"><span class="input-icon-addon"><i class="fas fa-video"></i></span> Photo/Video</button>
+                                            </div>
+                                        </div>
+                                    
 
+                                    @foreach (var item in groupView.ForumManage.Where(item => item.groupId == currentGroupId && item.status == 0))
+                                    {
+                                        <div class="post col-md-20">
+
+                                            <div class="post-header">
+                                                @{
+                                                    var user = groupView.UserInformations.FirstOrDefault(u => u.userId == item.createdBy);
+                                                    string profilePicture = user != null && user.Image != null && user.Image.Any()
+                                                                        ? Url.Content("~/UploadedFiles/" + user.Image.FirstOrDefault()?.imageFile)
+                                                                        : Url.Content("~/UploadedFiles/default.png"); // Fallback to default profile picture
+                                                    string fullName = user != null ? $"{user.first_name} {user.last_name}" : "Unknown";
+                                                }
+                                                <img src="@profilePicture" alt="Group Icon" class="group-icon">
+                                                <div class="group-info">
+
+                                                    <div class="group-name" style="color:#000000ad; text-shadow:1px 1px 3px rgb(255 255 255 / 0%);">
+                                                        @fullName
+                                                    </div>
+                                                    @if (item.createdBy == Model.Group.groupAdmin)
+                                                    {
+                                                        <div class="post-time" style="text-shadow:1px 1px 3px rgb(255 255 255 / 0%);">Admin</div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="post-time" style="text-shadow:1px 1px 3px rgb(255 255 255 / 0%);">Member</div>
+
+                                                    }
+                                                </div>
+                                                <div class="post-options">
+                                                    <button class="options-button">...</button>
+                                                    <div class="options-menu">
+                                                        <a href="#">Hide Post</a>
+                                                        <a href="#">Save post</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="post-content">
+                                                <p>@item.content</p>
+                                            </div>
+                                            <div class="post-actions">
+                                                <button class="action-button" onclick="toggleLike(this)"><span class="input-icon-addon"><i class="far fa-heart"></i></span> Like</button>
+                                                <button class="action-button"><span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact</button>
+                                                <button class="action-button"><span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost</button>
+                                            </div>
+                                            <div class="post-interact">
+                                                <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
+                                                <input type="text" placeholder="Interact as @User.Identity.Name" class="comment-input">
+                                            </div>
+                                        </div>
+                                                    }
+                                </div>
+                            </div>
+                        </div>
+     
     @if (currentUserId == Model.Group.groupAdmin)
     {
             <div id="manage" class="tab-pane">
@@ -440,6 +510,41 @@
         </div>
     </div>
 </div>
+
+    <div class="modal fade" id="createForumModal" tabindex="-1" role="dialog" aria-labelledby="createForumModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                @using (Html.BeginForm("Forum", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createForumModal">Create Post</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border:0px; background-color:#00000000">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+
+                        <div class="post-header">
+                            <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
+                            <div class="group-info">
+                                <div class="group-name" style="color:black; text-shadow:1px 1px 3px rgb(255 255 255 / 0%);">@User.Identity.Name</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <input name="content" type="text" placeholder="Start Discussion" style="padding:10px 10px 50% 10px; width:100%; border:0px; border-radius:10px;">
+                        </div>
+                        <input type="hidden" name="groupId" value="@currentGroupId" />
+                        <input type="hidden" name="createdBy" value="@currentUserId" />
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn" value="Post" style="background-color:#cdbb9c; width:100%;" />
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
 
 
 

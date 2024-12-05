@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using FaithConnect.Utils;
 
 namespace FaithConnect.Repository
 {
@@ -18,10 +19,27 @@ namespace FaithConnect.Repository
         {
             return _forumRepository._table.Where(f => f.groupId == groupId).ToList();
         }
-
-        public void AddForum(Forum forum, ref string errorMsg)
+        public ErrorCode AddForum(Forum fo, ref string errorMsg)
         {
-            _forumRepository.Create(forum, out errorMsg);
+            try
+            {
+                fo.forumId = Utilities.gUid;
+                fo.date_created = DateTime.Now;
+                fo.status = 0;
+                return _forumRepository.Create(fo, out errorMsg);
+
+            }
+            catch (Exception ex)
+            {
+                errorMsg = ex.Message;
+                return ErrorCode.Error;
+            }
+        }
+        public List<Forum> GetForumByGroup(int groupId)
+        {
+            return _forumRepository.GetAll()
+                                  .Where(m => m.groupId == groupId && m.status == 0).OrderByDescending(p => p.date_created)
+                                  .ToList(); // Get all group memberships with status = 1
         }
     }
 }

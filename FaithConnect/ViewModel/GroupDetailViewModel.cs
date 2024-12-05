@@ -18,6 +18,7 @@ namespace FaithConnect.ViewModel
         public List<Groups> AllGroups { get; set; } = new List<Groups>(); // Initialize to avoid null
         public List<GroupMembership> GroupMemberships { get; set; } = new List<GroupMembership>(); // Initialize to avoid null
         public List<Post> PostManage { get; set; } = new List<Post>(); // Initialize to avoid null
+        public List<Forum> ForumManage { get; set; } = new List<Forum>();
         public List<GroupMembership> MemberManagements { get; set; } = new List<GroupMembership>(); // Initialize to avoid null
 
         public GroupMembership UserMembership { get; set; }
