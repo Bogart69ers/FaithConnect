@@ -29,11 +29,13 @@ namespace FaithConnect
         public DbSet<Event> Event { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Forum> Forum { get; set; }
+        public DbSet<ForumComments> ForumComments { get; set; }
         public DbSet<GroupMembership> GroupMembership { get; set; }
         public DbSet<Groups> Groups { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Media> Media { get; set; }
         public DbSet<Post> Post { get; set; }
+        public DbSet<PostComments> PostComments { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<Survey> Survey { get; set; }
         public DbSet<UserAccount> UserAccount { get; set; }

@@ -18,8 +18,10 @@ namespace FaithConnect
         {
             this.Event = new HashSet<Event>();
             this.Forum = new HashSet<Forum>();
+            this.ForumComments = new HashSet<ForumComments>();
             this.GroupMembership = new HashSet<GroupMembership>();
             this.Post = new HashSet<Post>();
+            this.PostComments = new HashSet<PostComments>();
         }
     
         public int id { get; set; }
@@ -33,8 +35,10 @@ namespace FaithConnect
     
         public virtual ICollection<Event> Event { get; set; }
         public virtual ICollection<Forum> Forum { get; set; }
+        public virtual ICollection<ForumComments> ForumComments { get; set; }
         public virtual ICollection<GroupMembership> GroupMembership { get; set; }
         public virtual UserAccount UserAccount { get; set; }
         public virtual ICollection<Post> Post { get; set; }
+        public virtual ICollection<PostComments> PostComments { get; set; }
     }
 }

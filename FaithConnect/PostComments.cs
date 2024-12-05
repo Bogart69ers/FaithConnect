@@ -12,26 +12,17 @@ namespace FaithConnect
     using System;
     using System.Collections.Generic;
     
-    public partial class Post
+    public partial class PostComments
     {
-        public Post()
-        {
-            this.Media = new HashSet<Media>();
-            this.PostComments = new HashSet<PostComments>();
-        }
-    
         public int id { get; set; }
-        public string postId { get; set; }
-        public string title { get; set; }
-        public string content { get; set; }
+        public Nullable<int> postId { get; set; }
         public Nullable<int> groupId { get; set; }
-        public Nullable<int> createdBy { get; set; }
+        public Nullable<int> userId { get; set; }
         public Nullable<System.DateTime> date_created { get; set; }
-        public Nullable<int> status { get; set; }
+        public string comment { get; set; }
     
         public virtual Groups Groups { get; set; }
-        public virtual ICollection<Media> Media { get; set; }
+        public virtual Post Post { get; set; }
         public virtual UserAccount UserAccount { get; set; }
-        public virtual ICollection<PostComments> PostComments { get; set; }
     }
 }

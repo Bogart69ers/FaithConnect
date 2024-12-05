@@ -16,6 +16,7 @@ namespace FaithConnect
     {
         public Forum()
         {
+            this.ForumComments = new HashSet<ForumComments>();
             this.Media = new HashSet<Media>();
         }
     
@@ -30,6 +31,7 @@ namespace FaithConnect
     
         public virtual Groups Groups { get; set; }
         public virtual UserAccount UserAccount { get; set; }
+        public virtual ICollection<ForumComments> ForumComments { get; set; }
         public virtual ICollection<Media> Media { get; set; }
     }
 }

@@ -55,6 +55,17 @@
           <Property Name="date_created" Type="datetime" />
           <Property Name="status" Type="int" />
         </EntityType>
+        <EntityType Name="ForumComments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="forumId" Type="int" />
+          <Property Name="groupId" Type="int" />
+          <Property Name="userId" Type="int" />
+          <Property Name="date_created" Type="datetime" />
+          <Property Name="comment" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="GroupMembership">
           <Key>
             <PropertyRef Name="id" />
@@ -113,6 +124,17 @@
           <Property Name="createdBy" Type="int" />
           <Property Name="date_created" Type="datetime" />
           <Property Name="status" Type="int" />
+        </EntityType>
+        <EntityType Name="PostComments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="postId" Type="int" />
+          <Property Name="groupId" Type="int" />
+          <Property Name="userId" Type="int" />
+          <Property Name="date_created" Type="datetime" />
+          <Property Name="comment" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -247,6 +269,44 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ForumComments_Forum">
+          <End Role="Forum" Type="Self.Forum" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ForumComments" Type="Self.ForumComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Forum">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ForumComments">
+              <PropertyRef Name="forumId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ForumComments_Groups">
+          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1" />
+          <End Role="ForumComments" Type="Self.ForumComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Groups">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ForumComments">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ForumComments_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1" />
+          <End Role="ForumComments" Type="Self.ForumComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ForumComments">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_GroupMembership_Groups">
           <End Role="Groups" Type="Self.Groups" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -353,6 +413,44 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PostComments_Groups">
+          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1" />
+          <End Role="PostComments" Type="Self.PostComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Groups">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostComments">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PostComments_Post">
+          <End Role="Post" Type="Self.Post" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PostComments" Type="Self.PostComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Post">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostComments">
+              <PropertyRef Name="postId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PostComments_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1" />
+          <End Role="PostComments" Type="Self.PostComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostComments">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserAccount_Role">
           <End Role="Role" Type="Self.Role" Multiplicity="0..1" />
           <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="*" />
@@ -384,11 +482,13 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           <EntitySet Name="Event" EntityType="Self.Event" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Feedback" EntityType="Self.Feedback" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Forum" EntityType="Self.Forum" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ForumComments" EntityType="Self.ForumComments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GroupMembership" EntityType="Self.GroupMembership" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Groups" EntityType="Self.Groups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Image" EntityType="Self.Image" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Media" EntityType="Self.Media" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PostComments" EntityType="Self.PostComments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserAccount" EntityType="Self.UserAccount" Schema="dbo" store:Type="Tables" />
@@ -424,6 +524,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="Forum" EntitySet="Forum" />
           </AssociationSet>
+          <AssociationSet Name="FK_ForumComments_Forum" Association="Self.FK_ForumComments_Forum">
+            <End Role="Forum" EntitySet="Forum" />
+            <End Role="ForumComments" EntitySet="ForumComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ForumComments_Groups" Association="Self.FK_ForumComments_Groups">
+            <End Role="Groups" EntitySet="Groups" />
+            <End Role="ForumComments" EntitySet="ForumComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ForumComments_UserAccount" Association="Self.FK_ForumComments_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="ForumComments" EntitySet="ForumComments" />
+          </AssociationSet>
           <AssociationSet Name="FK_GroupMembership_Groups" Association="Self.FK_GroupMembership_Groups">
             <End Role="Groups" EntitySet="Groups" />
             <End Role="GroupMembership" EntitySet="GroupMembership" />
@@ -456,6 +568,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="Post" EntitySet="Post" />
           </AssociationSet>
+          <AssociationSet Name="FK_PostComments_Groups" Association="Self.FK_PostComments_Groups">
+            <End Role="Groups" EntitySet="Groups" />
+            <End Role="PostComments" EntitySet="PostComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PostComments_Post" Association="Self.FK_PostComments_Post">
+            <End Role="Post" EntitySet="Post" />
+            <End Role="PostComments" EntitySet="PostComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PostComments_UserAccount" Association="Self.FK_PostComments_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="PostComments" EntitySet="PostComments" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserAccount_Role" Association="Self.FK_UserAccount_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="UserAccount" EntitySet="UserAccount" />
@@ -474,11 +598,13 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySet Name="Event" EntityType="FaithConnectModel.Event" />
           <EntitySet Name="Feedback" EntityType="FaithConnectModel.Feedback" />
           <EntitySet Name="Forum" EntityType="FaithConnectModel.Forum" />
+          <EntitySet Name="ForumComments" EntityType="FaithConnectModel.ForumComments" />
           <EntitySet Name="GroupMembership" EntityType="FaithConnectModel.GroupMembership" />
           <EntitySet Name="Groups" EntityType="FaithConnectModel.Groups" />
           <EntitySet Name="Image" EntityType="FaithConnectModel.Image" />
           <EntitySet Name="Media" EntityType="FaithConnectModel.Media" />
           <EntitySet Name="Post" EntityType="FaithConnectModel.Post" />
+          <EntitySet Name="PostComments" EntityType="FaithConnectModel.PostComments" />
           <EntitySet Name="Role" EntityType="FaithConnectModel.Role" />
           <EntitySet Name="Survey" EntityType="FaithConnectModel.Survey" />
           <EntitySet Name="UserAccount" EntityType="FaithConnectModel.UserAccount" />
@@ -512,9 +638,21 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="Forum" EntitySet="Forum" />
           </AssociationSet>
+          <AssociationSet Name="FK_ForumComments_Forum" Association="FaithConnectModel.FK_ForumComments_Forum">
+            <End Role="Forum" EntitySet="Forum" />
+            <End Role="ForumComments" EntitySet="ForumComments" />
+          </AssociationSet>
           <AssociationSet Name="FK_Media_Forum" Association="FaithConnectModel.FK_Media_Forum">
             <End Role="Forum" EntitySet="Forum" />
             <End Role="Media" EntitySet="Media" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ForumComments_Groups" Association="FaithConnectModel.FK_ForumComments_Groups">
+            <End Role="Groups" EntitySet="Groups" />
+            <End Role="ForumComments" EntitySet="ForumComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ForumComments_UserAccount" Association="FaithConnectModel.FK_ForumComments_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="ForumComments" EntitySet="ForumComments" />
           </AssociationSet>
           <AssociationSet Name="FK_GroupMembership_Groups" Association="FaithConnectModel.FK_GroupMembership_Groups">
             <End Role="Groups" EntitySet="Groups" />
@@ -528,6 +666,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="Groups" EntitySet="Groups" />
             <End Role="Post" EntitySet="Post" />
           </AssociationSet>
+          <AssociationSet Name="FK_PostComments_Groups" Association="FaithConnectModel.FK_PostComments_Groups">
+            <End Role="Groups" EntitySet="Groups" />
+            <End Role="PostComments" EntitySet="PostComments" />
+          </AssociationSet>
           <AssociationSet Name="FK_Image_UserInformation" Association="FaithConnectModel.FK_Image_UserInformation">
             <End Role="UserInformation" EntitySet="UserInformation" />
             <End Role="Image" EntitySet="Image" />
@@ -539,6 +681,14 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_Post_UserAccount" Association="FaithConnectModel.FK_Post_UserAccount">
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="Post" EntitySet="Post" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PostComments_Post" Association="FaithConnectModel.FK_PostComments_Post">
+            <End Role="Post" EntitySet="Post" />
+            <End Role="PostComments" EntitySet="PostComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PostComments_UserAccount" Association="FaithConnectModel.FK_PostComments_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="PostComments" EntitySet="PostComments" />
           </AssociationSet>
           <AssociationSet Name="FK_UserAccount_Role" Association="FaithConnectModel.FK_UserAccount_Role">
             <End Role="Role" EntitySet="Role" />
@@ -606,7 +756,22 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="status" Type="Int32" />
           <NavigationProperty Name="Groups" Relationship="FaithConnectModel.FK_Forum_Groups" FromRole="Forum" ToRole="Groups" />
           <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_Forum_UserAccount" FromRole="Forum" ToRole="UserAccount" />
+          <NavigationProperty Name="ForumComments" Relationship="FaithConnectModel.FK_ForumComments_Forum" FromRole="Forum" ToRole="ForumComments" />
           <NavigationProperty Name="Media" Relationship="FaithConnectModel.FK_Media_Forum" FromRole="Forum" ToRole="Media" />
+        </EntityType>
+        <EntityType Name="ForumComments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="forumId" Type="Int32" />
+          <Property Name="groupId" Type="Int32" />
+          <Property Name="userId" Type="Int32" />
+          <Property Name="date_created" Type="DateTime" Precision="3" />
+          <Property Name="comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Forum" Relationship="FaithConnectModel.FK_ForumComments_Forum" FromRole="ForumComments" ToRole="Forum" />
+          <NavigationProperty Name="Groups" Relationship="FaithConnectModel.FK_ForumComments_Groups" FromRole="ForumComments" ToRole="Groups" />
+          <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_ForumComments_UserAccount" FromRole="ForumComments" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="GroupMembership">
           <Key>
@@ -633,9 +798,11 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="privacy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Event" Relationship="FaithConnectModel.FK_Event_Groups" FromRole="Groups" ToRole="Event" />
           <NavigationProperty Name="Forum" Relationship="FaithConnectModel.FK_Forum_Groups" FromRole="Groups" ToRole="Forum" />
+          <NavigationProperty Name="ForumComments" Relationship="FaithConnectModel.FK_ForumComments_Groups" FromRole="Groups" ToRole="ForumComments" />
           <NavigationProperty Name="GroupMembership" Relationship="FaithConnectModel.FK_GroupMembership_Groups" FromRole="Groups" ToRole="GroupMembership" />
           <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_Groups_UserAccount" FromRole="Groups" ToRole="UserAccount" />
           <NavigationProperty Name="Post" Relationship="FaithConnectModel.FK_Post_Groups" FromRole="Groups" ToRole="Post" />
+          <NavigationProperty Name="PostComments" Relationship="FaithConnectModel.FK_PostComments_Groups" FromRole="Groups" ToRole="PostComments" />
         </EntityType>
         <EntityType Name="Image">
           <Key>
@@ -679,6 +846,21 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Groups" Relationship="FaithConnectModel.FK_Post_Groups" FromRole="Post" ToRole="Groups" />
           <NavigationProperty Name="Media" Relationship="FaithConnectModel.FK_Media_Post" FromRole="Post" ToRole="Media" />
           <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_Post_UserAccount" FromRole="Post" ToRole="UserAccount" />
+          <NavigationProperty Name="PostComments" Relationship="FaithConnectModel.FK_PostComments_Post" FromRole="Post" ToRole="PostComments" />
+        </EntityType>
+        <EntityType Name="PostComments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="postId" Type="Int32" />
+          <Property Name="groupId" Type="Int32" />
+          <Property Name="userId" Type="Int32" />
+          <Property Name="date_created" Type="DateTime" Precision="3" />
+          <Property Name="comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Groups" Relationship="FaithConnectModel.FK_PostComments_Groups" FromRole="PostComments" ToRole="Groups" />
+          <NavigationProperty Name="Post" Relationship="FaithConnectModel.FK_PostComments_Post" FromRole="PostComments" ToRole="Post" />
+          <NavigationProperty Name="UserAccount" Relationship="FaithConnectModel.FK_PostComments_UserAccount" FromRole="PostComments" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -715,8 +897,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Event" Relationship="FaithConnectModel.FK_Event_UserAccount" FromRole="UserAccount" ToRole="Event" />
           <NavigationProperty Name="Feedback" Relationship="FaithConnectModel.FK_Feedback_UserAccount1" FromRole="UserAccount" ToRole="Feedback" />
           <NavigationProperty Name="Forum" Relationship="FaithConnectModel.FK_Forum_UserAccount" FromRole="UserAccount" ToRole="Forum" />
+          <NavigationProperty Name="ForumComments" Relationship="FaithConnectModel.FK_ForumComments_UserAccount" FromRole="UserAccount" ToRole="ForumComments" />
           <NavigationProperty Name="Groups" Relationship="FaithConnectModel.FK_Groups_UserAccount" FromRole="UserAccount" ToRole="Groups" />
           <NavigationProperty Name="Post" Relationship="FaithConnectModel.FK_Post_UserAccount" FromRole="UserAccount" ToRole="Post" />
+          <NavigationProperty Name="PostComments" Relationship="FaithConnectModel.FK_PostComments_UserAccount" FromRole="UserAccount" ToRole="PostComments" />
           <NavigationProperty Name="Role1" Relationship="FaithConnectModel.FK_UserAccount_Role" FromRole="UserAccount" ToRole="Role" />
           <NavigationProperty Name="UserInformation" Relationship="FaithConnectModel.FK_UserInformation_UserAccount" FromRole="UserAccount" ToRole="UserInformation" />
         </EntityType>
@@ -833,6 +1017,20 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ForumComments_Forum">
+          <End Type="FaithConnectModel.Forum" Role="Forum" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="FaithConnectModel.ForumComments" Role="ForumComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Forum">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ForumComments">
+              <PropertyRef Name="forumId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Media_Forum">
           <End Type="FaithConnectModel.Forum" Role="Forum" Multiplicity="0..1" />
           <End Type="FaithConnectModel.Media" Role="Media" Multiplicity="*" />
@@ -842,6 +1040,30 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Principal>
             <Dependent Role="Media">
               <PropertyRef Name="forumId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ForumComments_Groups">
+          <End Type="FaithConnectModel.Groups" Role="Groups" Multiplicity="0..1" />
+          <End Type="FaithConnectModel.ForumComments" Role="ForumComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Groups">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ForumComments">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ForumComments_UserAccount">
+          <End Type="FaithConnectModel.UserAccount" Role="UserAccount" Multiplicity="0..1" />
+          <End Type="FaithConnectModel.ForumComments" Role="ForumComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ForumComments">
+              <PropertyRef Name="userId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -881,6 +1103,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="Post">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PostComments_Groups">
+          <End Type="FaithConnectModel.Groups" Role="Groups" Multiplicity="0..1" />
+          <End Type="FaithConnectModel.PostComments" Role="PostComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Groups">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostComments">
               <PropertyRef Name="groupId" />
             </Dependent>
           </ReferentialConstraint>
@@ -927,6 +1161,32 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PostComments_Post">
+          <End Type="FaithConnectModel.Post" Role="Post" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="FaithConnectModel.PostComments" Role="PostComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Post">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostComments">
+              <PropertyRef Name="postId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PostComments_UserAccount">
+          <End Type="FaithConnectModel.UserAccount" Role="UserAccount" Multiplicity="0..1" />
+          <End Type="FaithConnectModel.PostComments" Role="PostComments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostComments">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserAccount_Role">
           <End Type="FaithConnectModel.Role" Role="Role" Multiplicity="0..1" />
           <End Type="FaithConnectModel.UserAccount" Role="UserAccount" Multiplicity="*" />
@@ -953,7 +1213,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -1008,6 +1268,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="groupId" ColumnName="groupId" />
                 <ScalarProperty Name="content" ColumnName="content" />
                 <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="forumId" ColumnName="forumId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ForumComments">
+            <EntityTypeMapping TypeName="FaithConnectModel.ForumComments">
+              <MappingFragment StoreEntitySet="ForumComments">
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
                 <ScalarProperty Name="forumId" ColumnName="forumId" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
@@ -1072,6 +1344,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="groupId" ColumnName="groupId" />
                 <ScalarProperty Name="content" ColumnName="content" />
                 <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="postId" ColumnName="postId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PostComments">
+            <EntityTypeMapping TypeName="FaithConnectModel.PostComments">
+              <MappingFragment StoreEntitySet="PostComments">
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
                 <ScalarProperty Name="postId" ColumnName="postId" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>

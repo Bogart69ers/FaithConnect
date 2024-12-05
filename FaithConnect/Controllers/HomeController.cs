@@ -18,8 +18,8 @@ namespace FaithConnect.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            var username = User.Identity.Name;
             IsUserLoggedSession();
+            var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var useracc = _AccManager.GetUserByUsername(username);
 
@@ -73,13 +73,6 @@ namespace FaithConnect.Controllers
                     ViewBag.Error = "User not found.";
                     return View();
                 }
-
-                if (user.status != (Int32)Status.Active)
-                {
-                    TempData["username"] = username;
-                    return RedirectToAction("Verify");
-                }
-
                 var info = _AccManager.GetUserInfoByUsername(username);
                 if (info == null)
                 {
@@ -87,12 +80,19 @@ namespace FaithConnect.Controllers
                     return View();
                 }
 
+                if (user.status != (Int32)Status.Active)
+                {
+                    TempData["username"] = username;
+                    return RedirectToAction("Verify");
+                }
                 FormsAuthentication.SetAuthCookie(username, false);
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
+
+               
 
                 if (user.Role1 == null)
                 {
@@ -163,6 +163,7 @@ namespace FaithConnect.Controllers
             _AccManager.UpdateUser(user, ref ErrorMessage);
             _AccManager.UpdateUserInformation(userinfo, ref ErrorMessage);
 
+            FormsAuthentication.SetAuthCookie(username, false);
 
             TempData["SuccessMessage"] = "Account verified successfully.";
             return RedirectToAction("Index");
