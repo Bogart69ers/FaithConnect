@@ -18,14 +18,33 @@ namespace FaithConnect.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            IsUserLoggedSession();
             var username = User.Identity.Name;
-            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var useracc = _AccManager.GetUserByUsername(username);
+            var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var userAccount = _AccManager.GetUserByUsername(username);
+            var posts = _postManager.GetAllPosts();
 
-            ViewBag.CurrentUserId = useracc.id;
+            ViewBag.CurrentUserId = userAccount.id;
 
-            return View(user);
+            var allUsers = _AccManager.GetAllUserInfo();  // Change this method to retrieve UserInformation
+
+            var tagsByPost = new Dictionary<int, List<string>>();
+
+            foreach (var post in posts)
+            {
+                tagsByPost[post.id] = _tagsManager.GetTagsForPost(post.id);
+
+            }
+            var model = new GroupViewModel
+            {
+                UserAcc = userAccount,
+                UserInformation = userInformation,
+                Posts = posts,
+                TagsByPost = tagsByPost,
+                UserInformations = allUsers  // Add the list of all users
+
+            };
+
+            return View(model);
         }
 
         [HttpPost]
@@ -382,12 +401,37 @@ namespace FaithConnect.Controllers
             {
                 UserInformation = userInformation,
                 GroupMemberships = groupMemberships,
-                AllGroups = discoverGroups
+                AllGroups = discoverGroups,
+                Group = groups
             };
 
             return View(model);
         }
 
+
+        [HttpPost]
+        public ActionResult MarkAsGoing(int eventId, int groupId)
+        {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var userId = user.userId;
+            // Check if user already marked "Going" for this event
+
+            var eventAttendance = new EventAttendance
+            {
+                eventId = eventId,
+                groupId = groupId,
+                userId = userId,
+                status = 0,
+            };
+            if(_eventManager.MarkEventAsGoing(eventAttendance, ref ErrorMessage) != ErrorCode.Success)
+            {
+                TempData["ErrorMessage"] = ErrorMessage;
+                return RedirectToAction("#");
+            }
+            TempData["SuccessMessage"] = "Join request sent successfully.";
+            return RedirectToAction("#");
+        }
 
         [HttpPost]
         public ActionResult JoinGroup(int groupId)
@@ -465,7 +509,7 @@ namespace FaithConnect.Controllers
                           Membership = m,
                           User = u
                       }).ToList();
-
+                                             
             var model = new GroupDetailViewModel
             {
                 Group = group,
@@ -584,7 +628,7 @@ namespace FaithConnect.Controllers
         //public ActionResult 
 
         [HttpPost]
-        public ActionResult Post(Post post, int groupId, int createdBy, String content)
+        public ActionResult Post(Post post, int groupId, int createdBy, String content, String tags)
         {
             try
             {
@@ -607,6 +651,16 @@ namespace FaithConnect.Controllers
                     var model = PrepareManageAccountViewModel();
                     return View("ManageGroups", model);
                 }
+
+                if (!string.IsNullOrEmpty(tags))
+                {
+                    var tagManager = new TagsManager();
+                    var tagList = tags.Split(',')
+                                      .Select(t => t.Trim())
+                                      .Where(t => !string.IsNullOrEmpty(t))
+                                      .ToList();
+                    tagManager.AssociateTagsWithPost(post.id, tagList);
+                }
                 TempData["SuccessMessage"] = "Post Uploaded.";
                 return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "contents" });
             }
@@ -618,6 +672,58 @@ namespace FaithConnect.Controllers
             }
 
         }
+
+        [HttpPost]
+        public ActionResult AddComment(int postId, int userId, int groupId, string comment)
+        {
+            if (string.IsNullOrEmpty(comment))
+            {
+                ViewBag.ErrorMessage = "Comment cannot be empty.";
+                return RedirectToAction("Index", new { postId });
+            }
+
+            var comm = new PostComments
+            {
+                postId = postId,
+                userId = userId,
+                groupId = groupId,
+                comment = comment,
+                date_created = DateTime.Now
+            };
+
+            string errorMsg = "";
+            var result = _commentManager.AddComment(comm, ref errorMsg);
+
+            if (result == ErrorCode.Error)
+            {
+                ViewBag.ErrorMessage = "Error adding comment: " + errorMsg;
+            }
+            else
+            {
+                ViewBag.SuccessMessage = "Comment added successfully!";
+            }
+
+            return RedirectToAction("Index", new { postId });
+        }
+
+        // Optional: Action to delete a comment
+        public ActionResult DeleteComment(int commentId, int postId)
+        {
+            string errorMsg = "";
+            var result = _commentManager.DeleteComment(commentId, ref errorMsg);
+
+            if (result == ErrorCode.Error)
+            {
+                ViewBag.ErrorMessage = "Error deleting comment: " + errorMsg;
+            }
+            else
+            {
+                ViewBag.SuccessMessage = "Comment deleted successfully!";
+            }
+
+            return RedirectToAction("PostDetails", new { postId });
+        }
+
         [HttpPost]
         public ActionResult Forum(Forum fo, int groupId, int createdBy, String content)
         {
@@ -641,7 +747,7 @@ namespace FaithConnect.Controllers
                     ModelState.AddModelError(string.Empty, ErrorMessage);
                     var model = PrepareManageAccountViewModel();
                     return View("ManageGroups", model);
-                }
+                }      
                 TempData["SuccessMessage"] = "Post Uploaded.";
                 return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "forums" });
             }
@@ -698,7 +804,7 @@ namespace FaithConnect.Controllers
                 return View("GroupDetail", model);
             }
         }
-
+       
         [HttpPost]
         public ActionResult CreateGroup(Groups group, String privacy, String groupName, String description, int groupAdmin)
         {
@@ -714,7 +820,7 @@ namespace FaithConnect.Controllers
                 }
                 group.privacy = privacy;
                 group.groupAdmin = groupAdmin;
-                group.status = (int)Status.Active;
+                group.status = (int)Status.InActive;
                 group.groupName = groupName;
                 group.description = description;
                 group.groupId = Utilities.gUid;

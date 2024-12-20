@@ -1,23 +1,15 @@
-﻿@model dynamic
+﻿@model FaithConnect.ViewModel.GroupViewModel
 @{
     string profileImage = Url.Content("~/UploadedFiles/default.png");
     string userName = "User";
 
-    if (Model is FaithConnect.UserInformation)
-    {
-        var userInfo = Model as FaithConnect.UserInformation;
-        var images = userInfo.Image.ToList();
-        profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
-        userName = userInfo.first_name + " " + userInfo.last_name;
-    }
-    else if (Model is FaithConnect.ViewModel.GroupViewModel)
-    {
-        var groupViewModel = Model as FaithConnect.ViewModel.GroupViewModel;
-        var userInfo = groupViewModel.UserInformation;
-        var images = userInfo.Image.ToList();
-        profileImage = string.IsNullOrEmpty(images.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
-        userName = userInfo.first_name + " " + userInfo.last_name;
-    }
+    var currentUserId = ViewBag.CurrentUserId;
+    var userInfo = Model.UserInformation;
+    var images = userInfo.Image?.ToList();
+    profileImage = string.IsNullOrEmpty(images?.FirstOrDefault()?.imageFile)
+        ? Url.Content("~/UploadedFiles/default.png")
+        : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
+    userName = userInfo.first_name + " " + userInfo.last_name;
 }
 @{
     ViewBag.Title = "Index";
@@ -27,39 +19,117 @@
 <div class="container mt--5 pt--5">
     <div class="row" style="flex-wrap:nowrap">
         <div class="col-md-8">
-            
-            @for (int i = 0; i <= 100; i++)
+            @if (Model.Posts != null && Model.Posts.Any())
             {
-                <div class="post col-md-20">
-
-                    <div class="post-header">
-                        <img src="path/to/unknown-group-icon.png" alt="Group Icon" class="group-icon">
-                        <div class="group-info">
-                            <div class="group-name">Unknown Group</div>
-                            <div class="post-time">1 min ago</div>
-                        </div>
-                        <div class="post-options">
-                            <button class="options-button">...</button>
-                            <div class="options-menu">
-                                <a href="#">Hide Post</a>
-                                <a href="#">Save post</a>
+                foreach (var post in Model.Posts)
+                {
+                    <div class="post col-md-20">
+                        <!-- Post Header -->
+                        <div class="post-header">
+                            <img src="~/Assets/Groups/img/group1.jpg" alt="Group Icon" class="group-icon">
+                            <div class="group-info">
+                                <div class="group-name">@post.Groups.groupName</div>
+                                <div class="post-time">Posted by @post.UserAccount.username</div>
+                                <div class="post-time">
+                                    @if (post.date_created.HasValue)
+                                    {
+                                        @post.date_created.Value.ToString("MMMM dd, yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span>No date provided</span>
+                                    }
+                                </div>                            
+                            </div>
+                            <div class="post-options">
+                                <button class="options-button">...</button>
+                                <div class="options-menu">
+                                    <a href="#">Hide Post</a>
+                                    <a href="#">Save post</a>
+                                </div>
                             </div>
                         </div>
+                        <!-- Post Content -->
+                        <div class="post-content">
+                            <p>@post.content</p>
+                        </div>
+                        <!-- Tags Section -->
+                        <div>
+                            @{
+                                var tags = ViewBag.TagsByPost != null && ViewBag.TagsByPost.ContainsKey(post.id) ? ViewBag.TagsByPost[post.id] as List<string> : new List<string>();
+
+                                if (tags != null && tags.Count > 0) // Use Count instead of Any
+                                {
+                                    foreach (var tag in tags)
+                                    {
+                                        <span class="badge badge-info" style="margin-right: 5px;" hidden>@tag</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span hidden>No tags</span>
+                                }
+                            }
+                        </div>
+                        <!-- Post Actions -->
+                        <div class="post-actions mt-2">
+                            <button class="action-button" onclick="toggleLike(this)">
+                                <span class="input-icon-addon"><i class="far fa-heart"></i></span> Like
+                            </button>
+                            <button class="action-button">
+                                <span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact
+                            </button>
+                            <button class="action-button">
+                                <span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost
+                            </button>
+                        </div>
+                        <div class="post-comments">
+                            <div class="post-time" style="font-size:13px; font-weight:bold; padding:10px 0 10px 0" >Interactions</div>
+                            @if (post.PostComments != null)
+                            {
+                                foreach (var com in post.PostComments)
+                                {
+                                    string profileImages = Url.Content("~/UploadedFiles/default.png");
+
+                                    var commentUserInfo = Model.UserInformations.FirstOrDefault(u => u.userId == com.userId);
+                                    var image = commentUserInfo.Image?.ToList();
+                                    profileImages = string.IsNullOrEmpty(image?.FirstOrDefault()?.imageFile)
+                                    ? Url.Content("~/UploadedFiles/default.png")
+                                    : Url.Content("~/UploadedFiles/" + image.FirstOrDefault()?.imageFile);
+
+
+                                    <div class="post-header">
+                                        <img src="@profileImages" alt="User Avatar" class="group-icon" style="width: 45px; height: 45px; object-fit: cover;">
+
+                                        <div class="group-info">
+                                            <div class="group-name">@(commentUserInfo != null ? commentUserInfo.first_name + " " + commentUserInfo.last_name : "Unknown User")</div>
+                                            <div class="post-content">@com.comment</div>
+                                        </div>
+                                    </div>
+                                    <br />
+                                 }
+
+                              }
+                              else
+                              {
+                                 <p>No comments yet.</p>
+                              }
+                        </div>
+                        <!-- Interact Input -->
+                        <form action="@Url.Action("AddComment", "Home")" method="post" style="display: inline;">
+                            <div class="post-interact mt-3">
+                                <input type="hidden" name="groupId" value="@post.groupId" />
+                                <input type="hidden" name="postId" value="@post.id" />
+                                <input type="hidden" name="userId" value="@currentUserId" />
+                                <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
+                                <input type="text" name="comment" placeholder="Interact as @userName" class="comment-input">
+                                <button type="submit" class="action-button"><span class="input-icon-addon"><i class="fas fa-paper-plane"></i></span></button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="post-content">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Accusamus minima delectus nemo unde quae recusandae assumenda</p>
-                    </div>
-                    <div class="post-actions">
-                        <button class="action-button" onclick="toggleLike(this)"><span class="input-icon-addon"><i class="far fa-heart"></i></span> Like</button>
-                        <button class="action-button"><span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact</button>
-                        <button class="action-button"><span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost</button>
-                    </div>
-                    <div class="post-interact">
-                        <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
-                        <input type="text" placeholder="Interact as @User.Identity.Name" class="comment-input">
-                    </div>
-                </div>
+               }
             }
+            
         </div>
         <div class="col-lg-4">
             <div class="events-container bg-white p-4 shadow-sm border-rad20" style="position:sticky; top:10%;">
@@ -108,41 +178,6 @@
         </div>
     </div>
 </div>
-
-    <div class="newsfeed">    
-        @for (int i = 0; i <= 100; i++)
-        {
-            <div class="post">
-       
-                <div class="post-header">
-                    <img src="path/to/unknown-group-icon.png" alt="Group Icon" class="group-icon">
-                    <div class="group-info">
-                        <div class="group-name">Unknown Group</div>
-                        <div class="post-time">1 min ago</div>
-                    </div>
-                    <div class="post-options">
-                        <button class="options-button">...</button>
-                        <div class="options-menu">
-                            <a href="#">Hide Post</a>
-                            <a href="#">Save post</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="post-content">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Accusamus minima delectus nemo unde quae recusandae assumenda</p>
-                </div>
-                <div class="post-actions">
-                    <button class="action-button" onclick="toggleLike(this)"><span class="input-icon-addon"><i class="far fa-heart"></i></span> Like</button>
-                    <button class="action-button"><span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact</button>
-                    <button class="action-button"><span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost</button>
-                </div>
-                <div class="post-interact">
-                    <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
-                    <input type="text" placeholder="Interact as @User.Identity.Name" class="comment-input">
-                </div>
-            </div>
-        }
-    </div>
 
 <script>
         function toggleLike(button) {

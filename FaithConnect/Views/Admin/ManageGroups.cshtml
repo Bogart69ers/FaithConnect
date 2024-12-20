@@ -65,7 +65,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var item in Model.Groups)
+                                    @foreach (var item in Model.Groups.Where(m => m.status == 1))
                                     {
                                         <tr>
                                             <td>@Html.DisplayFor(modelItem => item.id)</td>
@@ -87,35 +87,51 @@
                                 </tbody>
                             </table>
                         </div>
+                       
                     </div>
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Spiritual Leader List</div>
+                            <div class="card-title">Pending Group Approval</div>
                         </div>
                         <div class="card-body">
-                          
-                                <table id="userTable" class="table table-striped table-hover">
-                                    <thead>
+                            <table id="groupTable" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Group Name</th>
+                                        <th>Description</th>
+                                        <th>Created By</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Groups.Where(m => m.status == 0))
+                                    {
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Username</th>
-                                            <th>Role</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                @foreach (var item in Model.UserAccounts.Where(u => u.role == 3))
-                                {
-                                            <tr>
-                                                <td>@Html.DisplayFor(modelItem => item.id)</td>
-                                                <td>@Html.DisplayFor(modelItem => item.username)</td>
-                                                <td>Spiritual Leader</td>
-                                            </tr>
-                                }                                  
-                                    </tbody>
-                                </table>
-                                
+                                            <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.groupName)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.description)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.groupAdmin)</td>
+                                            <td>
+                                                <form action="@Url.Action("UpdateUpdateGroupStatus", "Admin")" method="post" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@item.id" />
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-trash"></i> Approve
+                                                    </button>
+                                                </form>
+                                                <form action="@Url.Action("DeleteGroup", new { id = item.id })" method="post" style="display:inline;">
+                                                    <button type="submit" class="btn btn-danger btn-sm">
 
+                                                        <i class="fas fa-trash"></i> reject
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
+
                     </div>
                 </div>
             </div>

@@ -21,7 +21,6 @@ namespace FaithConnect
         public Nullable<System.DateTime> date_created { get; set; }
         public string comment { get; set; }
     
-        public virtual Groups Groups { get; set; }
         public virtual Post Post { get; set; }
         public virtual UserAccount UserAccount { get; set; }
     }

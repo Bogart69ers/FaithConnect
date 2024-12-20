@@ -15,6 +15,8 @@ namespace FaithConnect.Controllers
         public EventManager _eventManager;
         public PostManager _postManager;
         public ForumManager _forumManager;
+        public TagsManager _tagsManager;
+        public CommentManager _commentManager; 
 
 
         public String Username { get { return User.Identity.Name; } }
@@ -29,7 +31,8 @@ namespace FaithConnect.Controllers
             _postManager = new PostManager();
             _eventManager = new EventManager();
             _forumManager = new ForumManager();
-
+            _tagsManager = new TagsManager();
+            _commentManager = new CommentManager();
         }
 
         public void IsUserLoggedSession()

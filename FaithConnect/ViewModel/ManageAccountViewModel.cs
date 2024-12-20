@@ -12,7 +12,11 @@ namespace FaithConnect.Repository
         public List<UserAccount> UserAccounts { get; set; }
         public UserAccount UserAccount { get; set; }
         public Groups Group { get; set; }
+        public List<Event> Events { get; set; }
+
         public IEnumerable<Groups> Groups { get; set; }
+        public IEnumerable<Post> Posts { get; set; }
+
         public IEnumerable<UserAccount> UserAccountIE { get; set; }
 
 

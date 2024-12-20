@@ -47,6 +47,9 @@
                 <button id="myGroupsBtn" class="groups-sidebar-button">
                     <span class="input-icon-addon"><i class="fa fa-users"></i></span> My Groups
                 </button>
+                <button id="PendingApprovalBtn" class="groups-sidebar-button">
+                    <span class="input-icon-addon"><i class="fa fa-users"></i></span> Pending Admin Approval
+                </button>
                 <button id="createGroupBtn" class="groups-sidebar-button">
                     <span class="input-icon-addon"><i class="fa fa-plus-circle"></i></span> Create Group
                 </button>
@@ -56,7 +59,7 @@
             <div id="discoverGroups" class="groups-content active">
                 <h4>Suggested for you</h4>
                 <div class="groups-grid">
-                    @foreach (var group in Model.AllGroups)
+                    @foreach (var group in Model.AllGroups.Where(m => m.status == 1))
                     {
                         var memberCount = Model.GroupMemberships.Count(m => m.groupId == group.id && m.status == 1); // Count members only with joined status
                         <div class="group-card">
@@ -119,6 +122,31 @@
                     </div>
                 </div>
             </div>
+            <div id="PendingApproval" class="groups-content">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>Pending Admin Approval</h4>
+                        <div class="groups-grid">
+                            @foreach (var item in Model.Group.Where(m => m.status == 0 && m.groupAdmin == Model.UserInformation.userId))
+                            {
+                                var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.id && m.status == 1); // Count members only with joined status
+                                <div class="group-card">
+                                    <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                    <div class="group-info">
+                                        <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = item.id })" style="color: black; font-weight: bold; text-decoration: none;">@item.groupName</a></h5>
+                                        <p>Members @memberCount</p>
+                                        <form action="@Url.Action("GroupDetail", "Home", new { groupId = item.id })" method="get">
+                                            <input type="hidden" name="groupId" value="@item.id" />
+                                            <button type="submit" class="btn btn-custom">View Group</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="createGroup" class="groups-content">
                 <h4>Create Group</h4>
                     <div class="card">
@@ -177,7 +205,8 @@
         const myGroups = document.getElementById('myGroups');
         const createGroup = document.getElementById('createGroup');
         const createGroupBtn = document.getElementById('createGroupBtn');
-
+        const PendingApprovalBtn = document.getElementById('PendingApprovalBtn');
+        const PendingApproval = document.getElementById('PendingApproval');
 
 
 
@@ -192,8 +221,8 @@
             discoverGroups.classList.add('active');
             myGroups.classList.remove('active');
             createGroup.classList.remove('active');
-
-
+            PendingApprovalBtn.classList.remove('active');
+            PendingApproval.classList.remove('active');
         });
 
         myGroupsBtn.addEventListener('click', function () {
@@ -203,7 +232,8 @@
             myGroups.classList.add('active');
             discoverGroups.classList.remove('active');
             createGroup.classList.remove('active');
-
+            PendingApprovalBtn.classList.remove('active');
+            PendingApproval.classList.remove('active');
         });
 
         createGroupBtn.addEventListener('click', function () {
@@ -213,6 +243,19 @@
             myGroups.classList.remove('active');
             discoverGroups.classList.remove('active');
             createGroup.classList.add('active');
+            PendingApprovalBtn.classList.remove('active');
+            PendingApproval.classList.remove('active');
+        });
+
+        PendingApprovalBtn.addEventListener('click', function () {
+            myGroupsBtn.classList.remove('active');
+            PendingApprovalBtn.classList.add('active');
+            PendingApproval.classList.add('active');
+            discoverBtn.classList.remove('active');
+            createGroupBtn.classList.remove('active');
+            myGroups.classList.remove('active');
+            discoverGroups.classList.remove('active');
+            createGroup.classList.remove('active');
 
         });
     });

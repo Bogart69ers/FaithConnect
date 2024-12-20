@@ -16,6 +16,7 @@ namespace FaithConnect
     {
         public Event()
         {
+            this.EventAttendance = new HashSet<EventAttendance>();
             this.Feedback = new HashSet<Feedback>();
             this.Media = new HashSet<Media>();
         }
@@ -32,6 +33,7 @@ namespace FaithConnect
     
         public virtual Groups Groups { get; set; }
         public virtual UserAccount UserAccount { get; set; }
+        public virtual ICollection<EventAttendance> EventAttendance { get; set; }
         public virtual ICollection<Feedback> Feedback { get; set; }
         public virtual ICollection<Media> Media { get; set; }
     }

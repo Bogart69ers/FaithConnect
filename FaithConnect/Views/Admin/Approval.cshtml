@@ -8,7 +8,7 @@
 <div class="content">
     <div class="page-inner">
         <div class="page-header">
-            <h4 class="page-title">Content Approval</h4>
+            <h4 class="page-title">Event Approval</h4>
             <ul class="breadcrumbs">
                 <li class="nav-home">
                     <a href="/Admin/AdminDashboard">
@@ -25,7 +25,7 @@
                     <i class="flaticon-right-arrow"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="/Admin/Approval">Content Approval</a>
+                    <a href="/Admin/Approval">Event Approval</a>
                 </li>
             </ul>
         </div>
@@ -35,15 +35,51 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">Pending Content</div>
+                        <div class="card-title">Approved Events</div>
                     </div>
                     <div class="card-body">
                         <table id="contentApprovalTable" class="table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Title</th>
-                                    <th>Author</th>
+                                    <th>Event Title</th>
+                                    <th>Created By</th>
+                                    <th>Date Submitted</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @* Example row, replace with dynamic data *@
+                                @foreach (var item in Model.Events.Where(u => u.status == 1))
+                                {
+
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.title)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.createdBy)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.date_created)</td>
+                                        <td><span class="badge badge-success">Approved</span></td>
+                                        
+                                    </tr>
+                                }
+                                @* Repeat for each pending content *@
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Pending Events</div>
+                    </div>
+                    <div class="card-body">
+                        <table id="contentApprovalTable" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Event Title</th>
+                                    <th>Created By</th>
                                     <th>Date Submitted</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -51,24 +87,34 @@
                             </thead>
                             <tbody>
                                 @* Example row, replace with dynamic data *@
-                                <tr>
-                                    <td>1</td>
-                                    <td>Sample Content Title</td>
-                                    <td>Author Name</td>
-                                    <td>2024-07-22</td>
-                                    <td><span class="badge badge-warning">Pending</span></td>
-                                    <td>
-                                        <a href="/Admin/Approval/Approve/1" class="btn btn-success btn-sm">
-                                            <i class="fas fa-check"></i> Approve
-                                        </a>
-                                        <a href="/Admin/Approval/Reject/1" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-times"></i> Reject
-                                        </a>
-                                        <a href="/Admin/Approval/View/1" class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
-                                    </td>
-                                </tr>
+                                @foreach (var item in Model.Events.Where(u => u.status == 0))
+                                {
+
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.title)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.createdBy)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.date_created)</td>
+                                        <td><span class="badge badge-warning">Pending</span></td>
+                                        <td>
+                                            <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            
+                                            <form action="@Url.Action("UpdateEventStatus", "Admin")" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@item.id" />
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-trash"></i> Approve
+                                                </button>
+                                            </form>
+                                            <form action="@Url.Action("Delete", new { id = item.id })" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Decline
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
                                 @* Repeat for each pending content *@
                             </tbody>
                         </table>

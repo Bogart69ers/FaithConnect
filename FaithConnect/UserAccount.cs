@@ -17,6 +17,7 @@ namespace FaithConnect
         public UserAccount()
         {
             this.Event = new HashSet<Event>();
+            this.EventAttendance = new HashSet<EventAttendance>();
             this.Feedback = new HashSet<Feedback>();
             this.Forum = new HashSet<Forum>();
             this.ForumComments = new HashSet<ForumComments>();
@@ -38,6 +39,7 @@ namespace FaithConnect
         public Nullable<System.DateTime> date_modified { get; set; }
     
         public virtual ICollection<Event> Event { get; set; }
+        public virtual ICollection<EventAttendance> EventAttendance { get; set; }
         public virtual ICollection<Feedback> Feedback { get; set; }
         public virtual ICollection<Forum> Forum { get; set; }
         public virtual ICollection<ForumComments> ForumComments { get; set; }

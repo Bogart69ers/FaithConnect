@@ -72,7 +72,12 @@ namespace FaithConnect.Repository
             return _groupRepo.Get(id);
         }
 
-        
+        public Groups GetGroupByIds(int? id)
+        {
+            return _groupRepo.Get(id);
+        }
+
+
         public ErrorCode CreateGroup(Groups group, ref string errMsg)
         {
             try
@@ -123,6 +128,32 @@ namespace FaithConnect.Repository
                     // Update the membership status
                     membership.status = status;
                     return _membershipRepo.Update(id, membership, out errMsg);
+                }
+                else
+                {
+                    errMsg = "Membership not found.";
+                    return ErrorCode.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log exception if necessary
+                errMsg = ex.Message;
+                return ErrorCode.Error;
+            }
+        }
+        public ErrorCode UpdateGroupStatus (int id, ref string errMsg)
+        {
+            try
+            {
+                // Retrieve the membership record by its ID
+                var group = _groupRepo._table.FirstOrDefault(m => m.id == id);
+
+                if (group != null)
+                {
+                    // Update the membership status
+                    group.status = 1;
+                    return _groupRepo.Update(id, group, out errMsg);
                 }
                 else
                 {

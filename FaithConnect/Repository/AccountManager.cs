@@ -226,5 +226,15 @@ namespace FaithConnect.Repository
 
             return GetUserByUserId(user.id);
         }
+
+        public string GetUserNameById(int? userId)
+        {
+            if (!userId.HasValue)
+            {
+                return "Unknown User"; // Or handle as needed
+            }
+            var user = _userInfo._table.FirstOrDefault(u => u.userId == userId.Value);
+            return user != null ? $"{user.first_name} {user.last_name}" : "Unknown User";
+        }
     }
 }

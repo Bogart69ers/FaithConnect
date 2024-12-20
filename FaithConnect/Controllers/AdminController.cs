@@ -17,12 +17,18 @@ namespace FaithConnect.Controllers
         {
             var username = User.Identity.Name;
             var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-
+            var groups = _groupManager.GetAllGroups();
+            var users = _AccManager.GetAllUsers();
+            var posts = _postManager.GetAllPosts();
             var accounts = _AccManager.GetAllUsers();
+
             var model = new ManageAccountViewModel
             {
                 UserInformation = userInfo,
-                UserAccounts = accounts
+                UserAccounts = accounts,
+                Group = new Groups(),
+                Groups = groups,
+                Posts = posts
             };
 
             return View(model);
@@ -33,10 +39,12 @@ namespace FaithConnect.Controllers
         {
             var username = User.Identity.Name;
             var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var events = _eventManager.GetAllEvents();
 
             var accounts = _AccManager.GetAllUsers();
             var model = new ManageAccountViewModel
             {
+                Events = events,
                 UserInformation = userInfo,
                 UserAccounts = accounts
             };
@@ -297,7 +305,37 @@ namespace FaithConnect.Controllers
             }
             return Json(null, JsonRequestBehavior.AllowGet);
         }
+        
+        [HttpPost]
+        public ActionResult UpdateUpdateGroupStatus(int id)
+        {
+            var result = _groupManager.UpdateGroupStatus(id, ref ErrorMessage);
 
+            if (result == ErrorCode.Success)
+            {
+                return RedirectToAction("ManageGroups");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = ErrorMessage;
+                return View("Error");
+            }
+        }
+        [HttpPost]
+        public ActionResult UpdateEventStatus(int id)
+        {
+            var result = _eventManager.UpdateEventStatus(id, ref ErrorMessage);
+
+            if (result == ErrorCode.Success)
+            {
+                return RedirectToAction("ManageGroups");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = ErrorMessage;
+                return View("Error");
+            }
+        }
 
         [HttpPost]
         public ActionResult Delete(int id)
