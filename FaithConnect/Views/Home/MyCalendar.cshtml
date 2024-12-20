@@ -49,7 +49,7 @@
                     <button id="recentEventsBtn" class="event-button">Recent Events</button>
                 </div>
                 <div id="upcomingEvent">
-                    @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 1 && g.Event.event_date > DateTime.Now).OrderByDescending(g => g.Event.event_date))
+                    @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 0 && g.Event.event_date > DateTime.Now).OrderByDescending(g => g.Event.event_date))
                     {
                         <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
                             <div class="event-date me-3 text-center">
@@ -80,7 +80,7 @@
                     }
                 </div>
                 <div id="recentEvent" class="d-none">
-                @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 1 &&  DateTime.Now > g.Event.event_date).OrderByDescending(g => g.Event.event_date))
+                @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 0 &&  DateTime.Now > g.Event.event_date).OrderByDescending(g => g.Event.event_date))
                 {
                         <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
                             <div class="event-date me-3 text-center">
