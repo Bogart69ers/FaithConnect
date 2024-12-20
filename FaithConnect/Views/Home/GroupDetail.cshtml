@@ -725,10 +725,12 @@
                 <h5 id="eventTitle"></h5>
                 <p id="eventDate"></p>
                 <p id="eventDescription"></p>
+                <input type="hidden" name="eventId" id="eventIdInput" />
+                <input type="hidden" name="groupId" id="groupIdInput" />
+
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn " value="Going" style="background-color:#cdbb9c; width:20%;" />
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         }
@@ -752,11 +754,18 @@
                 const title = this.getAttribute('data-title');
                 const description = this.getAttribute('data-description');
                 const date = this.getAttribute('data-date');
+                const eventId = this.getAttribute('data-eventId');
+                const groupId = this.getAttribute('data-groupId');
+
 
                 // Populate the modal with event data
                 document.getElementById('eventTitle').textContent = title;
                 document.getElementById('eventDescription').textContent = description;
                 document.getElementById('eventDate').textContent = date;
+                document.getElementById('eventIdInput').value = eventId;
+                document.getElementById('groupIdInput').value = groupId;
+
+
             });
         });
     });

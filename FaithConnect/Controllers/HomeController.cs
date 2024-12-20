@@ -22,6 +22,7 @@ namespace FaithConnect.Controllers
             var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var userAccount = _AccManager.GetUserByUsername(username);
             var posts = _postManager.GetAllPosts();
+            var events = _eventManager.GetAllEventAttendance();
 
             ViewBag.CurrentUserId = userAccount.id;
 
@@ -36,6 +37,7 @@ namespace FaithConnect.Controllers
             }
             var model = new GroupViewModel
             {
+                Events = events,
                 UserAcc = userAccount,
                 UserInformation = userInformation,
                 Posts = posts,
@@ -195,12 +197,15 @@ namespace FaithConnect.Controllers
             IsUserLoggedSession();
             var username = User.Identity.Name;
             var userInfo = _AccManager.GetUserInfoByUsername(username);
-            if (userInfo == null)
+            var posts = _postManager.GetAllPosts();
+
+            var model = new GroupViewModel
             {
-                TempData["ErrorMessage"] = "Error retrieving user information.";
-                return RedirectToAction("Index");
-            }
-            return View(userInfo);
+                UserInformation = userInfo,
+                Posts = posts
+            };
+            
+            return View(model);
         }
 
         [HttpPost]
@@ -424,13 +429,30 @@ namespace FaithConnect.Controllers
                 userId = userId,
                 status = 0,
             };
-            if(_eventManager.MarkEventAsGoing(eventAttendance, ref ErrorMessage) != ErrorCode.Success)
+            var result = _eventManager.MarkEventAsGoing(eventAttendance, ref ErrorMessage);
+
+            if (result == ErrorCode.Success)
+            {
+                TempData["SuccessMessage"] = "You have successfully marked yourself as 'Going' for this event.";
+            }
+            else if (result == ErrorCode.AlreadyExists)
+            {
+                TempData["ErrorMessage"] = "You have already marked yourself as 'Going' for this event.";
+            }
+            else
             {
                 TempData["ErrorMessage"] = ErrorMessage;
-                return RedirectToAction("#");
             }
-            TempData["SuccessMessage"] = "Join request sent successfully.";
-            return RedirectToAction("#");
+
+            // Redirect to the referring page
+            var refererUrl = Request.UrlReferrer?.ToString();
+            if (!string.IsNullOrEmpty(refererUrl))
+            {
+                return Redirect(refererUrl); // Explicitly returning RedirectResult
+            }
+
+            // Fallback to Index page if no referrer
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
@@ -600,9 +622,26 @@ namespace FaithConnect.Controllers
         {
             IsUserLoggedSession();
             var username = User.Identity.Name;
-            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var userAccount = _AccManager.GetUserByUsername(username);
+            var posts = _postManager.GetAllPosts();
+            var events = _eventManager.GetAllEventAttendance();
 
-            return View(user);
+            ViewBag.CurrentUserId = userAccount.id;
+
+            var allUsers = _AccManager.GetAllUserInfo();  // Change this method to retrieve UserInformation
+
+            var model = new GroupViewModel
+            {
+                Events = events,
+                UserAcc = userAccount,
+                UserInformation = userInformation,
+                Posts = posts,
+                UserInformations = allUsers  // Add the list of all users
+
+            };
+
+            return View(model);
         }
         [HttpPost]
         public ActionResult MyCalendar(Event ev)

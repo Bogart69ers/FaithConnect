@@ -18,13 +18,25 @@ namespace FaithConnect.Repository
             _eventAtRepository = new BaseRepository<EventAttendance>();
         }
 
+        
         public IEnumerable<Event> GetEventsByGroupId(int groupId)
         {
             return _eventRepository._table.Where(e => e.groupId == groupId).ToList();
         }
+        public IEnumerable<EventAttendance> GetEventAttendanceByUserId(int? userId)
+        {
+            return _eventAtRepository.GetAll().Where(m => m.userId == userId).ToList();
+        }
+ 
+       
+
         public List<Event> GetAllEvents()
         {
             return _eventRepository.GetAll();
+        }
+        public List<EventAttendance> GetAllEventAttendance()
+        {
+            return _eventAtRepository.GetAll();
         }
         public void AddEvent(Event ev, ref string errorMsg)
         {
@@ -53,7 +65,23 @@ namespace FaithConnect.Repository
         {
             try
             {
-                return _eventAtRepository.Create(ev, out errMsg);
+                var existingAttendance = _eventAtRepository._table.FirstOrDefault(a => a.eventId == ev.eventId && a.userId == ev.userId);
+                if(existingAttendance == null)
+                {
+                    return _eventAtRepository.Create(ev, out errMsg);
+
+                }
+                else if (existingAttendance.status == 1)
+                {
+                    errMsg = "You have already marked yourself as 'Going' for this event.";
+                    return ErrorCode.AlreadyExists;
+                }
+                else
+                {
+                    // Update the existing record to mark as "Going"
+                    existingAttendance.status = 1;
+                    return _eventAtRepository.Update(existingAttendance.id, existingAttendance, out errMsg); // Use your repository's Update method
+                }
             }
             catch (Exception ex)
             {

@@ -28,7 +28,9 @@ namespace FaithConnect.Utils
     {
         Success,
         Error,
-        NotFound
+        NotFound,
+        AlreadyExists // For duplicate "Going" requests
+
     }
 
     public enum RoleType

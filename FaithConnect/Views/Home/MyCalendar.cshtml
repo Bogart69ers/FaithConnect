@@ -1,4 +1,16 @@
-﻿@{
+﻿@model FaithConnect.ViewModel.GroupViewModel
+@{
+    string profileImage = Url.Content("~/UploadedFiles/default.png");
+    string userName = "User";
+
+    var currentUserId = ViewBag.CurrentUserId;
+    var userInfo = Model.UserInformation;
+    var images = userInfo.Image?.ToList();
+    profileImage = string.IsNullOrEmpty(images?.FirstOrDefault()?.imageFile)
+        ? Url.Content("~/UploadedFiles/default.png")
+        : Url.Content("~/UploadedFiles/" + images.FirstOrDefault()?.imageFile);
+    userName = userInfo.first_name + " " + userInfo.last_name;
+
     ViewBag.Title = "MyCalendar";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -31,54 +43,176 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="events-container bg-white p-4 shadow-sm border-rad20" >
+            <div class="events-container bg-white p-4 shadow-sm border-rad20">
                 <div class="event-buttons">
-                    <button id="upcomingEventsBtn" class="event-button active">Upcoming Events</button>
+                    <button id="upcomingEventBtn" class="event-button active">Upcoming Events</button>
                     <button id="recentEventsBtn" class="event-button">Recent Events</button>
                 </div>
-                <div id="upcomingEvents">
-                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
-                        <div class="event-date me-3 text-center">
-                            <div class="event-day mb-1">12</div>
-                            <div class="event-time">00:00 PM</div>
+                <div id="upcomingEvent">
+                    @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 1 && g.Event.event_date > DateTime.Now).OrderByDescending(g => g.Event.event_date))
+                    {
+                        <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
+                            <div class="event-date me-3 text-center">
+                                <div class="event-day mb-1" style="color:black;">
+                                    @events.Event.event_date.Value.ToString("MMM")
+                                </div>
+                                <div class="event-day mb-1">
+                                    @(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("dd") : "N/A")
+                                </div>
+                                <div class="event-time">@(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("hh:mm tt") : "N/A")</div>
+
+                            </div>
+                            <div class="event-details">
+                                <div class="event-day-of-week mb-1">@events.Event.event_date.Value.ToString("dddd")</div>
+                                <button class="action-button event-title mb-1"
+                                        data-toggle="modal"
+                                        data-target="#viewEventModal"
+                                        data-title="@events.Event.title"
+                                        data-eventId="@events.Event.id"
+                                        data-groupId="@events.Event.groupId"
+                                        data-description="@events.Event.description"
+                                        data-date="@events.Event.event_date.Value.ToString("MMMM d, yyyy hh:mm tt")">
+                                    @events.Event.title
+                                </button>
+                                <div class="event-description">@events.Event.description</div>
+                            </div>
                         </div>
-                        <div class="event-details">
-                            <div class="event-day-of-week mb-1">Thursday</div>
-                            <div class="event-title mb-1">Prayer Meeting</div>
-                            <div class="event-description">Prayer Meeting with Jesus</div>
-                        </div>
-                    </div>
-                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-13">
-                        <div class="event-date me-3 text-center">
-                            <div class="event-day mb-1">13</div>
-                            <div class="event-time">00:00 PM</div>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-day-of-week mb-1">Tuesday</div>
-                            <div class="event-title mb-1">Prayer Meeting</div>
-                            <div class="event-description">Prayer Meeting with Jesus</div>
-                        </div>
-                    </div>
-                    <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-27">
-                        <div class="event-date me-3 text-center">
-                            <div class="event-day mb-1">27</div>
-                            <div class="event-time">00:00 PM</div>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-day-of-week mb-1">Friday</div>
-                            <div class="event-title mb-1">Prayer Meeting</div>
-                            <div class="event-description">Prayer Meeting with Jesus</div>
-                        </div>
-                    </div>      
+                    }
                 </div>
-                <div id="recentEvents" class="d-none">
-                    <!-- Recent events will be populated similarly to upcoming events -->
+                <div id="recentEvent" class="d-none">
+                @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 1 &&  DateTime.Now > g.Event.event_date).OrderByDescending(g => g.Event.event_date))
+                {
+                        <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
+                            <div class="event-date me-3 text-center">
+                                <div class="event-day mb-1" style="color:black;">
+                                    @events.Event.event_date.Value.ToString("MMM")
+                                </div>
+                                <div class="event-day mb-1">
+                                    @(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("dd") : "N/A")
+                                </div>
+                                <div class="event-time">@(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("hh:mm tt") : "N/A")</div>
+
+                            </div>
+                            <div class="event-details">
+                                <div class="event-day-of-week mb-1">@events.Event.event_date.Value.ToString("dddd")</div>
+                                <button class="action-button event-title mb-1"
+                                        data-toggle="modal"
+                                        data-target="#viewEventModal"
+                                        data-title="@events.Event.title"
+                                        data-eventId="@events.Event.id"
+                                        data-groupId="@events.Event.groupId"
+                                        data-description="@events.Event.description"
+                                        data-date="@events.Event.event_date.Value.ToString("MMMM d, yyyy hh:mm tt")">
+                                    @events.Event.title
+                                </button>
+                                <div class="event-description">@events.Event.description</div>
+                            </div>
+                        </div>
+                    }
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // JavaScript code for calendar functionality and event toggling
+    document.addEventListener("DOMContentLoaded", function () {
+        // Button and section references
+        const upcomingEventBtn = document.getElementById('upcomingEventBtn');
+        const recentEventsBtn = document.getElementById('recentEventsBtn');
+
+        const upcomingEvent = document.getElementById('upcomingEvent');
+        const recentEvent = document.getElementById('recentEvent');
+
+        // Function to reset all buttons and sections
+        function resetActiveStates() {
+            // Remove active class from buttons
+            upcomingEventBtn.classList.remove('active');
+            recentEventsBtn.classList.remove('active');
+
+            // Hide all event sections
+            upcomingEvent.classList.add('d-none');
+            recentEvent.classList.add('d-none');
+        }
+
+        // Event listeners for button clicks
+        upcomingEventBtn.addEventListener('click', function () {
+            resetActiveStates();
+            upcomingEventBtn.classList.add('active');
+            upcomingEvent.classList.remove('d-none');
+        });
+
+        recentEventsBtn.addEventListener('click', function () {
+            resetActiveStates();
+            recentEventsBtn.classList.add('active');
+            recentEvent.classList.remove('d-none');
+        });
+        // Set initial state
+        resetActiveStates();
+        upcomingEventBtn.classList.add('active');
+        upcomingEvent.classList.remove('d-none');
+    });
+
 </script>
+<script >
+    document.addEventListener("DOMContentLoaded", function () {
+    // Initial setup
+    const currentMonthEl = document.getElementById('currentMonth');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+
+    function renderCalendar() {
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const calendarBody = document.querySelector('.calendar-container tbody');
+        const eventDates = Array.from(document.querySelectorAll('.event-item')).map(item => new Date(item.getAttribute('data-date')));
+
+        calendarBody.innerHTML = '';
+        let date = 1;
+
+        for (let i = 0; i < 6; i++) {
+            const row = document.createElement('tr');
+
+            for (let j = 0; j < 7; j++) {
+                const cell = document.createElement('td');
+                if (i === 0 && j < firstDay) {
+                    cell.appendChild(document.createTextNode(''));
+                } else if (date > daysInMonth) {
+                    break;
+                } else {
+                    const span = document.createElement('span');
+                    span.textContent = date;
+                    cell.appendChild(span);
+                    const cellDate = new Date(currentYear, currentMonth, date);
+
+                    if (eventDates.some(eventDate => eventDate.getDate() === date && eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear)) {
+                        cell.classList.add('event-day');
+                    }
+                    date++;
+                }
+                row.appendChild(cell);
+            }
+            calendarBody.appendChild(row);
+        }
+        currentMonthEl.textContent = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
+    }
+
+    prevMonthBtn.addEventListener('click', function () {
+        currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        currentYear = currentMonth === 11 ? currentYear - 1 : currentYear;
+        renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener('click', function () {
+        currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+        currentYear = currentMonth === 0 ? currentYear + 1 : currentYear;
+        renderCalendar();
+    });
+    renderCalendar();
+});</script>
+
