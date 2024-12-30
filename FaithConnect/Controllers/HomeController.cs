@@ -15,6 +15,8 @@ namespace FaithConnect.Controllers
     [Authorize(Roles = "Admin, User, Spiritual Leader")]
     public class HomeController : BaseController
     {
+       
+
         [Authorize]
         public ActionResult Index()
         {
@@ -60,6 +62,17 @@ namespace FaithConnect.Controllers
             }
             return RedirectToAction("Index");
 
+        }
+        [HttpGet]
+        public JsonResult GetUnreadNotificationCount()
+        {
+            var username = User.Identity.Name;
+            var userAccount = _AccManager.GetUserByUsername(username);
+            var notifications = _NotificationManager.GetNotificationsByUserId(userAccount.id);
+
+            var unreadCount = notifications.Count(n => n.isRead == false);
+
+            return Json(new { unreadCount }, JsonRequestBehavior.AllowGet);
         }
 
         [AllowAnonymous]
@@ -199,9 +212,12 @@ namespace FaithConnect.Controllers
             var userInfo = _AccManager.GetUserInfoByUsername(username);
             var posts = _postManager.GetAllPosts();
 
+            var allUsers = _AccManager.GetAllUserInfo();  // Change this method to retrieve UserInformation
+
             var model = new GroupViewModel
             {
                 UserInformation = userInfo,
+                UserInformations = allUsers,
                 Posts = posts
             };
             
@@ -209,16 +225,21 @@ namespace FaithConnect.Controllers
         }
 
         [HttpPost]
-        public ActionResult MyProfile(UserInformation userInf, HttpPostedFileBase profilePicture, HttpPostedFileBase coverPhoto)
+        public ActionResult MyProfile(UserInformation userInf, string religion, string address, string lastname, string phone, string email, string firstname, string bio, HttpPostedFileBase profilePicture, HttpPostedFileBase coverPhoto)
         {
             IsUserLoggedSession();
             if (ModelState.IsValid)
             {
-                var user = _AccManager.GetUserByUserId((Int32)userInf.userId);
+                var username = User.Identity.Name;
+                var userInfo = _AccManager.GetUserInfoByUsername(username);
+
+
+                var user = _AccManager.GetUserByUserId((Int32)userInfo.userId);
                 if (user == null)
                 {
-                    TempData["ErrorMessage"] = "Error updating profile: User not found.";
-                    return View(userInf);
+                    TempData["ErrorMessage"] = "Error updating profile: User not found.";               
+                    return View(user);
+
                 }
 
                 // Handle profile picture upload
@@ -232,7 +253,7 @@ namespace FaithConnect.Controllers
                     var profileSavePath = Path.Combine(uploadsFolderPath, profileFileName);
                     profilePicture.SaveAs(profileSavePath);
 
-                    var existingImage = _imgMgr.ListImgAttachByUserId(userInf.id).FirstOrDefault();
+                    var existingImage = _imgMgr.ListImgAttachByUserId(userInfo.id).FirstOrDefault();
                     if (existingImage != null)
                     {
                         existingImage.imageFile = profileFileName;
@@ -247,7 +268,7 @@ namespace FaithConnect.Controllers
                         Image img = new Image
                         {
                             imageFile = profileFileName,
-                            userId = userInf.id
+                            userId = userInfo.id
                         };
 
                         if (_imgMgr.CreateImg(img, ref ErrorMessage) == ErrorCode.Error)
@@ -269,7 +290,7 @@ namespace FaithConnect.Controllers
                     var coverSavePath = Path.Combine(uploadsFolderPath, coverFileName);
                     coverPhoto.SaveAs(coverSavePath);
 
-                    var existingImage = _imgMgr.ListImgAttachByUserId(userInf.id).FirstOrDefault();
+                    var existingImage = _imgMgr.ListImgAttachByUserId(userInfo.id).FirstOrDefault();
                     if (existingImage != null)
                     {
                         existingImage.coverPhoto = coverFileName;
@@ -284,7 +305,7 @@ namespace FaithConnect.Controllers
                         Image img = new Image
                         {
                             coverPhoto = coverFileName,
-                            userId = userInf.id
+                            userId = userInfo.id
                         };
 
                         if (_imgMgr.CreateImg(img, ref ErrorMessage) == ErrorCode.Error)
@@ -295,7 +316,21 @@ namespace FaithConnect.Controllers
                     }
                 }
 
-                if (_AccManager.UpdateUserInformation(userInf, ref ErrorMessage) == ErrorCode.Error)
+                UserInformation inf = new UserInformation
+                {                     
+                    id = userInfo.id,
+                    userId = userInfo.userId,
+                    date_created = userInfo.date_created,
+                    status = userInfo.status,
+                    religion = userInfo.religion,
+                    first_name = firstname,
+                    last_name = lastname,
+                    email = email,
+                    phone = phone,
+                    address = address,
+                    bio = bio
+                };
+                if (_AccManager.UpdateUserInformation(inf, ref ErrorMessage) == ErrorCode.Error)
                 {
                     ModelState.AddModelError(String.Empty, ErrorMessage);
                     return View(userInf);
@@ -318,7 +353,7 @@ namespace FaithConnect.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult SignUp(UserInformation ui, UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address)
+        public ActionResult SignUp(UserInformation ui, UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address, string religion)
         {
             try
             {
@@ -346,7 +381,7 @@ namespace FaithConnect.Controllers
                     return View(ua);
                 }
 
-                var userInfo = _AccManager.UserInfoSignup(ua.username,firstname,lastname,phone,address, ref ErrorMessage);
+                var userInfo = _AccManager.UserInfoSignup(ua.username,firstname,lastname,phone,address,religion, ref ErrorMessage);
 
 
                 var user = _AccManager.GetUserByEmail(ua.email);
@@ -388,6 +423,7 @@ namespace FaithConnect.Controllers
             var groups = _groupManager.GetAllGroups();
             var accounts = _AccManager.GetAllUsers();
 
+
             if (userInformation == null)
             {
                 TempData["ErrorMessage"] = ErrorMessage;
@@ -427,7 +463,7 @@ namespace FaithConnect.Controllers
                 eventId = eventId,
                 groupId = groupId,
                 userId = userId,
-                status = 0,
+                status = 1,
             };
             var result = _eventManager.MarkEventAsGoing(eventAttendance, ref ErrorMessage);
 
@@ -455,11 +491,18 @@ namespace FaithConnect.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+       
         [HttpPost]
         public ActionResult JoinGroup(int groupId)
         {
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction("Group");
+            }
+
             var membership = new GroupMembership
             {
                 groupId = groupId,
@@ -474,6 +517,37 @@ namespace FaithConnect.Controllers
                 return RedirectToAction("Group");
             }
 
+            var group = _groupManager.GetGroupById(groupId);
+            if (group == null)
+            {
+                TempData["ErrorMessage"] = "Group not found.";
+                return RedirectToAction("Group");
+            }
+
+            var adminUserId = group.groupAdmin;
+
+
+            string requestMessage = $"{user.first_name} has requested to join your group '{group.groupName}'.";
+
+            // 5) Create & save notification for the group's admin
+            var newNotification = new Notification
+            {
+                userId = adminUserId,  // recipient is the admin
+                message = requestMessage,
+                isRead = false,
+                date = DateTime.Now, // or CreatedAt, etc.
+                userIdfrom = user.id
+            };
+
+            string notifErrorMsg;
+            var notifResult = _NotificationManager.CreateNotification(newNotification, out notifErrorMsg);
+            if (notifResult == ErrorCode.Error)
+            {
+                // handle error if needed
+                TempData["ErrorMessage"] = notifErrorMsg;
+            }
+
+            // 6) Provide user feedback
             TempData["SuccessMessage"] = "Join request sent successfully.";
             return RedirectToAction("Group");
         }
@@ -554,14 +628,108 @@ namespace FaithConnect.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult ChangeGroupPhoto(int groupId, string groupName, string description, HttpPostedFileBase coverPhoto)
+        {
+            IsUserLoggedSession();
+
+            if (ModelState.IsValid)
+            {
+                var group = _groupManager.GetGroupById(groupId);
+                if (group == null)
+                {
+                    TempData["ErrorMessage"] = "Error updating profile: User not found.";
+                    return RedirectToAction("GroupDetail", new { groupId });
+                }
+
+                group.groupName = groupName;
+                group.description = description;
+
+
+                // Handle cover photo upload
+                if (coverPhoto != null && coverPhoto.ContentLength > 0)
+                {
+                    var uploadsFolderPath = Server.MapPath("~/UploadedFiles/");
+                    if (!Directory.Exists(uploadsFolderPath))
+                        Directory.CreateDirectory(uploadsFolderPath);
+
+                    var coverFileName = Path.GetFileName(coverPhoto.FileName);
+                    var coverSavePath = Path.Combine(uploadsFolderPath, coverFileName);
+                    coverPhoto.SaveAs(coverSavePath);
+
+                    var existingImage = _imgMgr.ListImgAttachByGroupId(groupId).FirstOrDefault();
+                    if (existingImage != null)
+                    {
+                        existingImage.coverPhoto = coverFileName;
+                        if (_imgMgr.UpdateGroupImg(existingImage, ref ErrorMessage) == ErrorCode.Error)
+                        {
+                            TempData["ErrorMessage"] = ErrorMessage;
+                            return RedirectToAction("GroupDetail", new { groupId });
+                        }
+                    }
+                    else
+                    {
+                        GroupImage img = new GroupImage
+                        {
+                            coverPhoto = coverFileName,
+                            groupId = groupId
+                        };
+
+                        if (_imgMgr.CreateGroupImg(img, ref ErrorMessage) == ErrorCode.Error)
+                        {
+                            TempData["ErrorMessage"] = ErrorMessage;
+                            return RedirectToAction("GroupDetail", new { groupId });
+                        }
+                    }
+                }
+
+                if (_groupManager.UpdateGroup(group, ref ErrorMessage) == ErrorCode.Error)
+                {
+                    TempData["ErrorMessage"] = ErrorMessage;
+                    return RedirectToAction("GroupDetail", new { groupId });
+                }
+
+                TempData["SuccessMessage"] = "Profile updated successfully.";
+                return RedirectToAction("GroupDetail", new { groupId });
+            }
+
+            TempData["ErrorMessage"] = "Validation failed. Please check your input.";
+            return RedirectToAction("GroupDetail", new { groupId });
+        }
+
+
 
         [HttpPost]
-        public ActionResult UpdateMembershipStatus(int id, int status, int groupId)
+        public ActionResult UpdateMembershipStatus(int userId,int id, int status, int groupId)
         {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var group = _groupManager.GetGroupById(groupId);
             var result = _groupManager.UpdateMembershipStatus(id, groupId, status, ref ErrorMessage);
+            var userInfo = _AccManager.GetUserInfoById(userId);
 
             if (result == ErrorCode.Success)
             {
+                string requestMessage = $"Admin has Approved your request to join '{group.groupName}'.";
+
+                // 5) Create & save notification for the group's admin
+                var newNotification = new Notification
+                {
+                    userId = userInfo.userId,  // recipient is the admin
+                    message = requestMessage,
+                    isRead = false,
+                    date = DateTime.Now, // or CreatedAt, etc.
+                    userIdfrom = user.id
+                };
+
+                string notifErrorMsg;
+                var notifResult = _NotificationManager.CreateNotification(newNotification, out notifErrorMsg);
+                if (notifResult == ErrorCode.Error)
+                {
+                    // handle error if needed
+                    TempData["ErrorMessage"] = notifErrorMsg;
+                }
+
                 return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "manage" });
             }
             else
@@ -569,6 +737,7 @@ namespace FaithConnect.Controllers
                 ViewBag.ErrorMessage = ErrorMessage;
                 return View("Error");
             }
+
         }
 
 

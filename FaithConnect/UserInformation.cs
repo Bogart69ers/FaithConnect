@@ -17,6 +17,7 @@ namespace FaithConnect
         public UserInformation()
         {
             this.Image = new HashSet<Image>();
+            this.Notification = new HashSet<Notification>();
         }
     
         public int id { get; set; }
@@ -29,8 +30,10 @@ namespace FaithConnect
         public Nullable<int> status { get; set; }
         public string bio { get; set; }
         public Nullable<System.DateTime> date_created { get; set; }
+        public string religion { get; set; }
     
         public virtual ICollection<Image> Image { get; set; }
+        public virtual ICollection<Notification> Notification { get; set; }
         public virtual UserAccount UserAccount { get; set; }
     }
 }

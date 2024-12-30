@@ -31,10 +31,12 @@ namespace FaithConnect
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Forum> Forum { get; set; }
         public DbSet<ForumComments> ForumComments { get; set; }
+        public DbSet<GroupImage> GroupImage { get; set; }
         public DbSet<GroupMembership> GroupMembership { get; set; }
         public DbSet<Groups> Groups { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Media> Media { get; set; }
+        public DbSet<Notification> Notification { get; set; }
         public DbSet<Post> Post { get; set; }
         public DbSet<PostComments> PostComments { get; set; }
         public DbSet<PostTags> PostTags { get; set; }

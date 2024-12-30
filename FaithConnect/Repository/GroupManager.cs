@@ -15,7 +15,18 @@ namespace FaithConnect.Repository
             _groupRepo = new BaseRepository<Groups>();
             _membershipRepo = new BaseRepository<GroupMembership>();
         }
-
+        public ErrorCode UpdateGroup(Groups group, ref string errMsg)
+        {
+            try
+            {
+                return _groupRepo.Update(group.id ,group, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+                return ErrorCode.Error;
+            }
+        }
         public List<Groups> GetAllGroups()
         {
             return _groupRepo.GetAll();
@@ -75,6 +86,11 @@ namespace FaithConnect.Repository
         public Groups GetGroupByIds(int? id)
         {
             return _groupRepo.Get(id);
+        }
+
+        public List<Groups> GetGroupByGroupId(int groupId)
+        {
+            return _groupRepo._table.Where(m => m.id == groupId).ToList();
         }
 
 

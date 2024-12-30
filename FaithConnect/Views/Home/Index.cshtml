@@ -15,7 +15,61 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
 
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 35%;
+    }
+
+    .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 25px;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .event-day {
+        cursor: pointer;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .tooltip {
+        position: absolute;
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1050;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
 <div class="container mt--5 pt--5">
     <div class="row" style="flex-wrap:nowrap">
         <div class="col-md-8">
@@ -137,9 +191,9 @@
                     <button id="upcomingEventsBtn" class="event-button active">Upcoming Events</button>
                 </div>
                 <div id="upcomingEvent">
-                    @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 0 && g.Event.event_date > DateTime.Now).OrderByDescending(g => g.Event.event_date))
+                    @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 1 && g.Event.event_date > DateTime.Now).OrderByDescending(g => g.Event.event_date))
                     {
-                        <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="2024-07-12">
+                        <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="@events.Event.event_date.Value.ToString("yyyy-MM-dd")">
                             <div class="event-date me-3 text-center">
                                 <div class="event-day mb-1" style="color:black;">
                                     @events.Event.event_date.Value.ToString("MMM")
@@ -148,18 +202,16 @@
                                     @(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("dd") : "N/A")
                                 </div>
                                 <div class="event-time">@(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("hh:mm tt") : "N/A")</div>
-
                             </div>
                             <div class="event-details">
                                 <div class="event-day-of-week mb-1">@events.Event.event_date.Value.ToString("dddd")</div>
                                 <button class="action-button event-title mb-1"
-                                        data-toggle="modal"
-                                        data-target="#viewEventModal"
                                         data-title="@events.Event.title"
                                         data-eventId="@events.Event.id"
                                         data-groupId="@events.Event.groupId"
                                         data-description="@events.Event.description"
-                                        data-date="@events.Event.event_date.Value.ToString("MMMM d, yyyy hh:mm tt")">
+                                        data-time="@(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("hh:mm tt") : "N/A")"
+                                        data-date="@events.Event.event_date.Value.ToString("MMMM d, yyyy")">
                                     @events.Event.title
                                 </button>
                                 <div class="event-description">@events.Event.description</div>
@@ -173,6 +225,16 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h3 id="eventTitle"></h3>
+        <p id="eventDate"></p> <!-- Placeholder for event date -->
+        <p id="eventTime"></p> <!-- Placeholder for event time -->
+        <p id="eventDescription"></p>
     </div>
 </div>
 
@@ -191,4 +253,153 @@
                 button.innerHTML = '<span class="input-icon-addon"><i class="fas fa-heart"></i></span> Liked';
             }
         }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Button and section references
+        const upcomingEventBtn = document.getElementById('upcomingEventBtn');
+        const recentEventsBtn = document.getElementById('recentEventsBtn');
+        const upcomingEvent = document.getElementById('upcomingEvent');
+        const recentEvent = document.getElementById('recentEvent');
+
+        function resetActiveStates() {
+            upcomingEventBtn.classList.remove('active');
+            recentEventsBtn.classList.remove('active');
+            upcomingEvent.classList.add('d-none');
+            recentEvent.classList.add('d-none');
+        }
+
+        upcomingEventBtn.addEventListener('click', function () {
+            resetActiveStates();
+            upcomingEventBtn.classList.add('active');
+            upcomingEvent.classList.remove('d-none');
+        });
+
+        recentEventsBtn.addEventListener('click', function () {
+            resetActiveStates();
+            recentEventsBtn.classList.add('active');
+            recentEvent.classList.remove('d-none');
+        });
+
+        resetActiveStates();
+        upcomingEventBtn.classList.add('active');
+        upcomingEvent.classList.remove('d-none');
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentMonthEl = document.getElementById('currentMonth');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        function renderCalendar() {
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const calendarBody = document.querySelector('.calendar-container tbody');
+            const eventItems = Array.from(document.querySelectorAll('.event-item'));
+            const eventDetails = eventItems.map(item => ({
+                date: new Date(item.getAttribute('data-date')),
+                title: item.querySelector('.event-title').textContent,
+                description: item.querySelector('.event-description').textContent
+            }));
+
+            calendarBody.innerHTML = '';
+            let date = 1;
+
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+                    if (i === 0 && j < firstDay) {
+                        cell.appendChild(document.createTextNode(''));
+                    } else if (date > daysInMonth) {
+                        break;
+                    } else {
+                        const span = document.createElement('span');
+                        span.textContent = date;
+                        const cellDate = new Date(currentYear, currentMonth, date);
+                        const event = eventDetails.find(event =>
+                            event.date.getDate() === date &&
+                            event.date.getMonth() === currentMonth &&
+                            event.date.getFullYear() === currentYear
+                        );
+
+                        if (event) {
+                            cell.classList.add('event-day');
+                            cell.setAttribute('data-title', event.title);
+                            cell.setAttribute('data-description', event.description);
+
+                            // Add event for showing tooltip
+                            cell.addEventListener('click', function () {
+                                eventTitle.textContent = event.title;
+                                eventDate.textContent = `Date: ${event.date.toLocaleDateString()}`;
+                                eventTime.textContent = `Time: ${event.eventTime}`;
+                                eventDescription.textContent = event.description;
+                                eventModal.style.display = 'block';
+                            });
+
+                            cell.addEventListener('mouseout', function () {
+                                const tooltip = document.getElementById('tooltip');
+                                tooltip.style.display = 'none';
+                            });
+                        }
+
+                        cell.appendChild(span);
+                        row.appendChild(cell);
+                        date++;
+                    }
+                }
+                calendarBody.appendChild(row);
+            }
+            currentMonthEl.textContent = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
+        }
+
+        prevMonthBtn.addEventListener('click', function () {
+            currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            currentYear = currentMonth === 11 ? currentYear - 1 : currentYear;
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', function () {
+            currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+            currentYear = currentMonth === 0 ? currentYear + 1 : currentYear;
+            renderCalendar();
+        });
+
+        renderCalendar();
+    });
+
+    const modal = document.getElementById('eventModal');
+    const closeModal = document.getElementById('closeModal');
+
+    document.querySelectorAll('.event-title').forEach(button => {
+        button.addEventListener('click', function () {
+            const title = this.getAttribute('data-title');
+            const description = this.getAttribute('data-description');
+            const eventDate = this.getAttribute('data-date');  // Get event date from data attribute
+            const eventTime = this.getAttribute('data-time');  // Get event time from data attribute
+
+            // Update modal content
+            document.getElementById('eventTitle').textContent = title;
+            document.getElementById('eventDescription').textContent = description;
+            document.getElementById('eventDate').textContent = `Date: ${eventDate}`;  // Set event date in modal
+            document.getElementById('eventTime').textContent = `Time: ${eventTime}`;  // Set event time in modal
+
+            // Show the modal
+            document.getElementById('eventModal').style.display = 'block';
+        });
+    });
+
+    closeModal.addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
 </script>

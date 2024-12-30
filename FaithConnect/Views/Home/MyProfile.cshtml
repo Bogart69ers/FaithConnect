@@ -147,10 +147,7 @@
                                     </button>
                                     <button class="action-button">
                                         <span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact
-                                    </button>
-                                    <button class="action-button">
-                                        <span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost
-                                    </button>
+                                    </button>                                   
                                 </div>
                                 <div class="post-comments">
                                     <div class="post-time" style="font-size:13px; font-weight:bold; padding:10px 0 10px 0">Interactions</div>
@@ -226,6 +223,10 @@
                         @Html.HiddenFor(model => model.UserInformation.userId)
                         @Html.HiddenFor(model => model.UserInformation.date_created)
                         @Html.HiddenFor(model => model.UserInformation.status)
+                        @Html.HiddenFor(model => model.UserInformation.religion)
+                        <input type="hidden" name="religion" value="@Model.UserInformation.religion" class="form-control">
+
+
 
                         <div class="form-group text-center">
                             <label for="profilePicture">Profile Picture</label>
@@ -244,32 +245,32 @@
                        
                         <div class="form-group">
                             <label for="firstname">First Name</label>
-                            @Html.EditorFor(model => model.UserInformation.first_name, new { htmlAttributes = new { @class = "form-control", placeholder = @Model.UserInformation.first_name, required = "required" } })
+                            <input type="text" name="firstname" value="@Model.UserInformation.first_name" class="form-control">
                             @Html.ValidationMessageFor(model => model.UserInformation.first_name, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label for="lastname">Last Name</label>
-                            @Html.EditorFor(model => model.UserInformation.last_name, new { htmlAttributes = new { @class = "form-control", placeholder = @Model.UserInformation.last_name, required = "required" } })
+                            <input type="text" name="lastname" value="@Model.UserInformation.last_name" class="form-control">
                             @Html.ValidationMessageFor(model => model.UserInformation.last_name, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone</label>
-                            @Html.EditorFor(model => model.UserInformation.phone, new { htmlAttributes = new { @class = "form-control", placeholder = @Model.UserInformation.phone, required = "required" } })
+                            <input type="text" name="phone" value="@Model.UserInformation.phone"  class="form-control">
                             @Html.ValidationMessageFor(model => model.UserInformation.phone, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            @Html.EditorFor(model => model.UserInformation.email, new { htmlAttributes = new { @class = "form-control", placeholder = @Model.UserInformation.email, required = "required", @readonly = "readonly" } })
+                            <input type="text" name="email" value="@Model.UserInformation.email" class="form-control">
                             @Html.ValidationMessageFor(model => model.UserInformation.email, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label for="bio">Bio</label>
-                            @Html.EditorFor(model => model.UserInformation.bio, new { htmlAttributes = new { @class = "form-control", placeholder = @Model.UserInformation.bio, required = "required" } })
+                            <input type="text" name="bio" placeholder="Enter bio" class="form-control">
                             @Html.ValidationMessageFor(model => model.UserInformation.bio, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
-                            <label for="location">Location</label>
-                            @Html.EditorFor(model => model.UserInformation.address, new { htmlAttributes = new { @class = "form-control", placeholder = @Model.UserInformation.address, required = "required" } })
+                            <label for="address">Address</label>
+                            <input type="text" name="address" value="@Model.UserInformation.address" class="form-control">
                             @Html.ValidationMessageFor(model => model.UserInformation.address, "", new { @class = "text-danger" })
                         </div>
                     </div>

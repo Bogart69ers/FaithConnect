@@ -19,10 +19,10 @@
         userName = userInfo.first_name + " " + userInfo.last_name;
     }
 
+}
+@{ 
     ViewBag.Title = Model.Group.groupName;
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-
 }
 
 <link rel="stylesheet" href="~/Assets/Groups/css/GroupDetail.css" />
@@ -37,7 +37,11 @@
         <div class="col-12">
             <!-- Group Banner Section -->
             <div class="group-header" >
-                <img src="~/Assets/Groups/img/group1.jpg" alt="Group Header" class="img-fluid group-banner">
+                @{
+                    string coverImage = string.IsNullOrEmpty(groupView.Group.GroupImage?.FirstOrDefault()?.coverPhoto)
+                                        ? Url.Content("~/UploadedFiles/default-cover.jpg")
+                                        : Url.Content("~/UploadedFiles/" + groupView.Group.GroupImage.FirstOrDefault()?.coverPhoto);                }
+                <img src="@coverImage" alt="Group Header" class="img-fluid group-banner">
                 <div class="group-info" style="position: absolute; bottom: 30px; left: 30px;">
                     <h2>@Model.Group.groupName</h2>
                     
@@ -58,7 +62,7 @@
                     <!-- If the logged-in user is the group admin, show the "Edit Group" button -->
                     @if (Model.Group.groupAdmin == currentUserId)
                     {
-                        <a href="@Url.Action("EditGroup", "Group", new { id = Model.Group.id })" class="btn btn-custom">Edit Group</a>
+                        <button class="btn btn-custom" data-toggle="modal" data-target="#editGroupProfileModal">Edit Group</button>
                     }
                     else if (groupView.GroupMemberships.Any(m => m.userId == currentUserInfoId && m.status == 1))
                     {
@@ -343,7 +347,7 @@
                                     </div>
                                     <div class="form-group mt-3">
                                         <label>Start Time</label>
-                                        <input type="time" name="event_time" class="form-control">
+                                        <input type="time" name="event_time" class="form-control">                                   
                                     </div>
                                     <div class="form-group mt-3">
                                         <textarea class="form-control" name="description" placeholder="Event / Meeting Details"></textarea>
@@ -605,6 +609,7 @@
 
                                                         <form action="@Url.Action("UpdateMembershipStatus", "Home")" method="post" style="display: inline;">
                                                             <input type="hidden" name="groupId" value="@item.groupId" />
+                                                            <input type="hidden" name="userId" value="@item.userId" />
                                                             <input type="hidden" name="id" value="@item.id" />
                                                             <input type="hidden" name="status" value="1" />
                                                             <button type="submit" class="btn btn-success btn-sm">
@@ -614,6 +619,7 @@
 
                                                         <form action="@Url.Action("UpdateMembershipStatus", "Home")" method="post" style="display: inline;">
                                                             <input type="hidden" name="groupId" value="@item.groupId" />
+                                                            <input type="hidden" name="userId" value="@item.userId" />
                                                             <input type="hidden" name="id" value="@item.id" />
                                                             <input type="hidden" name="status" value="2" />
                                                             <button type="submit" class="btn btn-danger btn-sm">
@@ -738,6 +744,52 @@
     </div>
 </div>
 
+<div class="modal fade" id="editGroupProfileModal" tabindex="-1" role="dialog" aria-labelledby="editGroupProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            @using (Html.BeginForm("ChangeGroupPhoto", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editGroupProfileModalLabel">Edit Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="groupId" value="@currentGroupId" />
+                       
+                        <div class="form-group text-center">
+                            <label for="coverPhoto">Cover Photo</label>
+                            <input type="file" name="coverPhoto" id="coverPhoto" accept="image/*" class="form-control" onchange="previewImage(event, 'coverPhotoPreviewContainer')">
+                            <div id="coverPhotoPreviewContainer" class="image-preview-container mt-2 rectangular-container">
+                                <img id="coverPhotoPreview" src="#" alt="Cover Photo Preview" class="img-fluid preview-image" style="display: none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="firstname">Group Name</label>
+                            <input type="text" name="groupName" class="form-control" value="@groupView.Group.groupName" required />
+                            @Html.ValidationMessageFor(model => groupView.Group.groupName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname">Group Description</label>
+                            <textarea name="description" class="form-control" required>@groupView.Group.description</textarea>
+                            @Html.ValidationMessageFor(model => groupView.Group.description, "", new { @class = "text-danger" })
+                        </div>                 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-success" value="Save Changes" style="background-color:saddlebrown" />
+                    </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+
 
 
 
@@ -745,6 +797,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJTY5KVphtPhzWj9WO1clHTMGaEkaGQ2J95JCzy/8p3ylzTEi" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-pjaaA8dDz/UmAGHEmpNMI0HHLmV7xI5a2zVzt95Z5CjoFQ7p1rR/YL2cw6K9/6Nf" crossorigin="anonymous"></script>
 <script src="~/Assets/Groups/js/groupdetail.js"></script>
+<script src="~/Assets/signup/js/preview.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Add event listener to all event buttons
@@ -775,26 +829,16 @@
         // Button and section references
         const upcomingEventBtn = document.getElementById('upcomingEventBtn');
         const recentEventsBtn = document.getElementById('recentEventsBtn');
-        const pendingEventsBtn = document.getElementById('pendingEventsBtn');
-
         const upcomingEvent = document.getElementById('upcomingEvent');
         const recentEvent = document.getElementById('recentEvent');
-        const pendingEvents = document.getElementById('pendingEvents');
 
-        // Function to reset all buttons and sections
         function resetActiveStates() {
-            // Remove active class from buttons
             upcomingEventBtn.classList.remove('active');
             recentEventsBtn.classList.remove('active');
-            pendingEventsBtn.classList.remove('active');
-
-            // Hide all event sections
             upcomingEvent.classList.add('d-none');
             recentEvent.classList.add('d-none');
-            pendingEvents.classList.add('d-none');
         }
 
-        // Event listeners for button clicks
         upcomingEventBtn.addEventListener('click', function () {
             resetActiveStates();
             upcomingEventBtn.classList.add('active');
@@ -807,18 +851,126 @@
             recentEvent.classList.remove('d-none');
         });
 
-        pendingEventsBtn.addEventListener('click', function () {
-            resetActiveStates();
-            pendingEventsBtn.classList.add('active');
-            pendingEvents.classList.remove('d-none');
-        });
-
-        // Set initial state
         resetActiveStates();
         upcomingEventBtn.classList.add('active');
         upcomingEvent.classList.remove('d-none');
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentMonthEl = document.getElementById('currentMonth');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        function renderCalendar() {
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const calendarBody = document.querySelector('.calendar-container tbody');
+            const eventItems = Array.from(document.querySelectorAll('.event-item'));
+            const eventDetails = eventItems.map(item => ({
+                date: new Date(item.getAttribute('data-date')),
+                title: item.querySelector('.event-title').textContent,
+                description: item.querySelector('.event-description').textContent
+            }));
+
+            calendarBody.innerHTML = '';
+            let date = 1;
+
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+                    if (i === 0 && j < firstDay) {
+                        cell.appendChild(document.createTextNode(''));
+                    } else if (date > daysInMonth) {
+                        break;
+                    } else {
+                        const span = document.createElement('span');
+                        span.textContent = date;
+                        const cellDate = new Date(currentYear, currentMonth, date);
+                        const event = eventDetails.find(event =>
+                            event.date.getDate() === date &&
+                            event.date.getMonth() === currentMonth &&
+                            event.date.getFullYear() === currentYear
+                        );
+
+                        if (event) {
+                            cell.classList.add('event-day');
+                            cell.setAttribute('data-title', event.title);
+                            cell.setAttribute('data-description', event.description);
+
+                            // Add event for showing tooltip
+                            cell.addEventListener('click', function () {
+                                eventTitle.textContent = event.title;
+                                eventDate.textContent = `Date: ${event.date.toLocaleDateString()}`;
+                                eventTime.textContent = `Time: ${event.eventTime}`;
+                                eventDescription.textContent = event.description;
+                                eventModal.style.display = 'block';
+                            });
+
+                            cell.addEventListener('mouseout', function () {
+                                const tooltip = document.getElementById('tooltip');
+                                tooltip.style.display = 'none';
+                            });
+                        }
+
+                        cell.appendChild(span);
+                        row.appendChild(cell);
+                        date++;
+                    }
+                }
+                calendarBody.appendChild(row);
+            }
+            currentMonthEl.textContent = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
+        }
+
+        prevMonthBtn.addEventListener('click', function () {
+            currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            currentYear = currentMonth === 11 ? currentYear - 1 : currentYear;
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', function () {
+            currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+            currentYear = currentMonth === 0 ? currentYear + 1 : currentYear;
+            renderCalendar();
+        });
+
+        renderCalendar();
+    });
+
+    const modal = document.getElementById('eventModal');
+    const closeModal = document.getElementById('closeModal');
+
+    document.querySelectorAll('.event-title').forEach(button => {
+        button.addEventListener('click', function () {
+            const title = this.getAttribute('data-title');
+            const description = this.getAttribute('data-description');
+            const eventDate = this.getAttribute('data-date');  // Get event date from data attribute
+            const eventTime = this.getAttribute('data-time');  // Get event time from data attribute
+
+            // Update modal content
+            document.getElementById('eventTitle').textContent = title;
+            document.getElementById('eventDescription').textContent = description;
+            document.getElementById('eventDate').textContent = `Date: ${eventDate}`;  // Set event date in modal
+            document.getElementById('eventTime').textContent = `Time: ${eventTime}`;  // Set event time in modal
+
+            // Show the modal
+            document.getElementById('eventModal').style.display = 'block';
+        });
+    });
+
+    closeModal.addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
 </script>
 
 <script>

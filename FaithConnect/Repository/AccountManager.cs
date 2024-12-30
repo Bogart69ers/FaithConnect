@@ -133,7 +133,7 @@ namespace FaithConnect.Repository
             return _userInfo.Update(userinf.id, userinf, out errMsg);
         }
 
-        public UserInformation UserInfoSignup(string username,string firstname, string lastname, string phone, string address, ref String err)
+        public UserInformation UserInfoSignup(string username,string firstname, string lastname, string phone, string address, string religion, ref String err)
         {
             var user = GetUserByUsername(username);
 
@@ -142,7 +142,6 @@ namespace FaithConnect.Repository
             {
                 return userInfo;
             }
-
             userInfo = new UserInformation();
             userInfo.userId = user.id;
             userInfo.email = user.email;
@@ -152,6 +151,8 @@ namespace FaithConnect.Repository
             userInfo.last_name = lastname;
             userInfo.address = address;
             userInfo.phone = phone;
+            userInfo.religion = religion;
+
 
             var userEmail = user.email;
             if (userEmail != null)

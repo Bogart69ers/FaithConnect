@@ -76,6 +76,14 @@
           <Property Name="date_created" Type="datetime" />
           <Property Name="comment" Type="nvarchar(max)" />
         </EntityType>
+        <EntityType Name="GroupImage">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="groupId" Type="int" />
+          <Property Name="coverPhoto" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="GroupMembership">
           <Key>
             <PropertyRef Name="id" />
@@ -121,6 +129,17 @@
           <Property Name="filePath" Type="nvarchar(max)" />
           <Property Name="mediaType" Type="nvarchar" MaxLength="100" />
           <Property Name="date_created" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="userId" Type="int" />
+          <Property Name="message" Type="nvarchar(max)" />
+          <Property Name="date" Type="datetime" />
+          <Property Name="isRead" Type="bit" />
+          <Property Name="userIdfrom" Type="int" />
         </EntityType>
         <EntityType Name="Post">
           <Key>
@@ -207,6 +226,7 @@
           <Property Name="status" Type="int" />
           <Property Name="bio" Type="nvarchar(max)" />
           <Property Name="date_created" Type="datetime" />
+          <Property Name="religion" Type="nvarchar(max)" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -370,6 +390,20 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_GroupImage_Groups">
+          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="GroupImage" Type="Self.GroupImage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Groups">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="GroupImage">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_GroupMembership_Groups">
           <End Role="Groups" Type="Self.Groups" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -447,6 +481,32 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Principal>
             <Dependent Role="Media">
               <PropertyRef Name="postId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_UserAccount1">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_UserInformation">
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1" />
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInformation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="userIdfrom" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -563,10 +623,12 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           <EntitySet Name="Feedback" EntityType="Self.Feedback" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Forum" EntityType="Self.Forum" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ForumComments" EntityType="Self.ForumComments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GroupImage" EntityType="Self.GroupImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GroupMembership" EntityType="Self.GroupMembership" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Groups" EntityType="Self.Groups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Image" EntityType="Self.Image" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Media" EntityType="Self.Media" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Notification" EntityType="Self.Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostComments" EntityType="Self.PostComments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostTags" EntityType="Self.PostTags" Schema="dbo" store:Type="Tables" />
@@ -630,6 +692,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="ForumComments" EntitySet="ForumComments" />
           </AssociationSet>
+          <AssociationSet Name="FK_GroupImage_Groups" Association="Self.FK_GroupImage_Groups">
+            <End Role="Groups" EntitySet="Groups" />
+            <End Role="GroupImage" EntitySet="GroupImage" />
+          </AssociationSet>
           <AssociationSet Name="FK_GroupMembership_Groups" Association="Self.FK_GroupMembership_Groups">
             <End Role="Groups" EntitySet="Groups" />
             <End Role="GroupMembership" EntitySet="GroupMembership" />
@@ -653,6 +719,14 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_Media_Post" Association="Self.FK_Media_Post">
             <End Role="Post" EntitySet="Post" />
             <End Role="Media" EntitySet="Media" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_UserAccount1" Association="Self.FK_Notification_UserAccount1">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_UserInformation" Association="Self.FK_Notification_UserInformation">
+            <End Role="UserInformation" EntitySet="UserInformation" />
+            <End Role="Notification" EntitySet="Notification" />
           </AssociationSet>
           <AssociationSet Name="FK_Post_Groups" Association="Self.FK_Post_Groups">
             <End Role="Groups" EntitySet="Groups" />
@@ -780,6 +854,15 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Groups" Relationship="Self.FK_ForumComments_Groups" FromRole="ForumComments" ToRole="Groups" />
           <NavigationProperty Name="UserAccount" Relationship="Self.FK_ForumComments_UserAccount" FromRole="ForumComments" ToRole="UserAccount" />
         </EntityType>
+        <EntityType Name="GroupImage">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="groupId" Type="Int32" />
+          <Property Name="coverPhoto" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Groups" Relationship="Self.FK_GroupImage_Groups" FromRole="GroupImage" ToRole="Groups" />
+        </EntityType>
         <EntityType Name="GroupMembership">
           <Key>
             <PropertyRef Name="id" />
@@ -807,6 +890,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="EventAttendance" Relationship="Self.FK_EventAttendance_Groups" FromRole="Groups" ToRole="EventAttendance" />
           <NavigationProperty Name="Forum" Relationship="Self.FK_Forum_Groups" FromRole="Groups" ToRole="Forum" />
           <NavigationProperty Name="ForumComments" Relationship="Self.FK_ForumComments_Groups" FromRole="Groups" ToRole="ForumComments" />
+          <NavigationProperty Name="GroupImage" Relationship="Self.FK_GroupImage_Groups" FromRole="Groups" ToRole="GroupImage" />
           <NavigationProperty Name="GroupMembership" Relationship="Self.FK_GroupMembership_Groups" FromRole="Groups" ToRole="GroupMembership" />
           <NavigationProperty Name="UserAccount" Relationship="Self.FK_Groups_UserAccount" FromRole="Groups" ToRole="UserAccount" />
           <NavigationProperty Name="Post" Relationship="Self.FK_Post_Groups" FromRole="Groups" ToRole="Post" />
@@ -837,6 +921,19 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Event" Relationship="Self.FK_Media_Event" FromRole="Media" ToRole="Event" />
           <NavigationProperty Name="Forum" Relationship="Self.FK_Media_Forum" FromRole="Media" ToRole="Forum" />
           <NavigationProperty Name="Post" Relationship="Self.FK_Media_Post" FromRole="Media" ToRole="Post" />
+        </EntityType>
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="userId" Type="Int32" />
+          <Property Name="message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="date" Type="DateTime" Precision="3" />
+          <Property Name="isRead" Type="Boolean" />
+          <Property Name="userIdfrom" Type="Int32" />
+          <NavigationProperty Name="UserAccount" Relationship="Self.FK_Notification_UserAccount1" FromRole="Notification" ToRole="UserAccount" />
+          <NavigationProperty Name="UserInformation" Relationship="Self.FK_Notification_UserInformation" FromRole="Notification" ToRole="UserInformation" />
         </EntityType>
         <EntityType Name="Post">
           <Key>
@@ -925,6 +1022,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Forum" Relationship="Self.FK_Forum_UserAccount" FromRole="UserAccount" ToRole="Forum" />
           <NavigationProperty Name="ForumComments" Relationship="Self.FK_ForumComments_UserAccount" FromRole="UserAccount" ToRole="ForumComments" />
           <NavigationProperty Name="Groups" Relationship="Self.FK_Groups_UserAccount" FromRole="UserAccount" ToRole="Groups" />
+          <NavigationProperty Name="Notification" Relationship="Self.FK_Notification_UserAccount1" FromRole="UserAccount" ToRole="Notification" />
           <NavigationProperty Name="Post" Relationship="Self.FK_Post_UserAccount" FromRole="UserAccount" ToRole="Post" />
           <NavigationProperty Name="PostComments" Relationship="Self.FK_PostComments_UserAccount" FromRole="UserAccount" ToRole="PostComments" />
           <NavigationProperty Name="Role1" Relationship="Self.FK_UserAccount_Role" FromRole="UserAccount" ToRole="Role" />
@@ -944,7 +1042,9 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="status" Type="Int32" />
           <Property Name="bio" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="date_created" Type="DateTime" Precision="3" />
+          <Property Name="religion" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Image" Relationship="Self.FK_Image_UserInformation" FromRole="UserInformation" ToRole="Image" />
+          <NavigationProperty Name="Notification" Relationship="Self.FK_Notification_UserInformation" FromRole="UserInformation" ToRole="Notification" />
           <NavigationProperty Name="UserAccount" Relationship="Self.FK_UserInformation_UserAccount" FromRole="UserInformation" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="vw_Role">
@@ -1131,6 +1231,20 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_GroupImage_Groups">
+          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="GroupImage" Type="Self.GroupImage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Groups">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="GroupImage">
+              <PropertyRef Name="groupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_GroupMembership_Groups">
           <End Role="Groups" Type="Self.Groups" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -1196,6 +1310,32 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Principal>
             <Dependent Role="Media">
               <PropertyRef Name="postId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_UserAccount1">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_UserInformation">
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1" />
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInformation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="userIdfrom" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1300,10 +1440,12 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySet Name="Feedback" EntityType="Self.Feedback" />
           <EntitySet Name="Forum" EntityType="Self.Forum" />
           <EntitySet Name="ForumComments" EntityType="Self.ForumComments" />
+          <EntitySet Name="GroupImage" EntityType="Self.GroupImage" />
           <EntitySet Name="GroupMembership" EntityType="Self.GroupMembership" />
           <EntitySet Name="Groups" EntityType="Self.Groups" />
           <EntitySet Name="Image" EntityType="Self.Image" />
           <EntitySet Name="Media" EntityType="Self.Media" />
+          <EntitySet Name="Notification" EntityType="Self.Notification" />
           <EntitySet Name="Post" EntityType="Self.Post" />
           <EntitySet Name="PostComments" EntityType="Self.PostComments" />
           <EntitySet Name="PostTags" EntityType="Self.PostTags" />
@@ -1369,6 +1511,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="ForumComments" EntitySet="ForumComments" />
           </AssociationSet>
+          <AssociationSet Name="FK_GroupImage_Groups" Association="Self.FK_GroupImage_Groups">
+            <End Role="Groups" EntitySet="Groups" />
+            <End Role="GroupImage" EntitySet="GroupImage" />
+          </AssociationSet>
           <AssociationSet Name="FK_GroupMembership_Groups" Association="Self.FK_GroupMembership_Groups">
             <End Role="Groups" EntitySet="Groups" />
             <End Role="GroupMembership" EntitySet="GroupMembership" />
@@ -1388,6 +1534,14 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_Media_Post" Association="Self.FK_Media_Post">
             <End Role="Post" EntitySet="Post" />
             <End Role="Media" EntitySet="Media" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_UserAccount1" Association="Self.FK_Notification_UserAccount1">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_UserInformation" Association="Self.FK_Notification_UserInformation">
+            <End Role="UserInformation" EntitySet="UserInformation" />
+            <End Role="Notification" EntitySet="Notification" />
           </AssociationSet>
           <AssociationSet Name="FK_Post_UserAccount" Association="Self.FK_Post_UserAccount">
             <End Role="UserAccount" EntitySet="UserAccount" />
@@ -1501,6 +1655,15 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="GroupImage">
+            <EntityTypeMapping TypeName="FaithConnectModel.GroupImage">
+              <MappingFragment StoreEntitySet="GroupImage">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="groupId" ColumnName="groupId" />
+                <ScalarProperty Name="coverPhoto" ColumnName="coverPhoto" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="GroupMembership">
             <EntityTypeMapping TypeName="FaithConnectModel.GroupMembership">
               <MappingFragment StoreEntitySet="GroupMembership">
@@ -1548,6 +1711,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="filePath" ColumnName="filePath" />
                 <ScalarProperty Name="mediaType" ColumnName="mediaType" />
                 <ScalarProperty Name="date_created" ColumnName="date_created" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notification">
+            <EntityTypeMapping TypeName="FaithConnectModel.Notification">
+              <MappingFragment StoreEntitySet="Notification">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="isRead" ColumnName="isRead" />
+                <ScalarProperty Name="userIdfrom" ColumnName="userIdfrom" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1642,6 +1817,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="bio" ColumnName="bio" />
                 <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="religion" ColumnName="religion" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

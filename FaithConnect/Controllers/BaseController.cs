@@ -2,6 +2,10 @@
 using System;
 using System.Web.Mvc;
 using FaithConnect.Models;
+using FaithConnect.ViewModel;
+using System.Linq;
+using System.Collections.Generic;
+
 
 namespace FaithConnect.Controllers
 {
@@ -16,8 +20,8 @@ namespace FaithConnect.Controllers
         public PostManager _postManager;
         public ForumManager _forumManager;
         public TagsManager _tagsManager;
-        public CommentManager _commentManager; 
-
+        public CommentManager _commentManager;
+        public NotificationManager _NotificationManager;
 
         public String Username { get { return User.Identity.Name; } }
         public String UserId { get { return _AccManager.GetUserByUsername(Username).userId; } }
@@ -33,7 +37,55 @@ namespace FaithConnect.Controllers
             _forumManager = new ForumManager();
             _tagsManager = new TagsManager();
             _commentManager = new CommentManager();
+            _NotificationManager = new NotificationManager();
         }
+        private string GetAvatarUrl(int id)
+        {
+            // 1) If userId = 0 or invalid, return a default image or handle as needed
+            if (id == 0)
+                return Url.Content("~/UploadedFiles/default.png");
+
+            // 2) Use your image manager to get user’s image
+            var userImage = _imgMgr.ListImgAttachByUserId(id).FirstOrDefault();
+            if (userImage == null || string.IsNullOrEmpty(userImage.imageFile))
+            {
+                // fallback to default
+                return Url.Content("~/UploadedFiles/default.png");
+            }
+            // 3) Otherwise return the actual path
+            return Url.Content("~/UploadedFiles/" + userImage.imageFile);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            base.OnActionExecuting(filterContext);
+
+            if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                var username = User.Identity.Name;
+                var userAccount = _AccManager.GetUserByUsername(username);
+                var userInfo = _AccManager.GetUserInfoByUsername(username);
+
+                if (userAccount != null)
+                {
+                    // 1) Fetch raw notifications
+                    var notifications = _NotificationManager.GetNotificationsByUserId(userAccount.id);
+
+                    // 2) Convert them to notificationViewModel
+                    var notificationViewModels = notifications
+                        .Select(n => new notificationViewModel
+                        {
+                            Notification = n,
+                            AvatarUrl = GetAvatarUrl((int)n.userIdfrom)
+                        })
+                        .ToList();
+
+                    // 3) Store in ViewBag
+                    ViewBag.Notifications = notificationViewModels;
+                }
+            }
+        }
+
 
         public void IsUserLoggedSession()
         {

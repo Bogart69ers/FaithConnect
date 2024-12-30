@@ -22,6 +22,7 @@ namespace FaithConnect
             this.Forum = new HashSet<Forum>();
             this.ForumComments = new HashSet<ForumComments>();
             this.Groups = new HashSet<Groups>();
+            this.Notification = new HashSet<Notification>();
             this.Post = new HashSet<Post>();
             this.PostComments = new HashSet<PostComments>();
             this.UserInformation = new HashSet<UserInformation>();
@@ -44,6 +45,7 @@ namespace FaithConnect
         public virtual ICollection<Forum> Forum { get; set; }
         public virtual ICollection<ForumComments> ForumComments { get; set; }
         public virtual ICollection<Groups> Groups { get; set; }
+        public virtual ICollection<Notification> Notification { get; set; }
         public virtual ICollection<Post> Post { get; set; }
         public virtual ICollection<PostComments> PostComments { get; set; }
         public virtual Role Role1 { get; set; }

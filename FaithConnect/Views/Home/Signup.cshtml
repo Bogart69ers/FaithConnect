@@ -24,13 +24,14 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter+Tight:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap"></noscript>
     <link rel="preload" as="style" href="~/Assets/login/css/mbr-additional.css?v=CW5Q19">
     <link rel="stylesheet" href="~/Assets/login/css/mbr-additional.css?v=CW5Q19" type="text/css">
+
 </head>
 <body>
     @using (Html.BeginForm())
     {
         <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
 
-        <section data-bs-version="5.1" class="form03 cid-uagZCfXL7S" id="form03-1z">
+        <section data-bs-version="5.1" class="form03 cid-uagZCfXL7S" id="form03-1z" >
             <div class="container">
                 <div class="row justify-content-center align-items-center">
                     <div class="col-12 col-lg-6">
@@ -52,8 +53,20 @@
                                 <div class="col-md-6 form-group mb-3">
                                     <input type="text" class="form-control" name="lastname" placeholder="Last Name" required />
                                 </div>
-                                <div class="col-12 form-group mb-3">
+                                <div class="col-6 form-group mb-3">
                                     <input type="text" class="form-control" name="phone" placeholder="Phone#" pattern="\d{10,11}" title="Please enter a valid phone number with 10 to 11 digits" required />
+                                </div>
+                                <div class="col-6 form-group mb-3" style="height: 10px;">
+                                    <select class="form-control" name="religion" required>
+                                        <option value="" disabled selected>Religion</option>
+                                        <option value="Catholic">Catholic</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Iglesia Ni Cristo">Iglesia Ni Cristo</option>
+                                        <option value="Born Again Christians">Born Again Christians</option>
+                                        <option value="Jehovah's Witness">Jehovah's Witness</option>
+                                        <option value="7th Day Adventist">7th Day Adventist</option>
+                                        <option value="Protestantism">Protestantism</option>
+                                    </select>
                                 </div>
                                 <div class="col-12 form-group mb-3">
                                     <input type="text" class="form-control" name="email" placeholder="Email" required />

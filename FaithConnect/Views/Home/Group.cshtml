@@ -1,6 +1,7 @@
 ﻿@model FaithConnect.ViewModel.GroupViewModel
 
 @{
+
     ViewBag.Title = "Group";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
@@ -9,6 +10,13 @@
 <link rel="stylesheet" href="~/Assets/Groups/css/StyleGroup.css" />
 
 <style>
+    .groups-sidebar-button.active{
+        width : 250px;
+    }
+
+    .groups-sidebar-button{
+        width : 250px;        
+    }
 
     .btn-custom {
         background-color: #d6c4a7;
@@ -61,9 +69,13 @@
                 <div class="groups-grid">
                     @foreach (var group in Model.AllGroups.Where(m => m.status == 1))
                     {
+                        string coverImage = string.IsNullOrEmpty(group.GroupImage?.FirstOrDefault()?.coverPhoto)
+                                            ? Url.Content("~/UploadedFiles/default-cover.jpg")
+                                            : Url.Content("~/UploadedFiles/" + group.GroupImage.FirstOrDefault()?.coverPhoto);
+
                         var memberCount = Model.GroupMemberships.Count(m => m.groupId == group.id && m.status == 1); // Count members only with joined status
                         <div class="group-card">
-                            <img src="~/Assets/Groups/img/group1.jpg" alt="Group image">
+                            <img src="@coverImage" alt="Group image">
                             <div class="group-info">
                                 <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = group.id })" style="color: black; font-weight: bold; text-decoration: none;">@group.groupName</a></h5>
                                 <p>Members @memberCount</p>
@@ -82,10 +94,10 @@
                         <h4>My Groups</h4>
                         <div class="groups-grid">
                             @foreach (var item in Model.GroupMemberships.Where(m => m.status == 1 && m.userId == Model.UserInformation.id))
-                            {
+                            {                               
                                 var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.groupId && m.status == 1 ); // Count members only with joined status
                                 <div class="group-card">
-                                    <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                    <img src="~/UploadedFiles/default-cover.jpg" alt="Group image">
                                     <div class="group-info">
                                         <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = item.groupId })" style="color: black; font-weight: bold; text-decoration: none;">@item.Groups.groupName</a></h5>
                                         <p>Members @memberCount</p>
@@ -106,7 +118,7 @@
                             {
                                 var memberCount = Model.GroupMemberships.Count(m => m.groupId == group.groupId && m.status == 1); // Count members only with joined status
                                 <div class="group-card">
-                                    <img src="~/Assets/Groups/img/group3.jpg" alt="Group image">
+                                    <img src="~/UploadedFiles/default-cover.jpg" alt="Group image">
                                     <div class="group-info">
                                         <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = group.groupId })" style="color: black; font-weight: bold; text-decoration: none;">@group.Groups.groupName</a></h5>
                                         <p>Members @memberCount</p>
@@ -129,9 +141,13 @@
                         <div class="groups-grid">
                             @foreach (var item in Model.Group.Where(m => m.status == 0 && m.groupAdmin == Model.UserInformation.userId))
                             {
+                                string coverImage = string.IsNullOrEmpty(item.GroupImage?.FirstOrDefault()?.coverPhoto)
+                                            ? Url.Content("~/UploadedFiles/default-cover.jpg")
+                                            : Url.Content("~/UploadedFiles/" + item.GroupImage.FirstOrDefault()?.coverPhoto);
+
                                 var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.id && m.status == 1); // Count members only with joined status
                                 <div class="group-card">
-                                    <img src="~/Assets/Groups/img/group2.jpg" alt="Group image">
+                                    <img src="@coverImage" alt="Group image">
                                     <div class="group-info">
                                         <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = item.id })" style="color: black; font-weight: bold; text-decoration: none;">@item.groupName</a></h5>
                                         <p>Members @memberCount</p>

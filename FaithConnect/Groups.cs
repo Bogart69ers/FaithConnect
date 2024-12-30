@@ -20,6 +20,7 @@ namespace FaithConnect
             this.EventAttendance = new HashSet<EventAttendance>();
             this.Forum = new HashSet<Forum>();
             this.ForumComments = new HashSet<ForumComments>();
+            this.GroupImage = new HashSet<GroupImage>();
             this.GroupMembership = new HashSet<GroupMembership>();
             this.Post = new HashSet<Post>();
         }
@@ -37,6 +38,7 @@ namespace FaithConnect
         public virtual ICollection<EventAttendance> EventAttendance { get; set; }
         public virtual ICollection<Forum> Forum { get; set; }
         public virtual ICollection<ForumComments> ForumComments { get; set; }
+        public virtual ICollection<GroupImage> GroupImage { get; set; }
         public virtual ICollection<GroupMembership> GroupMembership { get; set; }
         public virtual UserAccount UserAccount { get; set; }
         public virtual ICollection<Post> Post { get; set; }

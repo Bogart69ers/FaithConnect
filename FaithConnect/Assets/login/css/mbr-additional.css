@@ -635,12 +635,13 @@ a:hover {
 .scrollToTop_wraper {
   display: none;
 }
+
 .form-control {
   font-family: 'Inter Tight', sans-serif;
   font-size: 1.4rem;
   line-height: 1.3;
   font-weight: 400;
-  border-radius: 40px !important;
+  border-radius: 20px !important;
 }
 .form-control > .mbr-iconfont {
   font-size: 1.75rem;
