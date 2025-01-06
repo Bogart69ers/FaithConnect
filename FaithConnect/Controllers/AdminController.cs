@@ -35,6 +35,7 @@ namespace FaithConnect.Controllers
         }
 
 
+
         public ActionResult Approval()
         {
             var username = User.Identity.Name;
@@ -51,6 +52,23 @@ namespace FaithConnect.Controllers
 
             return View(model);
         }
+
+
+
+        [HttpGet]
+        public JsonResult GetUnreadNotificationCount()
+        {
+            var username = User.Identity.Name;
+            var userAccount = _AccManager.GetUserByUsername(username);
+            var notifications = _NotificationManager.GetNotificationsByUserId(userAccount.id);
+
+            var unreadCount = notifications.Count(n => n.isRead == false);
+
+            return Json(new { unreadCount }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
         public ActionResult Reports()
         {
             var username = User.Identity.Name;
@@ -65,6 +83,7 @@ namespace FaithConnect.Controllers
 
             return View(model);
         }
+
 
 
         public ActionResult ManageGroups()
@@ -87,7 +106,20 @@ namespace FaithConnect.Controllers
             return View(model);
         }
 
-        
+
+
+        [HttpPost]
+        public JsonResult MarkAsRead(int notificationId)
+        {
+            var result = _NotificationManager.MarkAsRead(notificationId, out ErrorMessage);
+            if (result == ErrorCode.Success)
+            {
+                return Json(new { success = true });
+            }
+            return Json(new { success = false, message = ErrorMessage });
+        }
+
+
 
         [HttpPost]
         public ActionResult CreateGroup(Groups group, String priv ,String groupName,String description, int groupAdmin )
@@ -125,23 +157,10 @@ namespace FaithConnect.Controllers
                 var model = PrepareManageAccountViewModel();
                 return View("ManageGroups", model);
             }
-        }
-
-        [HttpPost]
-        public ActionResult DeleteGroup(int id)
-        {
-            var result = _groupManager.DeleteGroup(id, ref ErrorMessage);
-            if (result == ErrorCode.Success)
-            {
-                return RedirectToAction("ManageGroups");
-            }
-
-            ModelState.AddModelError("", ErrorMessage);
-            var model = PrepareManageAccountViewModel();
-            return View("ManageGroups", model);
-        }
-
+        }    
         
+
+
         public ActionResult ManageAccount()
         {
             var username = User.Identity.Name;
@@ -155,6 +174,8 @@ namespace FaithConnect.Controllers
             };
             return View(model);
         }
+
+
 
         [HttpPost]
         public ActionResult Create(UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address)
@@ -231,7 +252,6 @@ namespace FaithConnect.Controllers
 
 
 
-
         public ActionResult Edit(int id)
         {
             var user = _AccManager.GetUserById(id);
@@ -241,6 +261,8 @@ namespace FaithConnect.Controllers
             }
             return View(user);
         }
+
+
 
         [HttpPost]
         public ActionResult Edit(UserAccount userAccount, string ConfirmPass)
@@ -305,14 +327,101 @@ namespace FaithConnect.Controllers
             }
             return Json(null, JsonRequestBehavior.AllowGet);
         }
-        
+
+
+
+        [HttpPost]
+        public ActionResult DeleteGroup(int id)
+        {
+            
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var group = _groupManager.GetGroupById(id);
+
+            var result = _groupManager.DeleteGroup(id, ref ErrorMessage);
+
+            if (result == ErrorCode.Success)
+            {              
+                return RedirectToAction("ManageGroups");
+            }
+
+            ModelState.AddModelError("", ErrorMessage);
+            var model = PrepareManageAccountViewModel();
+            return View("ManageGroups", model);
+        }
+
+        [HttpPost]
+        public ActionResult RejectGroup(int id)
+        {
+
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var group = _groupManager.GetGroupById(id);
+
+            string requestMessage = $"Admin Rejected your group page '{group.groupName}'.";
+
+            var newNotification = new Notification
+            {
+                userId = group.groupAdmin,  // recipient is the admin
+                message = requestMessage,
+                isRead = false,
+                date = DateTime.Now, // or CreatedAt, etc.
+                userIdfrom = user.id
+            };
+
+
+            string notifErrorMsg;
+            var notifResult = _NotificationManager.CreateNotification(newNotification, out notifErrorMsg);
+            if (notifResult == ErrorCode.Error)
+            {
+                // handle error if needed
+                TempData["ErrorMessage"] = notifErrorMsg;
+            }
+
+            var result = _groupManager.DeleteGroup(id, ref ErrorMessage);
+
+            if (result == ErrorCode.Success)
+            {
+                return RedirectToAction("ManageGroups");
+            }
+
+            ModelState.AddModelError("", ErrorMessage);
+            var model = PrepareManageAccountViewModel();
+            return View("ManageGroups", model);
+        }
+
+
         [HttpPost]
         public ActionResult UpdateUpdateGroupStatus(int id)
         {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var group = _groupManager.GetGroupById(id);
             var result = _groupManager.UpdateGroupStatus(id, ref ErrorMessage);
 
+            string requestMessage = $"Admin Approved your group page '{group.groupName}'.";
+
             if (result == ErrorCode.Success)
             {
+
+                var newNotification = new Notification
+                {
+                    userId = group.groupAdmin,  // recipient is the admin
+                    message = requestMessage,
+                    isRead = false,
+                    date = DateTime.Now, // or CreatedAt, etc.
+                    userIdfrom = user.id
+                };
+
+
+                string notifErrorMsg;
+                var notifResult = _NotificationManager.CreateNotification(newNotification, out notifErrorMsg);
+                if (notifResult == ErrorCode.Error)
+                {
+                    // handle error if needed
+                    TempData["ErrorMessage"] = notifErrorMsg;
+                }
+
                 return RedirectToAction("ManageGroups");
             }
             else
@@ -321,14 +430,41 @@ namespace FaithConnect.Controllers
                 return View("Error");
             }
         }
+
+
+
         [HttpPost]
-        public ActionResult UpdateEventStatus(int id)
+        public ActionResult UpdateEventStatus(int id, string title, int groupId)
         {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var group = _groupManager.GetGroupById(groupId);
             var result = _eventManager.UpdateEventStatus(id, ref ErrorMessage);
 
+            string requestMessage = $"Admin Approved Event '{title}' from your group page {group.groupName}.";
+
+
             if (result == ErrorCode.Success)
             {
-                return RedirectToAction("ManageGroups");
+                var newNotification = new Notification
+                {
+                    userId = group.groupAdmin,  // recipient is the admin
+                    message = requestMessage,
+                    isRead = false,
+                    date = DateTime.Now, // or CreatedAt, etc.
+                    userIdfrom = user.id
+                };
+
+
+                string notifErrorMsg;
+                var notifResult = _NotificationManager.CreateNotification(newNotification, out notifErrorMsg);
+                if (notifResult == ErrorCode.Error)
+                {
+                    // handle error if needed
+                    TempData["ErrorMessage"] = notifErrorMsg;
+                }
+
+                return RedirectToAction("Approval");
             }
             else
             {
@@ -337,9 +473,35 @@ namespace FaithConnect.Controllers
             }
         }
 
+
+
         [HttpPost]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id, string title, int groupId)
         {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var group = _groupManager.GetGroupById(groupId);
+
+            string requestMessage = $"Admin Declined Event '{title}' from your group page {group.groupName}.";
+
+            var newNotification = new Notification
+            {
+                userId = group.groupAdmin,  // recipient is the admin
+                message = requestMessage,
+                isRead = false,
+                date = DateTime.Now, // or CreatedAt, etc.
+                userIdfrom = user.id
+            };
+
+
+            string notifErrorMsg;
+            var notifResult = _NotificationManager.CreateNotification(newNotification, out notifErrorMsg);
+            if (notifResult == ErrorCode.Error)
+            {
+                // handle error if needed
+                TempData["ErrorMessage"] = notifErrorMsg;
+            }
+
             var result = _AccManager.DeleteUser(id, ref ErrorMessage);
             if (result == ErrorCode.Success)
             {
@@ -350,6 +512,24 @@ namespace FaithConnect.Controllers
             var model = PrepareManageAccountViewModel();
             return View("ManageAccount", model);
         }
+
+        [HttpPost]
+        public ActionResult DeleteAccount(int id)
+        {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            var result = _AccManager.DeleteUser(id, ref ErrorMessage);
+            if (result == ErrorCode.Success)
+            {
+                return RedirectToAction("ManageAccount");
+            }
+            // Handle error
+            ModelState.AddModelError("", ErrorMessage);
+            var model = PrepareManageAccountViewModel();
+            return View("ManageAccount", model);
+        }
+
         private ManageAccountViewModel PrepareManageAccountViewModel()
         {
             var username = User.Identity.Name;

@@ -127,7 +127,6 @@
                                     <th>ID</th>
                                     <th>Username</th>
                                     <th>Email</th>
-                                    <th>Role</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -140,13 +139,12 @@
                                         <td>@Html.DisplayFor(modelItem => item.id)</td>
                                         <td>@Html.DisplayFor(modelItem => item.username)</td>
                                         <td>@Html.DisplayFor(modelItem => item.email)</td>
-                                        <td>@roleNames[item.role.GetValueOrDefault()]</td>
                                         <td><span class="badge badge-success">Active</span></td>
                                         <td>
                                             <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="@Url.Action("Delete", new { id = item.id })" method="post" style="display:inline;">
+                                            <form action="@Url.Action("DeleteAccount", new { id = item.id })" method="post" style="display:inline;">
                                                 <button type="submit" class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </button>
@@ -188,7 +186,7 @@
                                             <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="@Url.Action("Delete", new { id = item.id })" method="post" style="display:inline;">
+                                            <form action="@Url.Action("DeleteAccount", new { id = item.id })" method="post" style="display:inline;">
                                                 <button type="submit" class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </button>

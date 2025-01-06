@@ -18,6 +18,7 @@ namespace FaithConnect
         {
             this.Media = new HashSet<Media>();
             this.PostComments = new HashSet<PostComments>();
+            this.PostMedia = new HashSet<PostMedia>();
             this.PostTags = new HashSet<PostTags>();
         }
     
@@ -34,6 +35,7 @@ namespace FaithConnect
         public virtual ICollection<Media> Media { get; set; }
         public virtual UserAccount UserAccount { get; set; }
         public virtual ICollection<PostComments> PostComments { get; set; }
+        public virtual ICollection<PostMedia> PostMedia { get; set; }
         public virtual ICollection<PostTags> PostTags { get; set; }
     }
 }

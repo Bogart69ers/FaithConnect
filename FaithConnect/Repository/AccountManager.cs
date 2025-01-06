@@ -164,6 +164,12 @@ namespace FaithConnect.Repository
 
             return GetUserInfoByUserId(user.id);
         }
+
+        public IEnumerable<UserAccount> GetAllSuperAdmins()
+        {
+            return _userAcc._table.Where(m => m.role == 2).ToList();
+        }
+
         public UserInformation GetUserInfoByUsername(string username)
         {
             var userAcc = GetUserByUsername(username);

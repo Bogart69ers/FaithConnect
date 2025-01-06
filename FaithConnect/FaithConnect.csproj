@@ -80,6 +80,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -451,6 +455,7 @@
     <Content Include="Assets\Groups\js\group.js" />
     <Content Include="Assets\Groups\js\groupdetail.js" />
     <Content Include="Assets\Index\css\main.css" />
+    <Content Include="Assets\Index\css\modal.css" />
     <Content Include="Assets\Index\css\style1.css" />
     <Content Include="Assets\Index\css\Style2.css" />
     <Content Include="Assets\Index\css\tooltip.css" />
@@ -523,6 +528,9 @@
     <Compile Include="EventAttendance.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="EventMedia.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Feedback.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -575,6 +583,9 @@
     <Compile Include="PostComments.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="PostMedia.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="PostTags.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -583,6 +594,7 @@
     <Compile Include="Repository\BaseRepository.cs" />
     <Compile Include="Repository\CommentManager.cs" />
     <Compile Include="Repository\EventManager.cs" />
+    <Compile Include="Repository\EventMediaManager.cs" />
     <Compile Include="Repository\ForumManager.cs" />
     <Compile Include="Repository\GroupManager.cs" />
     <Compile Include="Repository\IBaseRepository.cs" />
@@ -590,6 +602,7 @@
     <Compile Include="Repository\MailManager.cs" />
     <Compile Include="Repository\NotificationManager.cs" />
     <Compile Include="Repository\PostManager.cs" />
+    <Compile Include="Repository\PostMediaManager.cs" />
     <Compile Include="Repository\TagsManager.cs" />
     <Compile Include="Role.cs">
       <DependentUpon>Model1.tt</DependentUpon>

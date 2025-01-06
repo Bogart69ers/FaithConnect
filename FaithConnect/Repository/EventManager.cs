@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FaithConnect.Utils;
+using System.Data.Entity;
+
 
 namespace FaithConnect.Repository
 {
@@ -10,25 +12,62 @@ namespace FaithConnect.Repository
     {
         private readonly BaseRepository<Event> _eventRepository;
         private readonly BaseRepository<EventAttendance> _eventAtRepository;
+        private readonly BaseRepository<EventMedia> _eventMediaRepository;
+
 
 
         public EventManager()
         {
             _eventRepository = new BaseRepository<Event>();
             _eventAtRepository = new BaseRepository<EventAttendance>();
+            _eventMediaRepository = new BaseRepository<EventMedia>();
+
         }
 
-        
+
         public IEnumerable<Event> GetEventsByGroupId(int groupId)
         {
             return _eventRepository._table.Where(e => e.groupId == groupId).ToList();
+        }
+        public IQueryable<Event> GetEventsByGroupIdWithMedia(int groupId)
+        {
+            return _eventRepository._table
+                .Where(e => e.groupId == groupId)
+                .Include(e => e.EventMedia) // Include event-related media
+                .Include(e => e.Groups) // Ensure Groups navigation is loaded
+                .Include(e => e.Groups.GroupImage); // Include GroupImage explicitly
+        }
+        public IQueryable<EventAttendance> GetEventsByUserIdWithMedia(int userId)
+        {
+            return _eventAtRepository._table
+                .Where(e => e.userId == userId)
+                .Include(e => e.Event.EventMedia) // Include event-related media
+                .Include(e => e.Groups) // Ensure Groups navigation is loaded
+                .Include(e => e.Groups.GroupImage); // Include GroupImage explicitly
         }
         public IEnumerable<EventAttendance> GetEventAttendanceByUserId(int? userId)
         {
             return _eventAtRepository.GetAll().Where(m => m.userId == userId).ToList();
         }
- 
-       
+
+        public EventAttendance CheckAttendance(int eventId, int? userId)
+        {
+            try
+            {
+                // Check if there's an attendance record for the given eventId and userId
+                var attendance = _eventAtRepository._table
+                    .FirstOrDefault(a => a.eventId == eventId && a.userId == userId && a.status == 1);
+
+                return attendance;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine($"Error in CheckAttendance: {ex.Message}");
+                return null;
+            }
+        }
+
 
         public List<Event> GetAllEvents()
         {

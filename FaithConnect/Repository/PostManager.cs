@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FaithConnect.Utils;
+using System.Data.Entity;
+
 
 namespace FaithConnect.Repository
 {
@@ -11,41 +13,50 @@ namespace FaithConnect.Repository
         private readonly BaseRepository<Post> _postRepository;
         private readonly GroupManager _groupManager;
         private readonly AccountManager _userManager;
+        private readonly BaseRepository<PostMedia> _postMediaRepository;
+
 
         public PostManager()
         {
             _postRepository = new BaseRepository<Post>();
             _groupManager = new GroupManager();
             _userManager = new AccountManager();
+            _postMediaRepository = new BaseRepository<PostMedia>();
+
+        }
+
+        public IQueryable<Post> GetPostByGroupQueryable(int groupId)
+        {
+            return _postRepository._table
+                .Where(m => m.groupId == groupId && m.status == 0)
+                .OrderByDescending(p => p.date_created)
+                .Include(p => p.Groups)
+                .Include(p => p.UserAccount)
+                .Include(p => p.PostMedia);
         }
 
         public IEnumerable<Post> GetAllPosts()
         {
-            var posts = _postRepository.GetAll().OrderByDescending(p => p.date_created).ToList();
-
-            foreach (var post in posts)
-            {
-                // Fetch group name and user name based on foreign keys
-                post.Groups.groupName = _groupManager.GetGroupById(post.groupId ?? 0)?.groupName ?? "Unknown Group";
-                post.UserAccount.username = _userManager.GetUserNameById(post.createdBy); // Assuming 'createdBy' is the userId
-            }
-
-            return posts;
+            return _postRepository._table
+                .OrderByDescending(p => p.date_created)
+                .Include(p => p.Groups)
+                .Include(p => p.UserAccount)
+                .Include(p => p.PostMedia)
+                .ToList();
         }
+
 
         public IEnumerable<Post> GetPostsByGroupId(int groupId)
         {
-            var posts = _postRepository._table.Where(p => p.groupId == groupId).OrderByDescending(p => p.date_created).ToList();
-
-            foreach (var post in posts)
-            {
-                // Fetch group name and user name for each post
-                post.Groups.groupName = _groupManager.GetGroupById(post.groupId ?? 0)?.groupName ?? "Unknown Group";
-                post.UserAccount.username = _userManager.GetUserNameById(post.createdBy);
-            }
-
-            return posts;
+            return _postRepository._table
+                .Where(p => p.groupId == groupId)
+                .OrderByDescending(p => p.date_created)
+                .Include(p => p.Groups)
+                .Include(p => p.UserAccount)
+                .Include(p => p.PostMedia)
+                .ToList();
         }
+
 
         public ErrorCode AddPost(Post post, ref string errorMsg)
         {
@@ -65,31 +76,23 @@ namespace FaithConnect.Repository
         }
         public List<Post> GetPostByGroup(int groupId)
         {
-            var posts = _postRepository.GetAll()
-                                  .Where(m => m.groupId == groupId && m.status == 0)
-                                  .OrderByDescending(p => p.date_created)
-                                  .ToList();
-
-            foreach (var post in posts)
-            {
-                post.Groups.groupName = _groupManager.GetGroupById(post.groupId ?? 0)?.groupName ?? "Unknown Group";
-                post.UserAccount.username = _userManager.GetUserNameById(post.createdBy);
-            }
-
-            return posts;
+            return _postRepository._table
+                .Where(m => m.groupId == groupId && m.status == 0)
+                .OrderByDescending(p => p.date_created)
+                .Include(p => p.Groups)
+                .Include(p => p.UserAccount)
+                .Include(p => p.PostMedia)
+                .ToList();
         }
+
         public Post GetPostById(int postId)
         {
-            var post = _postRepository.GetAll().FirstOrDefault(p => p.id == postId);
-
-            if (post != null)
-            {
-                // Fetch group name and user name for the post
-                post.Groups.groupName = _groupManager.GetGroupById(post.groupId ?? 0)?.groupName ?? "Unknown Group";
-                post.UserAccount.username = _userManager.GetUserNameById(post.createdBy);
-            }
-
-            return post;
+            return _postRepository._table
+                .Include(p => p.Groups)
+                .Include(p => p.UserAccount)
+                .Include(p => p.PostMedia) 
+                .FirstOrDefault(p => p.id == postId);
         }
+
     }
 } 

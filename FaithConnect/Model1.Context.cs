@@ -28,6 +28,7 @@ namespace FaithConnect
         public DbSet<Content> Content { get; set; }
         public DbSet<Event> Event { get; set; }
         public DbSet<EventAttendance> EventAttendance { get; set; }
+        public DbSet<EventMedia> EventMedia { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Forum> Forum { get; set; }
         public DbSet<ForumComments> ForumComments { get; set; }
@@ -39,6 +40,7 @@ namespace FaithConnect
         public DbSet<Notification> Notification { get; set; }
         public DbSet<Post> Post { get; set; }
         public DbSet<PostComments> PostComments { get; set; }
+        public DbSet<PostMedia> PostMedia { get; set; }
         public DbSet<PostTags> PostTags { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<Survey> Survey { get; set; }

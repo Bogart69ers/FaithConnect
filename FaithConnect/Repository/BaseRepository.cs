@@ -8,11 +8,10 @@ using System.Data.Entity;
 namespace FaithConnect.Repository
 {
     public class BaseRepository<T> : IBaseRepository<T>
-        where T : class
+    where T : class
     {
 
         public DbContext _db;
-
         public DbSet<T> _table;
 
         public BaseRepository()
@@ -20,6 +19,8 @@ namespace FaithConnect.Repository
             _db = new FaithConnectEntities();
             _table = _db.Set<T>();
         }
+
+
         public ErrorCode Create(T t, out string errorMsg)
         {
             try

@@ -31,43 +31,7 @@
         </div>
 
         <div class="row">
-            <!-- Content Approval List -->
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Approved Events</div>
-                    </div>
-                    <div class="card-body">
-                        <table id="contentApprovalTable" class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Event Title</th>
-                                    <th>Created By</th>
-                                    <th>Date Submitted</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @* Example row, replace with dynamic data *@
-                                @foreach (var item in Model.Events.Where(u => u.status == 1))
-                                {
-
-                                    <tr>
-                                        <td>@Html.DisplayFor(modelItem => item.id)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.title)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.createdBy)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.date_created)</td>
-                                        <td><span class="badge badge-success">Approved</span></td>
-                                        
-                                    </tr>
-                                }
-                                @* Repeat for each pending content *@
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <!-- Content Approval List -->            
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
@@ -96,18 +60,20 @@
                                         <td>@Html.DisplayFor(modelItem => item.createdBy)</td>
                                         <td>@Html.DisplayFor(modelItem => item.date_created)</td>
                                         <td><span class="badge badge-warning">Pending</span></td>
-                                        <td>
-                                            <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
-                                                <i class="fas fa-edit"></i> Edit
-                                            </a>
+                                        <td>                                           
                                             
                                             <form action="@Url.Action("UpdateEventStatus", "Admin")" method="post" style="display:inline;">
                                                 <input type="hidden" name="id" value="@item.id" />
+                                                <input type="hidden" name="groupId" value="@item.groupId" />
+                                                <input type="hidden" name="title" value="@item.title" />
                                                 <button type="submit" class="btn btn-success btn-sm">
                                                     <i class="fas fa-trash"></i> Approve
                                                 </button>
                                             </form>
-                                            <form action="@Url.Action("Delete", new { id = item.id })" method="post" style="display:inline;">
+                                            <form action="@Url.Action("Delete", "Admin")" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@item.id" />
+                                                <input type="hidden" name="groupId" value="@item.groupId" />
+                                                <input type="hidden" name="title" value="@item.title" />
                                                 <button type="submit" class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i> Decline
                                                 </button>
@@ -122,6 +88,43 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Approved Events</div>
+                </div>
+                <div class="card-body">
+                    <table id="contentApprovalTable" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Event Title</th>
+                                <th>Created By</th>
+                                <th>Date Submitted</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @* Example row, replace with dynamic data *@
+                            @foreach (var item in Model.Events.Where(u => u.status == 1))
+                            {
+
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.id)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.title)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.createdBy)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.date_created)</td>
+                                    <td><span class="badge badge-success">Approved</span></td>
+
+                                </tr>
+                            }
+                            @* Repeat for each pending content *@
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

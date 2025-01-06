@@ -59,5 +59,17 @@ namespace FaithConnect.Repository
         {
             return _notif.Delete(id, out errMsg);
         }
+
+        public ErrorCode MarkAsRead(int id, out string errMsg)
+        {
+            var notification = GetNotificationById(id);
+            if (notification != null)
+            {
+                notification.isRead = true;
+                return UpdateNotification(notification, out errMsg);
+            }
+            errMsg = "Notification not found.";
+            return ErrorCode.NotFound;
+        }
     }
 }

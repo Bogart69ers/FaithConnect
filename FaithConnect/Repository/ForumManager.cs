@@ -41,5 +41,7 @@ namespace FaithConnect.Repository
                                   .Where(m => m.groupId == groupId && m.status == 0).OrderByDescending(p => p.date_created)
                                   .ToList(); // Get all group memberships with status = 1
         }
+
+
     }
 }

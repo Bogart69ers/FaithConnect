@@ -7,6 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
+
 namespace FaithConnect.Controllers
 {
     public class BaseController : Controller
@@ -22,6 +23,8 @@ namespace FaithConnect.Controllers
         public TagsManager _tagsManager;
         public CommentManager _commentManager;
         public NotificationManager _NotificationManager;
+        public PostMediaManager _postMediaManager; 
+        public EventMediaManager _eventMediaManager; 
 
         public String Username { get { return User.Identity.Name; } }
         public String UserId { get { return _AccManager.GetUserByUsername(Username).userId; } }
@@ -38,6 +41,8 @@ namespace FaithConnect.Controllers
             _tagsManager = new TagsManager();
             _commentManager = new CommentManager();
             _NotificationManager = new NotificationManager();
+            _postMediaManager = new PostMediaManager(); 
+            _eventMediaManager = new EventMediaManager();
         }
         private string GetAvatarUrl(int id)
         {

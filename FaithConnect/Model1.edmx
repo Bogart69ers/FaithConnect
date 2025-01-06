@@ -40,6 +40,17 @@
           <Property Name="groupId" Type="int" />
           <Property Name="status" Type="int" />
         </EntityType>
+        <EntityType Name="EventMedia">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="eventId" Type="int" />
+          <Property Name="mediaType" Type="nvarchar" MaxLength="50" />
+          <Property Name="mediaFile" Type="nvarchar(max)" />
+          <Property Name="uploadedAt" Type="datetime" />
+          <Property Name="uploadedBy" Type="int" />
+        </EntityType>
         <EntityType Name="Feedback">
           <Key>
             <PropertyRef Name="id" />
@@ -164,6 +175,17 @@
           <Property Name="userId" Type="int" />
           <Property Name="date_created" Type="datetime" />
           <Property Name="comment" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="PostMedia">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="postId" Type="int" />
+          <Property Name="mediaType" Type="nvarchar" MaxLength="50" />
+          <Property Name="mediaFile" Type="nvarchar(max)" />
+          <Property Name="uploadedAt" Type="datetime" />
+          <Property Name="uploadedBy" Type="int" />
         </EntityType>
         <EntityType Name="PostTags">
           <Key>
@@ -297,6 +319,32 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Principal>
             <Dependent Role="EventAttendance">
               <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EventMedia_Event">
+          <End Role="Event" Type="Self.Event" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="EventMedia" Type="Self.EventMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="EventMedia">
+              <PropertyRef Name="eventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EventMedia_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1" />
+          <End Role="EventMedia" Type="Self.EventMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="EventMedia">
+              <PropertyRef Name="uploadedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -562,6 +610,32 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PostMedia_Post">
+          <End Role="Post" Type="Self.Post" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PostMedia" Type="Self.PostMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Post">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostMedia">
+              <PropertyRef Name="postId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PostMedia_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1" />
+          <End Role="PostMedia" Type="Self.PostMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostMedia">
+              <PropertyRef Name="uploadedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PostTags_Post">
           <End Role="Post" Type="Self.Post" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -620,6 +694,7 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           <EntitySet Name="Content" EntityType="Self.Content" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Event" EntityType="Self.Event" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EventAttendance" EntityType="Self.EventAttendance" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EventMedia" EntityType="Self.EventMedia" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Feedback" EntityType="Self.Feedback" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Forum" EntityType="Self.Forum" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ForumComments" EntityType="Self.ForumComments" Schema="dbo" store:Type="Tables" />
@@ -631,6 +706,7 @@ warning 6002: The table/view 'FaithConnect.dbo.vw_Role' does not have a primary 
           <EntitySet Name="Notification" EntityType="Self.Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostComments" EntityType="Self.PostComments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PostMedia" EntityType="Self.PostMedia" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostTags" EntityType="Self.PostTags" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Survey" EntityType="Self.Survey" Schema="dbo" store:Type="Tables" />
@@ -663,6 +739,14 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_EventAttendance_UserAccount" Association="Self.FK_EventAttendance_UserAccount">
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="EventAttendance" EntitySet="EventAttendance" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EventMedia_Event" Association="Self.FK_EventMedia_Event">
+            <End Role="Event" EntitySet="Event" />
+            <End Role="EventMedia" EntitySet="EventMedia" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EventMedia_UserAccount" Association="Self.FK_EventMedia_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="EventMedia" EntitySet="EventMedia" />
           </AssociationSet>
           <AssociationSet Name="FK_Feedback_Event1" Association="Self.FK_Feedback_Event1">
             <End Role="Event" EntitySet="Event" />
@@ -744,6 +828,14 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="PostComments" EntitySet="PostComments" />
           </AssociationSet>
+          <AssociationSet Name="FK_PostMedia_Post" Association="Self.FK_PostMedia_Post">
+            <End Role="Post" EntitySet="Post" />
+            <End Role="PostMedia" EntitySet="PostMedia" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PostMedia_UserAccount" Association="Self.FK_PostMedia_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="PostMedia" EntitySet="PostMedia" />
+          </AssociationSet>
           <AssociationSet Name="FK_PostTags_Post" Association="Self.FK_PostTags_Post">
             <End Role="Post" EntitySet="Post" />
             <End Role="PostTags" EntitySet="PostTags" />
@@ -793,6 +885,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Groups" Relationship="Self.FK_Event_Groups" FromRole="Event" ToRole="Groups" />
           <NavigationProperty Name="UserAccount" Relationship="Self.FK_Event_UserAccount" FromRole="Event" ToRole="UserAccount" />
           <NavigationProperty Name="EventAttendance" Relationship="Self.FK_EventAttendance_Event" FromRole="Event" ToRole="EventAttendance" />
+          <NavigationProperty Name="EventMedia" Relationship="Self.FK_EventMedia_Event" FromRole="Event" ToRole="EventMedia" />
           <NavigationProperty Name="Feedback" Relationship="Self.FK_Feedback_Event1" FromRole="Event" ToRole="Feedback" />
           <NavigationProperty Name="Media" Relationship="Self.FK_Media_Event" FromRole="Event" ToRole="Media" />
         </EntityType>
@@ -808,6 +901,19 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Event" Relationship="Self.FK_EventAttendance_Event" FromRole="EventAttendance" ToRole="Event" />
           <NavigationProperty Name="Groups" Relationship="Self.FK_EventAttendance_Groups" FromRole="EventAttendance" ToRole="Groups" />
           <NavigationProperty Name="UserAccount" Relationship="Self.FK_EventAttendance_UserAccount" FromRole="EventAttendance" ToRole="UserAccount" />
+        </EntityType>
+        <EntityType Name="EventMedia">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="eventId" Type="Int32" />
+          <Property Name="mediaType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="mediaFile" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="uploadedAt" Type="DateTime" Precision="3" />
+          <Property Name="uploadedBy" Type="Int32" />
+          <NavigationProperty Name="Event" Relationship="Self.FK_EventMedia_Event" FromRole="EventMedia" ToRole="Event" />
+          <NavigationProperty Name="UserAccount" Relationship="Self.FK_EventMedia_UserAccount" FromRole="EventMedia" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="Feedback">
           <Key>
@@ -951,6 +1057,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Media" Relationship="Self.FK_Media_Post" FromRole="Post" ToRole="Media" />
           <NavigationProperty Name="UserAccount" Relationship="Self.FK_Post_UserAccount" FromRole="Post" ToRole="UserAccount" />
           <NavigationProperty Name="PostComments" Relationship="Self.FK_PostComments_Post" FromRole="Post" ToRole="PostComments" />
+          <NavigationProperty Name="PostMedia" Relationship="Self.FK_PostMedia_Post" FromRole="Post" ToRole="PostMedia" />
           <NavigationProperty Name="PostTags" Relationship="Self.FK_PostTags_Post" FromRole="Post" ToRole="PostTags" />
         </EntityType>
         <EntityType Name="PostComments">
@@ -965,6 +1072,19 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Post" Relationship="Self.FK_PostComments_Post" FromRole="PostComments" ToRole="Post" />
           <NavigationProperty Name="UserAccount" Relationship="Self.FK_PostComments_UserAccount" FromRole="PostComments" ToRole="UserAccount" />
+        </EntityType>
+        <EntityType Name="PostMedia">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="postId" Type="Int32" />
+          <Property Name="mediaType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="mediaFile" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="uploadedAt" Type="DateTime" Precision="3" />
+          <Property Name="uploadedBy" Type="Int32" />
+          <NavigationProperty Name="Post" Relationship="Self.FK_PostMedia_Post" FromRole="PostMedia" ToRole="Post" />
+          <NavigationProperty Name="UserAccount" Relationship="Self.FK_PostMedia_UserAccount" FromRole="PostMedia" ToRole="UserAccount" />
         </EntityType>
         <EntityType Name="PostTags">
           <Key>
@@ -1018,6 +1138,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <Property Name="date_modified" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Event" Relationship="Self.FK_Event_UserAccount" FromRole="UserAccount" ToRole="Event" />
           <NavigationProperty Name="EventAttendance" Relationship="Self.FK_EventAttendance_UserAccount" FromRole="UserAccount" ToRole="EventAttendance" />
+          <NavigationProperty Name="EventMedia" Relationship="Self.FK_EventMedia_UserAccount" FromRole="UserAccount" ToRole="EventMedia" />
           <NavigationProperty Name="Feedback" Relationship="Self.FK_Feedback_UserAccount1" FromRole="UserAccount" ToRole="Feedback" />
           <NavigationProperty Name="Forum" Relationship="Self.FK_Forum_UserAccount" FromRole="UserAccount" ToRole="Forum" />
           <NavigationProperty Name="ForumComments" Relationship="Self.FK_ForumComments_UserAccount" FromRole="UserAccount" ToRole="ForumComments" />
@@ -1025,6 +1146,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <NavigationProperty Name="Notification" Relationship="Self.FK_Notification_UserAccount1" FromRole="UserAccount" ToRole="Notification" />
           <NavigationProperty Name="Post" Relationship="Self.FK_Post_UserAccount" FromRole="UserAccount" ToRole="Post" />
           <NavigationProperty Name="PostComments" Relationship="Self.FK_PostComments_UserAccount" FromRole="UserAccount" ToRole="PostComments" />
+          <NavigationProperty Name="PostMedia" Relationship="Self.FK_PostMedia_UserAccount" FromRole="UserAccount" ToRole="PostMedia" />
           <NavigationProperty Name="Role1" Relationship="Self.FK_UserAccount_Role" FromRole="UserAccount" ToRole="Role" />
           <NavigationProperty Name="UserInformation" Relationship="Self.FK_UserInformation_UserAccount" FromRole="UserAccount" ToRole="UserInformation" />
         </EntityType>
@@ -1093,6 +1215,20 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_EventMedia_Event">
+          <End Role="Event" Type="Self.Event" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="EventMedia" Type="Self.EventMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Event">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="EventMedia">
+              <PropertyRef Name="eventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Feedback_Event1">
           <End Role="Event" Type="Self.Event" Multiplicity="0..1" />
           <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
@@ -1138,6 +1274,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Principal>
             <Dependent Role="EventAttendance">
               <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EventMedia_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1" />
+          <End Role="EventMedia" Type="Self.EventMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="EventMedia">
+              <PropertyRef Name="uploadedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1367,6 +1515,20 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PostMedia_Post">
+          <End Role="Post" Type="Self.Post" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PostMedia" Type="Self.PostMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Post">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostMedia">
+              <PropertyRef Name="postId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PostTags_Post">
           <End Role="Post" Type="Self.Post" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -1390,6 +1552,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             </Principal>
             <Dependent Role="PostComments">
               <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PostMedia_UserAccount">
+          <End Role="UserAccount" Type="Self.UserAccount" Multiplicity="0..1" />
+          <End Role="PostMedia" Type="Self.PostMedia" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserAccount">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PostMedia">
+              <PropertyRef Name="uploadedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1437,6 +1611,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySet Name="Content" EntityType="Self.Content" />
           <EntitySet Name="Event" EntityType="Self.Event" />
           <EntitySet Name="EventAttendance" EntityType="Self.EventAttendance" />
+          <EntitySet Name="EventMedia" EntityType="Self.EventMedia" />
           <EntitySet Name="Feedback" EntityType="Self.Feedback" />
           <EntitySet Name="Forum" EntityType="Self.Forum" />
           <EntitySet Name="ForumComments" EntityType="Self.ForumComments" />
@@ -1448,6 +1623,7 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <EntitySet Name="Notification" EntityType="Self.Notification" />
           <EntitySet Name="Post" EntityType="Self.Post" />
           <EntitySet Name="PostComments" EntityType="Self.PostComments" />
+          <EntitySet Name="PostMedia" EntityType="Self.PostMedia" />
           <EntitySet Name="PostTags" EntityType="Self.PostTags" />
           <EntitySet Name="Role" EntityType="Self.Role" />
           <EntitySet Name="Survey" EntityType="Self.Survey" />
@@ -1467,6 +1643,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="Event" EntitySet="Event" />
             <End Role="EventAttendance" EntitySet="EventAttendance" />
           </AssociationSet>
+          <AssociationSet Name="FK_EventMedia_Event" Association="Self.FK_EventMedia_Event">
+            <End Role="Event" EntitySet="Event" />
+            <End Role="EventMedia" EntitySet="EventMedia" />
+          </AssociationSet>
           <AssociationSet Name="FK_Feedback_Event1" Association="Self.FK_Feedback_Event1">
             <End Role="Event" EntitySet="Event" />
             <End Role="Feedback" EntitySet="Feedback" />
@@ -1482,6 +1662,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_EventAttendance_UserAccount" Association="Self.FK_EventAttendance_UserAccount">
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="EventAttendance" EntitySet="EventAttendance" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EventMedia_UserAccount" Association="Self.FK_EventMedia_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="EventMedia" EntitySet="EventMedia" />
           </AssociationSet>
           <AssociationSet Name="FK_Feedback_UserAccount1" Association="Self.FK_Feedback_UserAccount1">
             <End Role="UserAccount" EntitySet="UserAccount" />
@@ -1551,6 +1735,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
             <End Role="Post" EntitySet="Post" />
             <End Role="PostComments" EntitySet="PostComments" />
           </AssociationSet>
+          <AssociationSet Name="FK_PostMedia_Post" Association="Self.FK_PostMedia_Post">
+            <End Role="Post" EntitySet="Post" />
+            <End Role="PostMedia" EntitySet="PostMedia" />
+          </AssociationSet>
           <AssociationSet Name="FK_PostTags_Post" Association="Self.FK_PostTags_Post">
             <End Role="Post" EntitySet="Post" />
             <End Role="PostTags" EntitySet="PostTags" />
@@ -1558,6 +1746,10 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
           <AssociationSet Name="FK_PostComments_UserAccount" Association="Self.FK_PostComments_UserAccount">
             <End Role="UserAccount" EntitySet="UserAccount" />
             <End Role="PostComments" EntitySet="PostComments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PostMedia_UserAccount" Association="Self.FK_PostMedia_UserAccount">
+            <End Role="UserAccount" EntitySet="UserAccount" />
+            <End Role="PostMedia" EntitySet="PostMedia" />
           </AssociationSet>
           <AssociationSet Name="FK_PostTags_Tags" Association="Self.FK_PostTags_Tags">
             <End Role="Tags" EntitySet="Tags" />
@@ -1613,6 +1805,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="eventId" ColumnName="eventId" />
                 <ScalarProperty Name="groupId" ColumnName="groupId" />
                 <ScalarProperty Name="status" ColumnName="status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EventMedia">
+            <EntityTypeMapping TypeName="FaithConnectModel.EventMedia">
+              <MappingFragment StoreEntitySet="EventMedia">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="eventId" ColumnName="eventId" />
+                <ScalarProperty Name="mediaType" ColumnName="mediaType" />
+                <ScalarProperty Name="mediaFile" ColumnName="mediaFile" />
+                <ScalarProperty Name="uploadedAt" ColumnName="uploadedAt" />
+                <ScalarProperty Name="uploadedBy" ColumnName="uploadedBy" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1749,6 +1953,18 @@ FROM [dbo].[vw_Role] AS [vw_Role]</DefiningQuery>
                 <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="date_created" ColumnName="date_created" />
                 <ScalarProperty Name="comment" ColumnName="comment" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PostMedia">
+            <EntityTypeMapping TypeName="FaithConnectModel.PostMedia">
+              <MappingFragment StoreEntitySet="PostMedia">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="postId" ColumnName="postId" />
+                <ScalarProperty Name="mediaType" ColumnName="mediaType" />
+                <ScalarProperty Name="mediaFile" ColumnName="mediaFile" />
+                <ScalarProperty Name="uploadedAt" ColumnName="uploadedAt" />
+                <ScalarProperty Name="uploadedBy" ColumnName="uploadedBy" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
