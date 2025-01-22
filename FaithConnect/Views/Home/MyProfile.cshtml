@@ -1,4 +1,6 @@
-﻿@model FaithConnect.ViewModel.GroupViewModel
+﻿@using Newtonsoft.Json
+
+@model FaithConnect.ViewModel.GroupViewModel
 
 @{
     string userName = "User";
@@ -15,8 +17,229 @@
 <link href="~/Assets/signup/css/style.css" rel="stylesheet">
 <link href="~/Assets/signup/css/style2.css" rel="stylesheet">
 
+<style>
+    .modal-header {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 10px; /* Space between profile picture and text */
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+    }
 
-<body>
+    /* Profile Picture Styling */
+    .profile-picture {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+    }
+
+    /* Profile Details Styling */
+    .profile-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .profile-details h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .profile-details small {
+        font-size: 0.875rem;
+        color: #777;
+    }
+
+    /* Close Button Styling */
+    .modal-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.8rem;
+        color: #333;
+        background: none;
+        border: none;
+        cursor: pointer;
+        z-index: 1051;
+        transition: transform 0.2s, color 0.2s;
+    }
+
+    .modal-close-btn:hover {
+        color: #ff0000;
+        transform: scale(1.2);
+    }
+
+    /* Focus effect for accessibility */
+    .modal-close-btn:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    /* Ensure modal content maintains proper positioning */
+    .modal-content {
+        position: relative;
+    }
+    #mediaPreview img,
+    #mediaPreview video {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .post-media .img-thumbnail {
+        width: 500px;
+        height: 200px; /* Fixed height for grid images */
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .carousel-item img {
+        height: 500px; /* Adjust the height of images in the carousel */
+        object-fit: contain;
+    }    
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        display: flex;
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    /* Hide arrows gracefully when not needed */
+    .carousel-control-prev[style*="display: none"],
+    .carousel-control-next[style*="display: none"] {
+        display: none !important;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        filter: invert(0%) sepia(100%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+    }
+
+    /* Optional: Adjust arrow size */
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Ensure visibility on hover */
+    .carousel-control-prev:hover .carousel-control-prev-icon,
+    .carousel-control-next:hover .carousel-control-next-icon {
+        filter: invert(0%) sepia(100%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+        opacity: 0.8;
+    }
+    /* New Styles for Single Image Posts */
+    .single-image-container {
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically if there's a set height */
+        width: 100%;
+        margin: 0 auto; /* Ensure centering within parent container */
+    }
+
+    /* Ensure the image fits well */
+    .single-post-image {
+        width: 1000px; /* Prevent the image from overflowing */
+        max-height: 500px; /* Adjust max height if necessary */
+        object-fit: contain; /* Maintain image proportions */
+        border-radius: 8px; /* Optional: Add rounded corners */
+    }
+    .modals {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modals-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 35%;
+    }
+    .masonry-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-auto-rows: 200px;
+        gap: 10px;
+    }
+
+    .masonry-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+
+    .masonry-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        position:absolute;
+    }
+
+    .masonry-item.overlay-item {
+        filter: brightness(0.7);
+    }
+
+    .masonry-item.overlay-item .overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 8px 12px;
+        border-radius: 4px;
+        z-index: 2;
+    }
+    .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 25px;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .event-day {
+        cursor: pointer;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .tooltip {
+        position: absolute;
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1050;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
     <div class="container">
         <div class="profile-page tx-13">
             <div class="row">
@@ -88,10 +311,16 @@
                 </div>
                 <!-- Middle section -->
                 <div class="col-md-8">
-                    @if (Model.Posts != null && Model.Posts.Any())
-            {
-                foreach (var post in Model.Posts)
-                {
+                    @if (Model.RepostedPosts != null && Model.RepostedPosts.Any())
+                    {
+                        foreach (var post in Model.RepostedPosts)
+                        {
+                            var user = Model.UserInformations.FirstOrDefault(u => u.userId == post.createdBy);
+                            string profilePicture = user != null && user.Image != null && user.Image.Any()
+                                                ? Url.Content("~/UploadedFiles/" + user.Image.FirstOrDefault()?.imageFile)
+                                                : Url.Content("~/UploadedFiles/default.png"); // Fallback to default profile picture
+                            string fullName = user != null ? $"{user.first_name} {user.last_name}" : "Unknown";
+
                             <div class="post col-md-20">
                                 <!-- Post Header -->
                                 <div class="post-header">
@@ -122,34 +351,90 @@
                                 <div class="post-content">
                                     <p>@post.content</p>
                                 </div>
-                                <!-- Tags Section -->
-                                <div>
-                                    @{
-                                        var tags = ViewBag.TagsByPost != null && ViewBag.TagsByPost.ContainsKey(post.id) ? ViewBag.TagsByPost[post.id] as List<string> : new List<string>();
+                                @if (post.PostMedia != null && post.PostMedia.Any(m => m.mediaType.StartsWith("Image", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    var imageMedia = post.PostMedia.Where(m => m.mediaType.StartsWith("Image", StringComparison.OrdinalIgnoreCase)).ToList();
+                                    var imageCount = imageMedia.Count;
 
-                                        if (tags != null && tags.Count > 0) // Use Count instead of Any
+                                    if (imageCount == 1)
+                                    {
+                                        // Single Image
+                                        var singleImage = imageMedia.FirstOrDefault();
+                                        if (singleImage != null)
                                         {
-                                            foreach (var tag in tags)
-                                            {
-                                                <span class="badge badge-info" style="margin-right: 5px;" hidden>@tag</span>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <span hidden>No tags</span>
+                                            <div class="post-media mt-2">
+                                                <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#imageModals"
+                                                        data-images='["@Url.Content(singleImage.mediaFile)"]'
+                                                        data-profile-picture="@Url.Content(profilePicture)"
+                                                        data-user-name="@fullName"
+                                                        data-post-title="@post.content">
+                                                    <img src="@Url.Content(singleImage.mediaFile)" alt="Post Image" class="img-fluid single-post-image" loading="lazy">
+                                                </button>
+                                            </div>
                                         }
                                     }
-                                </div>
+                                    else if (imageCount > 1)
+                                    {
+                                        // Multiple Images in Masonry Grid
+                                        var imageUrls = imageMedia.Select(m => Url.Content(m.mediaFile)).ToList();
+                                        var imageUrlsJson = JsonConvert.SerializeObject(imageUrls);
+
+                                        <div class="post-media-wrapper">
+                                            <div class="post-media masonry-grid">
+                                                @for (var index = 0; index < imageUrls.Count; index++)
+                                                {
+                                                    var imageUrl = imageUrls[index];
+                                                    <div class="masonry-item @(index == 4 && imageCount > 5 ? "overlay-item" : "")">
+                                                        <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#imageModals"
+                                                                data-images='@Html.Raw(imageUrlsJson)'
+                                                                data-profile-picture="@Url.Content(profilePicture)"
+                                                                data-user-name="@fullName"
+                                                                data-post-title="@post.content">
+                                                            <img src="@imageUrl" alt="Post Image" class="img-fluid masonry-image" loading="lazy">
+                                                            @if (index == 4 && imageCount > 5)
+                                                            {
+                                                                <div class="overlay">+@(imageCount - 5)</div>
+                                                            }
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+
+
+                                }
+                                @if (post.PostMedia != null && post.PostMedia.Any(m => m.mediaType.StartsWith("Video", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    var videoMedia = post.PostMedia.Where(m => m.mediaType.StartsWith("Video", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                                    <div class="post-media mt-2">
+                                        @foreach (var media in videoMedia)
+                                        {
+                                            <video controls class="img-fluid mb-2" style="max-width: 100%; height: auto;">
+                                                <source src="@Url.Content(media.mediaFile)" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        }
+                                    </div>
+                                }
+                                <span class="input-icon-addon like-count" style="color: #777; font-size: 15px;"><i class="fas fa-heart"></i>  @post.Reaction.Count(r => r.hasLiked == true)</span>
+
                                 <!-- Post Actions -->
                                 <div class="post-actions mt-2">
-                                    <button class="action-button" onclick="toggleLike(this)">
-                                        <span class="input-icon-addon"><i class="far fa-heart"></i></span> Like
+                                    <button class="action-button"
+                                            onclick="toggleLike(this, @post.id)"
+                                            data-isliked="@(post.Reaction.Any(r => r.userId == currentUserId && r.hasLiked) ? "true" : "false")">
+                                        <span class="input-icon-addon">
+                                            <i class="@(post.Reaction.Any(r => r.userId == currentUserId && r.hasLiked) ? "fas" : "far") fa-heart"></i>
+                                        </span>
+                                        @(post.Reaction.Any(r => r.userId == currentUserId && r.hasLiked) ? "Liked" : "Like")
                                     </button>
-                                    <button class="action-button">
+                                    <button class="action-button" onclick="focusCommentInput(@post.id)">
                                         <span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact
-                                    </button>                                   
+                                    </button>                                                                    
                                 </div>
-                                <div class="post-comments">
+                                <div id="comments-section-@post.id" class="post-comments">
                                     <div class="post-time" style="font-size:13px; font-weight:bold; padding:10px 0 10px 0">Interactions</div>
                                     @if (post.PostComments != null)
                                     {
@@ -182,13 +467,14 @@
                                     }
                                 </div>
                                 <!-- Interact Input -->
-                                <form action="@Url.Action("AddComment", "Home")" method="post" style="display: inline;">
+                                <form onsubmit="submitComment(this, @post.id)" style="display: inline;">
                                     <div class="post-interact mt-3">
                                         <input type="hidden" name="groupId" value="@post.groupId" />
                                         <input type="hidden" name="postId" value="@post.id" />
                                         <input type="hidden" name="userId" value="@currentUserId" />
+                                        <input type="hidden" name="redirectPage" value="Index" />
                                         <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
-                                        <input type="text" name="comment" placeholder="Interact as @userName" class="comment-input">
+                                        <input id="comment-input-@post.id" type="text" name="comment" placeholder="Interact as @userName" class="comment-input">
                                         <button type="submit" class="action-button"><span class="input-icon-addon"><i class="fas fa-paper-plane"></i></span></button>
                                     </div>
                                 </form>
@@ -284,9 +570,181 @@
         </div>
     </div>
 
+    <div class="modal fade" id="imageModals" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div class="modal-header align-items-center border-0 d-flex">
+                    <img id="modalProfilePicture" src="" alt="Profile Picture" class="rounded-circle profile-picture">
+                    <div class="ml-3 profile-details">
+                        <h5 id="modalUserName" class="mb-0"></h5>
+                        <p id="modalPostTitle"></p>
+                    </div>
+                </div>
+
+                <div class="modal-body p-0">
+                    <!-- Bootstrap Carousel -->
+                    <div id="carouselExample" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner" id="carouselImages">
+                            <!-- Dynamically populated images will go here -->
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer p-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/Assets/signup/js/preview.js"></script>
 
-    
-</body>
+<script>
+    function toggleLike(button, postId) {
+        const icon = button.querySelector('.input-icon-addon i');
+        const isLiked = button.getAttribute('data-isliked') === "true"; // Read current state
+        const likeCountElement = button.closest('.post').querySelector('.like-count'); // Locate the like count element
+
+        fetch('/Home/ToggleLike', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId, isLiked })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update button state
+                if (isLiked) {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    button.setAttribute('data-isliked', "false");
+                } else {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    button.setAttribute('data-isliked', "true");
+                }
+
+                // Update the like count
+                if (likeCountElement) {
+                    likeCountElement.innerHTML = `<i class="fas fa-heart"></i> ${data.likeCount}`;
+                }
+            } else {
+                console.error('Failed to toggle like');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('[data-toggle="modal"]').forEach(button => {
+            button.addEventListener('click', function () {
+                // Get image array for carousel
+                const images = JSON.parse(this.getAttribute('data-images') || '[]');
+                const carouselInner = document.getElementById('carouselImages');
+                carouselInner.innerHTML = ''; // Clear previous content
+
+                // Populate Carousel
+                if (images.length > 0) {
+                    images.forEach((src, index) => {
+                        const isActive = index === 0 ? 'active' : '';
+                        carouselInner.innerHTML += `
+                            <div class="carousel-item ${isActive}">
+                                <img src="${src}" class="d-block w-100" alt="Post Image">
+                            </div>
+                        `;
+                    });
+
+                    // Show/Hide Arrows based on image count
+                    const prevArrow = document.querySelector('.carousel-control-prev');
+                    const nextArrow = document.querySelector('.carousel-control-next');
+
+                    if (images.length === 1) {
+                        prevArrow.style.display = 'none';
+                        nextArrow.style.display = 'none';
+                    } else {
+                        prevArrow.style.display = 'flex';
+                        nextArrow.style.display = 'flex';
+                    }
+                }
+
+                // Populate Profile Details
+                const profilePicture = this.getAttribute('data-profile-picture');
+                const userName = this.getAttribute('data-user-name');
+                const postTitle = this.getAttribute('data-post-title');
+
+                document.getElementById('modalProfilePicture').src = profilePicture || 'https://via.placeholder.com/50';
+                document.getElementById('modalUserName').innerText = userName || 'Unknown User';
+                document.getElementById('modalPostTitle').innerText = postTitle || '';
+
+                // Reset carousel to the first slide
+                $('#carouselExample').carousel(0);
+            });
+        });
+    });
+</script>
+<script>
+    function focusCommentInput(postId) {
+    const inputField = document.getElementById(`comment-input-${postId}`);
+    if (inputField) {
+        inputField.focus();
+    }
+}
+</script>
+<script>
+    function submitComment(form, postId) {
+        event.preventDefault(); // Prevent normal form submission
+
+        const commentInput = form.querySelector("input[name='comment']");
+        const commentText = commentInput.value;
+
+        if (!commentText.trim()) {
+            alert("Comment cannot be empty.");
+            return;
+        }
+
+        const formData = new URLSearchParams(new FormData(form));
+
+        fetch('/Home/AddComment', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                commentInput.value = ''; // Clear the input field
+
+                const commentsSection = document.querySelector(`#comments-section-${postId}`);
+                const newComment = `
+                    <div class="post-header">
+                        <img src="${data.comment.profileImage}" alt="User Avatar" class="group-icon" style="width: 45px; height: 45px; object-fit: cover;">
+                        <div class="group-info">
+                            <div class="group-name">${data.comment.user}</div>
+                            <div class="post-content">${data.comment.comment}</div>
+                        </div>
+                    </div>
+                    <br />`;
+                commentsSection.insertAdjacentHTML('beforeend', newComment);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An unexpected error occurred. Please try again.");
+        });
+    }
+</script>

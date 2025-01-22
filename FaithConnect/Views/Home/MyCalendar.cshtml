@@ -92,6 +92,9 @@
                 <div id="upcomingEvent">
                     @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 1 && g.Event.event_date > DateTime.Now).OrderByDescending(g => g.Event.event_date))
                     {
+                        var goingCount = ViewBag.EventAttendanceCounts.ContainsKey(events.eventId)
+                                   ? ViewBag.EventAttendanceCounts[events.eventId]
+                                   : 0;
                         <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="@events.Event.event_date.Value.ToString("yyyy-MM-dd")">
                             <div class="event-date me-3 text-center">
                                 <div class="event-day mb-1" style="color:black;">
@@ -114,11 +117,16 @@
                                         data-time="@(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("hh:mm tt") : "N/A")"
                                         data-date="@events.Event.event_date.Value.ToString("MMMM d, yyyy")"
                                         data-groupImage="@ViewBag.GroupPhoto"
-                                        data-groupName="@events.Event.Groups.groupName"                                                        
+                                        data-groupName="@events.Event.Groups.groupName"
+                                        data-goingcount="@goingCount"
                                         data-media='@Html.Raw(Json.Encode(events.Event.EventMedia.Select(m => m.mediaFile)))'>
                                     @events.Event.title
                                 </button>
+
                                 <div class="event-description">@events.Event.description</div>
+                                <div class="event-description">
+                                    <span class="badge badge-success" style="color:dimgrey">Going: @goingCount</span>
+                                </div>
                             </div>
                         </div>
                     }
@@ -185,6 +193,9 @@
                 <p id="eventTime"></p>
                 <p id="eventDescription"></p>
 
+                <div class="event-attendance mt-2">
+                    <span class="badge badge-success" style="color:dimgrey">Going: <span id="eventGoingCount">0</span></span>
+                </div>
                 <!-- Event Media -->
                 <div id="eventMediaContainer" class="mt-3"></div>
 
@@ -208,6 +219,7 @@
                 const time = this.getAttribute('data-time');
                 const groupImage = this.getAttribute('data-groupImage');
                 const groupName = this.getAttribute('data-groupName');
+                const goingCount = this.getAttribute('data-goingcount');
                 const mediaFiles = JSON.parse(this.getAttribute('data-media') || '[]');
 
                 // Update modal content
@@ -217,6 +229,7 @@
                 document.getElementById('eventTime').textContent = `Time: ${time}`;
                 document.getElementById('groupName').textContent = groupName;
                 document.getElementById('groupImage').src = groupImage || '/UploadedFiles/default-cover.png';
+                document.getElementById('eventGoingCount').textContent = goingCount || '0';
 
                 // Handle media files
                 const mediaContainer = document.getElementById('eventMediaContainer');
@@ -237,6 +250,7 @@
             });
         });
     });
+
 </script>
 
 <script>

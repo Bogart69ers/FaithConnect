@@ -22,6 +22,5 @@ namespace FaithConnect
         public string comment { get; set; }
     
         public virtual Post Post { get; set; }
-        public virtual UserAccount UserAccount { get; set; }
     }
 }

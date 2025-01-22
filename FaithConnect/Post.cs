@@ -20,6 +20,8 @@ namespace FaithConnect
             this.PostComments = new HashSet<PostComments>();
             this.PostMedia = new HashSet<PostMedia>();
             this.PostTags = new HashSet<PostTags>();
+            this.Reaction = new HashSet<Reaction>();
+            this.Repost = new HashSet<Repost>();
         }
     
         public int id { get; set; }
@@ -37,5 +39,7 @@ namespace FaithConnect
         public virtual ICollection<PostComments> PostComments { get; set; }
         public virtual ICollection<PostMedia> PostMedia { get; set; }
         public virtual ICollection<PostTags> PostTags { get; set; }
+        public virtual ICollection<Reaction> Reaction { get; set; }
+        public virtual ICollection<Repost> Repost { get; set; }
     }
 }

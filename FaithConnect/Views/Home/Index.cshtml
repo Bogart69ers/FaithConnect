@@ -369,19 +369,26 @@
                                 }
                             }
                         </div>
+                        <span class="input-icon-addon like-count" style="color: #777; font-size: 15px;"><i class="fas fa-heart"></i>  @post.Reaction.Count(r => r.hasLiked == true)</span>
                         <!-- Post Actions -->
                         <div class="post-actions mt-2">
-                            <button class="action-button" onclick="toggleLike(this)">
-                                <span class="input-icon-addon"><i class="far fa-heart"></i></span> Like
+                            <button class="action-button"
+                                    onclick="toggleLike(this, @post.id)"
+                                    data-isliked="@(post.Reaction.Any(r => r.userId == currentUserId && r.hasLiked) ? "true" : "false")">
+                                <span class="input-icon-addon">
+                                    <i class="@(post.Reaction.Any(r => r.userId == currentUserId && r.hasLiked) ? "fas" : "far") fa-heart"></i>
+                                </span>
+                                @(post.Reaction.Any(r => r.userId == currentUserId && r.hasLiked) ? "Liked" : "Like")
                             </button>
-                            <button class="action-button">
+                            <button class="action-button" onclick="focusCommentInput(@post.id)">
                                 <span class="input-icon-addon"><i class="fas fa-comment-alt"></i></span> Interact
                             </button>
-                            <button class="action-button">
+                            <button class="action-button" onclick="repostPost(@post.id)">
                                 <span class="input-icon-addon"><i class="fas fa-retweet"></i></span> Repost
                             </button>
+
                         </div>
-                        <div class="post-comments">
+                        <div id="comments-section-@post.id" class="post-comments">
                             <div class="post-time" style="font-size:13px; font-weight:bold; padding:10px 0 10px 0" >Interactions</div>
                             @if (post.PostComments != null)
                             {
@@ -414,14 +421,14 @@
                               }
                         </div>
                         <!-- Interact Input -->
-                        <form action="@Url.Action("AddComment", "Home")" method="post" style="display: inline;">
+                        <form onsubmit="submitComment(this, @post.id)" style="display: inline;">
                             <div class="post-interact mt-3">
                                 <input type="hidden" name="groupId" value="@post.groupId" />
                                 <input type="hidden" name="postId" value="@post.id" />
                                 <input type="hidden" name="userId" value="@currentUserId" />
                                 <input type="hidden" name="redirectPage" value="Index" />
                                 <img src="@profileImage" alt="Avatar" class="user-icon" style="width: 45px; height: 45px; object-fit: cover">
-                                <input type="text" name="comment" placeholder="Interact as @userName" class="comment-input">
+                                <input id="comment-input-@post.id" type="text" name="comment" placeholder="Interact as @userName" class="comment-input">
                                 <button type="submit" class="action-button"><span class="input-icon-addon"><i class="fas fa-paper-plane"></i></span></button>
                             </div>
                         </form>
@@ -438,6 +445,9 @@
                 <div id="upcomingEvent">
                     @foreach (var events in Model.Events.Where(g => g.userId == currentUserId && g.status == 1 && g.Event.event_date > DateTime.Now).OrderByDescending(g => g.Event.event_date))
                     {
+                        var goingCount = ViewBag.EventAttendanceCounts.ContainsKey(events.eventId)
+                                   ? ViewBag.EventAttendanceCounts[events.eventId]
+                                   : 0;
                         <div class="event-item mb-3 p-3 bg-light rounded d-flex" data-date="@events.Event.event_date.Value.ToString("yyyy-MM-dd")">
                             <div class="event-date me-3 text-center">
                                 <div class="event-day mb-1" style="color:black;">
@@ -451,15 +461,25 @@
                             <div class="event-details">
                                 <div class="event-day-of-week mb-1">@events.Event.event_date.Value.ToString("dddd")</div>
                                 <button class="action-button event-title mb-1"
+                                        data-toggle="modal"
+                                        data-target="#viewEventModal"
                                         data-title="@events.Event.title"
                                         data-eventId="@events.Event.id"
                                         data-groupId="@events.Event.groupId"
                                         data-description="@events.Event.description"
                                         data-time="@(events.Event.event_date.HasValue ? events.Event.event_date.Value.ToString("hh:mm tt") : "N/A")"
-                                        data-date="@events.Event.event_date.Value.ToString("MMMM d, yyyy")">
+                                        data-date="@events.Event.event_date.Value.ToString("MMMM d, yyyy")"
+                                        data-groupImage="@ViewBag.GroupPhoto"
+                                        data-groupName="@events.Event.Groups.groupName"
+                                        data-goingcount="@goingCount"
+                                        data-media='@Html.Raw(Json.Encode(events.Event.EventMedia.Select(m => m.mediaFile)))'>
                                     @events.Event.title
                                 </button>
+
                                 <div class="event-description">@events.Event.description</div>
+                                <div class="event-description">
+                                    <span class="badge badge-success" style="color:dimgrey">Going: @goingCount</span>
+                                </div>
                             </div>
                         </div>
                     }
@@ -473,49 +493,65 @@
     </div>
 </div>
 
-<div id="eventModal" class="modals">
-    <div class="modal-content" style="width:50%; background-color: white; margin: 15% auto; padding: 20px; border: 1px solid #888;">
-        <span id="closeModal" class="close" >&times;</span>
-        <h3 id="eventTitle"></h3>
-        <p id="eventDate"></p> <!-- Placeholder for event date -->
-        <p id="eventTime"></p> <!-- Placeholder for event time -->
-        <p id="eventDescription"></p>
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Event Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <!-- Group Image and Group Name -->
+                <div class="mb-3">
+                    <img id="groupImage" src="#" alt="Group Image" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                    <h5 id="groupName" class="mt-2"></h5>
+                </div>
+
+                <!-- Event Details -->
+                <h5 id="eventTitle"></h5>
+                <p id="eventDate"></p>
+                <p id="eventTime"></p>
+                <p id="eventDescription"></p>
+
+                <div class="event-attendance mt-2">
+                    <span class="badge badge-success" style="color:dimgrey">Going: <span id="eventGoingCount">0</span></span>
+                </div>
+                <!-- Event Media -->
+                <div id="eventMediaContainer" class="mt-3"></div>
+
+                <!-- Action Buttons -->
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="modal fade" id="imageModals" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-
-            <div class="modal-header align-items-center border-0 d-flex">
-                <img id="modalProfilePicture" src="" alt="Profile Picture" class="rounded-circle profile-picture">
-                <div class="ml-3 profile-details">
-                    <h5 id="modalUserName" class="mb-0"></h5>
-                    <p id="modalPostTitle"></p>
-                </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Event Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
-            <div class="modal-body p-0">
-                <!-- Bootstrap Carousel -->
-                <div id="carouselExample" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner" id="carouselImages">
-                        <!-- Dynamically populated images will go here -->
-                    </div>
-                    <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
+            <div class="modal-body text-center">
+                <!-- Group Image and Group Name -->
+                <div class="mb-3">
+                    <img id="groupImage" src="#" alt="Group Image" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                    <h5 id="groupName" class="mt-2"></h5>
                 </div>
-            </div>
-            <div class="modal-footer p-2">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+
+                <!-- Event Details -->
+                <h5 id="eventTitle"></h5>
+                <p id="eventDate"></p>
+                <p id="eventTime"></p>
+                <p id="eventDescription"></p>
+
+                <div class="event-attendance mt-2">
+                    <span class="badge badge-success" style="color:dimgrey">Going: <span id="eventGoingCount">0</span></span>
+                </div>
+                <!-- Event Media -->
+                <div id="eventMediaContainer" class="mt-3"></div>
+
+                <!-- Action Buttons -->
             </div>
         </div>
     </div>
@@ -523,9 +559,54 @@
 
 
 
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.event-title').forEach(button => {
+            button.addEventListener('click', function () {
+                // Fetch event details from button attributes
+                const title = this.getAttribute('data-title');
+                const description = this.getAttribute('data-description');
+                const date = this.getAttribute('data-date');
+                const time = this.getAttribute('data-time');
+                const groupImage = this.getAttribute('data-groupImage');
+                const groupName = this.getAttribute('data-groupName');
+                const goingCount = this.getAttribute('data-goingcount');
+                const mediaFiles = JSON.parse(this.getAttribute('data-media') || '[]');
+
+                // Update modal content
+                document.getElementById('eventTitle').textContent = title;
+                document.getElementById('eventDescription').textContent = description;
+                document.getElementById('eventDate').textContent = `Date: ${date}`;
+                document.getElementById('eventTime').textContent = `Time: ${time}`;
+                document.getElementById('groupName').textContent = groupName;
+                document.getElementById('groupImage').src = groupImage || '/UploadedFiles/default-cover.png';
+                document.getElementById('eventGoingCount').textContent = goingCount || '0';
+
+                // Handle media files
+                const mediaContainer = document.getElementById('eventMediaContainer');
+                mediaContainer.innerHTML = '';
+
+                if (mediaFiles.length > 0) {
+                    const imageUrl = mediaFiles[0];
+                    mediaContainer.innerHTML = `
+                    <img src="${imageUrl}" class="img-fluid rounded" alt="Event Media" style="max-height: 300px; object-fit: cover;">
+                `;
+                } else {
+                    mediaContainer.innerHTML = `<p class="text-muted">No media available for this event.</p>`;
+                }
+
+                // Show the Bootstrap Modal
+                const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                modal.show();
+            });
+        });
+    });
+
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll('[data-toggle="modal"]').forEach(button => {
@@ -575,21 +656,42 @@
     });
 </script>
 <script>
-        function toggleLike(button) {
-            const icon = button.querySelector('.input-icon-addon i');
-            const isLiked = icon.classList.contains('fas');
+    function toggleLike(button, postId) {
+        const icon = button.querySelector('.input-icon-addon i');
+        const isLiked = button.getAttribute('data-isliked') === "true"; // Read current state
+        const likeCountElement = button.closest('.post').querySelector('.like-count'); // Locate the like count element
 
-            if (isLiked) {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                button.innerHTML = '<span class="input-icon-addon"><i class="far fa-heart"></i></span> Like';
+        fetch('/Home/ToggleLike', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId, isLiked })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update button state
+                if (isLiked) {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    button.setAttribute('data-isliked', "false");
+                } else {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    button.setAttribute('data-isliked', "true");
+                }
+
+                // Update the like count
+                if (likeCountElement) {
+                    likeCountElement.innerHTML = `<i class="fas fa-heart"></i> ${data.likeCount}`;
+                }
             } else {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                button.innerHTML = '<span class="input-icon-addon"><i class="fas fa-heart"></i></span> Liked';
+                console.error('Failed to toggle like');
             }
-        }
+        })
+        .catch(error => console.error('Error:', error));
+    }
 </script>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -639,7 +741,8 @@
             const eventDetails = eventItems.map(item => ({
                 date: new Date(item.getAttribute('data-date')),
                 title: item.querySelector('.event-title').textContent,
-                description: item.querySelector('.event-description').textContent
+                description: item.querySelector('.event-description').textContent,
+                time: item.querySelector('.event-time').textContent || 'N/A'
             }));
 
             calendarBody.innerHTML = '';
@@ -667,26 +770,12 @@
                             cell.classList.add('event-day');
                             cell.setAttribute('data-title', event.title);
                             cell.setAttribute('data-description', event.description);
-
-                            // Add event for showing tooltip
-                            cell.addEventListener('click', function () {
-                                eventTitle.textContent = event.title;
-                                eventDate.textContent = `Date: ${event.date.toLocaleDateString()}`;
-                                eventTime.textContent = `Time: ${event.eventTime}`;
-                                eventDescription.textContent = event.description;
-                                eventModal.style.display = 'block';
-                            });
-
-                            cell.addEventListener('mouseout', function () {
-                                const tooltip = document.getElementById('tooltip');
-                                tooltip.style.display = 'none';
-                            });
                         }
 
                         cell.appendChild(span);
-                        row.appendChild(cell);
                         date++;
                     }
+                    row.appendChild(cell);
                 }
                 calendarBody.appendChild(row);
             }
@@ -708,34 +797,92 @@
         renderCalendar();
     });
 
-    const modal = document.getElementById('eventModal');
-    const closeModal = document.getElementById('closeModal');
-
-    document.querySelectorAll('.event-title').forEach(button => {
-        button.addEventListener('click', function () {
-            const title = this.getAttribute('data-title');
-            const description = this.getAttribute('data-description');
-            const eventDate = this.getAttribute('data-date');  // Get event date from data attribute
-            const eventTime = this.getAttribute('data-time');  // Get event time from data attribute
-
-            // Update modal content
-            document.getElementById('eventTitle').textContent = title;
-            document.getElementById('eventDescription').textContent = description;
-            document.getElementById('eventDate').textContent = `Date: ${eventDate}`;  // Set event date in modal
-            document.getElementById('eventTime').textContent = `Time: ${eventTime}`;  // Set event time in modal
-
-            // Show the modal
-            document.getElementById('eventModal').style.display = 'block';
+</script>
+<script>
+    function focusCommentInput(postId) {
+    const inputField = document.getElementById(`comment-input-${postId}`);
+    if (inputField) {
+        inputField.focus();
+    }
+}
+</script>
+<script>
+    function repostPost(postId) {
+        fetch('/Home/RepostPost', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Reposted!',
+                    text: data.message || 'Your repost was successful.',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Repost',
+                    text: data.error || 'Something went wrong. Please try again later.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Unexpected Error',
+                text: 'An unexpected error occurred. Please try again later.',
+                confirmButtonText: 'OK'
+            });
         });
-    });
+    }
+</script>
+<script>
+    function submitComment(form, postId) {
+        event.preventDefault(); // Prevent normal form submission
 
-    closeModal.addEventListener('click', function () {
-        modal.style.display = 'none';
-    });
+        const commentInput = form.querySelector("input[name='comment']");
+        const commentText = commentInput.value;
 
-    window.addEventListener('click', function (event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
+        if (!commentText.trim()) {
+            alert("Comment cannot be empty.");
+            return;
         }
-    });
+
+        const formData = new URLSearchParams(new FormData(form));
+
+        fetch('/Home/AddComment', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                commentInput.value = ''; // Clear the input field
+
+                const commentsSection = document.querySelector(`#comments-section-${postId}`);
+                const newComment = `
+                    <div class="post-header">
+                        <img src="${data.comment.profileImage}" alt="User Avatar" class="group-icon" style="width: 45px; height: 45px; object-fit: cover;">
+                        <div class="group-info">
+                            <div class="group-name">${data.comment.user}</div>
+                            <div class="post-content">${data.comment.comment}</div>
+                        </div>
+                    </div>
+                    <br />`;
+                commentsSection.insertAdjacentHTML('beforeend', newComment);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An unexpected error occurred. Please try again.");
+        });
+    }
 </script>

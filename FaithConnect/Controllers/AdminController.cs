@@ -5,7 +5,10 @@ using System.Web;
 using System.Web.Mvc;
 using FaithConnect.Utils;
 using FaithConnect.Repository;
-using FaithConnect.ViewModel;
+using System.Data.Entity;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
 
 namespace FaithConnect.Controllers
 {
@@ -13,14 +16,120 @@ namespace FaithConnect.Controllers
     public class AdminController : BaseController
     {
         // GET: Admin
+
+        public ActionResult GenerateAdminReport()
+        {
+            try
+            {
+                // Retrieve data for the report
+                var activeGroupsCount = _groupManager.GetAllGroups().Count(g => g.status == 1);
+                var pendingGroupsCount = _groupManager.GetAllGroups().Count(g => g.status == 0);
+                var activeUsersCount = _AccManager.GetAllUsers().Count(u => u.status == 1);
+                var totalPostsCount = _postManager.GetAllPosts().Count();
+                var totalEventsCount = _eventManager.GetAllEvents().Count();
+                var pendingEventsCount = _eventManager.GetAllEvents().Count(e => e.status == 0);
+                var approvedEventsCount = _eventManager.GetAllEvents().Count(e => e.status == 1);
+
+                // Create a memory stream for the PDF
+                using (var ms = new MemoryStream())
+                {
+                    // Initialize PDF document
+                    Document document = new Document(PageSize.A4, 25, 25, 30, 30);
+                    PdfWriter.GetInstance(document, ms);
+                    document.Open();
+
+                    // Add document title and metadata
+                    var titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+                    var metadataFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+                    document.Add(new Paragraph("Admin Dashboard Report", titleFont));
+                    document.Add(new Paragraph($"Generated on: {DateTime.Now}", metadataFont));
+                    document.Add(new Paragraph("\n"));
+
+                    // Create a table with metrics
+                    PdfPTable table = new PdfPTable(2) { WidthPercentage = 100 };
+                    table.SetWidths(new float[] { 70, 30 }); // Adjust column widths
+
+                    var headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+                    var cellFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+
+                    // Table headers
+                    table.AddCell(new PdfPCell(new Phrase("Metric", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
+                    table.AddCell(new PdfPCell(new Phrase("Count", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
+
+                    // Table data
+                    table.AddCell(new PdfPCell(new Phrase("Total Active Groups", cellFont)));
+                    table.AddCell(new PdfPCell(new Phrase(activeGroupsCount.ToString(), cellFont)));
+
+                    table.AddCell(new PdfPCell(new Phrase("Pending Groups", cellFont)));
+                    table.AddCell(new PdfPCell(new Phrase(pendingGroupsCount.ToString(), cellFont)));
+
+                    table.AddCell(new PdfPCell(new Phrase("Active Users", cellFont)));
+                    table.AddCell(new PdfPCell(new Phrase(activeUsersCount.ToString(), cellFont)));
+
+                    table.AddCell(new PdfPCell(new Phrase("Total Posts", cellFont)));
+                    table.AddCell(new PdfPCell(new Phrase(totalPostsCount.ToString(), cellFont)));
+
+                    table.AddCell(new PdfPCell(new Phrase("Total Events", cellFont)));
+                    table.AddCell(new PdfPCell(new Phrase(totalEventsCount.ToString(), cellFont)));
+
+                    table.AddCell(new PdfPCell(new Phrase("Pending Events", cellFont)));
+                    table.AddCell(new PdfPCell(new Phrase(pendingEventsCount.ToString(), cellFont)));
+
+                    table.AddCell(new PdfPCell(new Phrase("Approved Events", cellFont)));
+                    table.AddCell(new PdfPCell(new Phrase(approvedEventsCount.ToString(), cellFont)));
+
+                    // Add table to document
+                    document.Add(table);
+                    document.Close();
+
+                    // Return the PDF as a response
+                    Response.ContentType = "application/pdf";
+                    Response.AddHeader("content-disposition", "inline; filename=AdminDashboardReport.pdf");
+                    Response.Buffer = true;
+                    Response.Clear();
+                    Response.OutputStream.Write(ms.ToArray(), 0, ms.ToArray().Length);
+                    Response.OutputStream.Flush();
+                    Response.End();
+
+                    return new EmptyResult(); // Avoid returning a view
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred while generating the report: {ex.Message}";
+                return RedirectToAction("AdminDashboard");
+            }
+        }
+
         public ActionResult AdminDashboard()
         {
             var username = User.Identity.Name;
             var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var groups = _groupManager.GetAllGroups();
+            var groups = _groupManager.GetAllGroups()
+                            .Where(e => e.status == 1)
+                               .ToList();
+
+            var pendingGroups = _groupManager.GetAllGroups()
+                               .Where(e => e.status == 0)
+                               .ToList();
+
             var users = _AccManager.GetAllUsers();
+
             var posts = _postManager.GetAllPosts();
-            var accounts = _AccManager.GetAllUsers();
+
+
+            var accounts = _AccManager.GetAllUsers()
+                            .Where(e => e.status == 1)
+                                            .ToList();
+
+            var events = _eventManager.GetAllEvents();
+
+            var pendingEvents = _eventManager.GetAllEvents()
+                                    .Where(e => e.status == 0)
+                                    .ToList();
+            var approvedEvents = _eventManager.GetAllEvents()
+                                    .Where(e => e.status == 1)
+                                    .ToList();
 
             var model = new ManageAccountViewModel
             {
@@ -28,7 +137,11 @@ namespace FaithConnect.Controllers
                 UserAccounts = accounts,
                 Group = new Groups(),
                 Groups = groups,
-                Posts = posts
+                Posts = posts,
+                Events = events,
+                PendingEvents = pendingEvents,
+                ApprovedEvents = approvedEvents,
+                PendingGroups = pendingGroups
             };
 
             return View(model);
@@ -40,7 +153,9 @@ namespace FaithConnect.Controllers
         {
             var username = User.Identity.Name;
             var userInfo = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
-            var events = _eventManager.GetAllEvents();
+
+            var events = _eventManager.GetAllEvent().ToList();
+
 
             var accounts = _AccManager.GetAllUsers();
             var model = new ManageAccountViewModel
@@ -52,6 +167,7 @@ namespace FaithConnect.Controllers
 
             return View(model);
         }
+
 
 
 
@@ -138,7 +254,7 @@ namespace FaithConnect.Controllers
                 group.status = (int)Status.Active;
                 group.groupName = groupName;
                 group.description = description;
-                group.groupId = Utilities.gUid;
+                group.groupId = Utils.Utilities.gUid;
                 group.date_created = DateTime.Now;
 
                 if (_groupManager.CreateGroup(group, ref ErrorMessage) != ErrorCode.Success)
@@ -178,7 +294,7 @@ namespace FaithConnect.Controllers
 
 
         [HttpPost]
-        public ActionResult Create(UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address)
+        public ActionResult Create(UserAccount ua, string ConfirmPass, string firstname, string lastname, string phone, string address, string religion)
         {
             try
             {
@@ -195,8 +311,8 @@ namespace FaithConnect.Controllers
                     return View("ManageAccount", model);
                 }
 
-                ua.userId = Utilities.gUid;
-                ua.vcode = Utilities.code.ToString();
+                ua.userId = Utils.Utilities.gUid;
+                ua.vcode = Utils.Utilities.code.ToString();
                 ua.date_created = DateTime.Now;
                 ua.status = (int)Status.InActive;
 
@@ -216,7 +332,8 @@ namespace FaithConnect.Controllers
                     address = address,
                     email = ua.email,
                     status = (int)Status.Active,
-                    date_created = DateTime.Now
+                    date_created = DateTime.Now,
+                    religion = religion
                 };
 
                 if (_AccManager.CreateUserInformation(ui, ref ErrorMessage) != ErrorCode.Success)
@@ -290,6 +407,7 @@ namespace FaithConnect.Controllers
                     existingUser.role = userAccount.role;
                     existingUser.status = userAccount.status;
 
+
                     if (!string.IsNullOrEmpty(userAccount.password))
                     {
                         existingUser.password = userAccount.password; // Only update password if provided
@@ -331,9 +449,8 @@ namespace FaithConnect.Controllers
 
 
         [HttpPost]
-        public ActionResult DeleteGroup(int id)
+        public JsonResult DeleteGroup(int id)
         {
-            
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var group = _groupManager.GetGroupById(id);
@@ -341,14 +458,13 @@ namespace FaithConnect.Controllers
             var result = _groupManager.DeleteGroup(id, ref ErrorMessage);
 
             if (result == ErrorCode.Success)
-            {              
-                return RedirectToAction("ManageGroups");
+            {
+                return Json(new { success = true, message = "Group deleted successfully." });
             }
 
-            ModelState.AddModelError("", ErrorMessage);
-            var model = PrepareManageAccountViewModel();
-            return View("ManageGroups", model);
+            return Json(new { success = false, message = ErrorMessage });
         }
+
 
         [HttpPost]
         public ActionResult RejectGroup(int id)
@@ -476,13 +592,13 @@ namespace FaithConnect.Controllers
 
 
         [HttpPost]
-        public ActionResult Delete(int id, string title, int groupId)
+        public ActionResult Delete(int id, string title, int groupId, string message)
         {
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
             var group = _groupManager.GetGroupById(groupId);
 
-            string requestMessage = $"Admin Declined Event '{title}' from your group page {group.groupName}.";
+            string requestMessage = $"Admin Declined Event '{title}' due to '{message}' from your group page {group.groupName}.";
 
             var newNotification = new Notification
             {
@@ -502,19 +618,19 @@ namespace FaithConnect.Controllers
                 TempData["ErrorMessage"] = notifErrorMsg;
             }
 
-            var result = _AccManager.DeleteUser(id, ref ErrorMessage);
+            var result = _eventManager.DeleteEvent(id, ref ErrorMessage);
             if (result == ErrorCode.Success)
             {
-                return RedirectToAction("ManageAccount");
+                return RedirectToAction("Approval");
             }
             // Handle error
             ModelState.AddModelError("", ErrorMessage);
             var model = PrepareManageAccountViewModel();
-            return View("ManageAccount", model);
+            return View("Approval", model);
         }
 
         [HttpPost]
-        public ActionResult DeleteAccount(int id)
+        public JsonResult DeleteAccount(int id)
         {
             var username = User.Identity.Name;
             var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
@@ -522,13 +638,12 @@ namespace FaithConnect.Controllers
             var result = _AccManager.DeleteUser(id, ref ErrorMessage);
             if (result == ErrorCode.Success)
             {
-                return RedirectToAction("ManageAccount");
+                return Json(new { success = true, message = "Account deleted successfully." });
             }
-            // Handle error
-            ModelState.AddModelError("", ErrorMessage);
-            var model = PrepareManageAccountViewModel();
-            return View("ManageAccount", model);
+
+            return Json(new { success = false, message = ErrorMessage });
         }
+
 
         private ManageAccountViewModel PrepareManageAccountViewModel()
         {

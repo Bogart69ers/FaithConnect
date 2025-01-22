@@ -30,7 +30,6 @@ namespace FaithConnect
         public Nullable<int> status { get; set; }
     
         public virtual Groups Groups { get; set; }
-        public virtual UserAccount UserAccount { get; set; }
         public virtual ICollection<ForumComments> ForumComments { get; set; }
         public virtual ICollection<Media> Media { get; set; }
     }

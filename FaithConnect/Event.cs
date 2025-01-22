@@ -33,7 +33,6 @@ namespace FaithConnect
         public Nullable<int> createdBy { get; set; }
     
         public virtual Groups Groups { get; set; }
-        public virtual UserAccount UserAccount { get; set; }
         public virtual ICollection<EventAttendance> EventAttendance { get; set; }
         public virtual ICollection<EventMedia> EventMedia { get; set; }
         public virtual ICollection<Feedback> Feedback { get; set; }

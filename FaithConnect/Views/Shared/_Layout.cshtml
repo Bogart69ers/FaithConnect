@@ -29,7 +29,30 @@
 
     string currentPath = Request.Path;
 }
+@functions {
+    private string GetRedirectUrl(Notification notification)
+    {
+        // Example logic for determining redirect URL
+        if (notification.message.Contains("post"))
+        {
+            // Redirect to the post details page
+            return Url.Action("PostDetails", "Posts", new { postId = notification.userIdfrom });
+        }
+        else if (notification.message.Contains("event"))
+        {
+            // Redirect to the event details page
+            return Url.Action("EventDetails", "Events", new { eventId = notification.userIdfrom });
+        }
+        else if (notification.message.Contains("group"))
+        {
+            // Redirect to the group details page
+            return Url.Action("GroupDetail", "Groups", new { groupId = notification.userIdfrom });
+        }
 
+        // Default fallback
+        return Url.Action("Index", "Home");
+    }
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,6 +65,63 @@
     <link rel="stylesheet" href="~/Assets/Index/css/main.css" />
     <link rel="stylesheet" type="text/css" href="~/Assets/Index/css/Style2.css">
     
+    <style>
+        .notification-item {
+    border: none;
+    padding: 10px 0;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.notification-item:hover {
+    background-color: #f1f1f1;
+}
+
+.notification-form {
+    display: flex;
+    width: 100%;
+    padding: 0;
+}
+
+.notification-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.notification-message {
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0;
+    font-weight: 500;
+    color: #333;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #888;
+}
+
+.notification-status {
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.notification-button {
+    border: none;
+    background: none;
+    text-align: left;
+    padding: 0;
+    width: 100%;
+}
+
+.notification-button:focus {
+    outline: none;
+}
+
+
+    </style>
 
 </head>
 <body class="bg-gray position-relative">
@@ -163,17 +243,8 @@
                                 <h2>Notifications</h2>
                                 <!-- 'Mark all as read' or other dropdown items -->
                             </div>
-                            <div class="d-flex" type="button">
-                                <p class="rounded-pill bg-gray p-2">All</p>
-                                <p class="ms-3 rounded-pill bg-primary p-2 text-white">Unread</p>
-                            </div>
+                            
                         </li>
-
-                        <!-- Example heading (optional) -->
-                        <div class="d-flex justify-content-between mx-2">
-                            <h5>New</h5>
-                            <a href="#" class="text-decoration-none">See All</a>
-                        </div>
                         @functions {
                             private string GetTimeAgo(DateTime? dateTime)
                             {
@@ -203,35 +274,38 @@
 
                         @using FaithConnect.ViewModel
 
-                       @foreach (var notifVm in ViewBag.Notifications as List<notificationViewModel>)
-                       {
-                        <li class="my-2 p-1">
-                            <a class="d-flex align-items-center justify-content-evenly text-decoration-none text-dark" href="#">
-                                <div class="d-flex align-items-center justify-content-evenly">
-                                    <div class="p-2">
-                                        <img src="@notifVm.AvatarUrl"
-                                             alt="avatar"
-                                             class="rounded-circle"
-                                             style="width: 58px; height: 58px; object-fit: cover" />
-                                    </div>
-                                    <div>
-                                        <p class="fs-7 m-0">@notifVm.Notification.message</p>
-                                        <span class="fs-7 text-primary">
-                                            @GetTimeAgo(notifVm.Notification.date)
-                                        </span>
-                                    </div>
-                                </div>
-                                @if (!(notifVm.Notification.isRead ?? false))
-                                {
-                                    <i class="fas fa-circle fs-7 text-primary"></i>
-                                }
-                            </a>
-                        </li>
-                       }
-
-
+                        @if (ViewBag.Notifications != null)
+                        {
+                            foreach (var notifVm in ViewBag.Notifications as List<notificationViewModel>)
+                            {
+                            <li class="notification-item my-2">
+                                <form action="@Url.Action("MarkNotificationAsRead", "Base")" method="post" class="notification-form">
+                                    <input type="hidden" name="id" value="@notifVm.Notification.id" />
+                                    <input type="hidden" name="redirectUrl" value="@GetRedirectUrl(notifVm.Notification)" />
+                                    <button type="submit" class="notification-button">
+                                        <div class="d-flex align-items-center">
+                                            <img src="@notifVm.AvatarUrl" alt="Avatar" class="notification-avatar me-3" />
+                                            <div>
+                                                <p class="notification-message m-0">@notifVm.Notification.message</p>
+                                                <span class="notification-time text-muted small">@GetTimeAgo(notifVm.Notification.date)</span>
+                                            </div>
+                                            @if (!(notifVm.Notification.isRead ?? false))
+                                            {
+                                                <i class="fas fa-circle notification-status text-primary ms-auto"></i>
+                                            }
+                                        </div>
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="text-center text-muted">No notifications found.</li>
+                    }              
                     </ul>
 
+                  
                     <!-- secondary menu -->
                     <div class="rounded-circle p-1 bg-gray d-flex align-items-center justify-content-center mx-2" style="width: 38px; height: 38px" type="button" id="secondMenu" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
                         <i class="fas fa-caret-down"></i>
@@ -247,15 +321,7 @@
                                     <p class="m-0 text-muted">See your profile</p>
                                 </a>
                             </div>
-                        </li>
-                        <hr />
-                        <li class="dropdown-item p-1 rounded d-flex align-items-center" type="button">
-                            <i class="fas fa-exclamation-circle bg-gray p-2 rounded-circle"></i>
-                            <div class="ms-3">
-                                <p class="m-0">Give Feedback</p>
-                                <p class="m-0 text-muted fs-7">Help us improve the new FaithConnect.</p>
-                            </div>
-                        </li>
+                        </li>                        
                         <hr />
                         <li class="dropdown-item p-1 my-3 rounded" type="button">
                             <ul class="navbar-nav">
@@ -319,70 +385,7 @@
                                     </ul>
                                 </li>
                             </ul>
-                        </li>
-                        <li class="dropdown-item p-1 my-3 rounded" type="button">
-                            <ul class="navbar-nav">
-                                <li class="nav-item">
-                                    <div class="d-flex" data-bs-toggle="dropdown">
-                                        <i class="fas fa-question-circle bg-gray p-2 rounded-circle"></i>
-                                        <div class="ms-3 d-flex justify-content-between align-items-center w-100">
-                                            <p class="m-0">Help & Support</p>
-                                            <i class="fas fa-chevron-right"></i>
-                                        </div>
-                                    </div>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                                <div class="rounded-circle p-1 bg-gray d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px">
-                                                    <i class="fas fa-cog"></i>
-                                                </div>
-                                                <p class="m-0">Settings</p>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                                <div class="rounded-circle p-1 bg-gray d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px">
-                                                    <i class="fas fa-lock"></i>
-                                                </div>
-                                                <p class="m-0">Privacy Checkup</p>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                                <div class="rounded-circle p-1 bg-gray d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px">
-                                                    <i class="fas fa-unlock-alt"></i>
-                                                </div>
-                                                <p class="m-0">Privacy Shortcuts</p>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                                <div class="rounded-circle p-1 bg-gray d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px">
-                                                    <i class="fas fa-list"></i>
-                                                </div>
-                                                <p class="m-0">Activity Log</p>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                                <div class="rounded-circle p-1 bg-gray d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px">
-                                                    <i class="fas fa-newspaper"></i>
-                                                </div>
-                                                <p class="m-0">News Feed Preferences</p>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                                <div class="rounded-circle p-1 bg-gray d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px">
-                                                    <i class="fas fa-globe"></i>
-                                                </div>
-                                                <p class="m-0">Language</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
+                        </li>                        
                         <li class="dropdown-item p-1 my-3 rounded" type="button">
                             <ul class="navbar-nav">
                                 <li class="nav-item">

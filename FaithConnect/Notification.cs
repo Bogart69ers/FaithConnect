@@ -22,6 +22,5 @@ namespace FaithConnect
         public Nullable<int> userIdfrom { get; set; }
     
         public virtual UserAccount UserAccount { get; set; }
-        public virtual UserInformation UserInformation { get; set; }
     }
 }

@@ -48,7 +48,7 @@
     <div class="row">
         <div class="col-3">
             <div class="groups-sidebar">
-                <input type="text" class="form-control mb-3" placeholder="Search Groups">
+                <input type="text" id="searchGroups" class="form-control mb-3" placeholder="Search Groups">
                 <button id="discoverBtn" class="groups-sidebar-button active">
                     <span class="input-icon-addon"><i class="fa fa-search"></i></span> Discover
                 </button>
@@ -65,7 +65,7 @@
         </div>
         <div class="col-9">
             <div id="discoverGroups" class="groups-content active">
-                <h4>Suggested for you</h4>
+                <h4>All Groups</h4>
                 <div class="groups-grid">
                     @foreach (var group in Model.AllGroups.Where(m => m.status == 1))
                     {
@@ -74,13 +74,14 @@
                                             : Url.Content("~/UploadedFiles/" + group.GroupImage.FirstOrDefault()?.coverPhoto);
 
                         var memberCount = Model.GroupMemberships.Count(m => m.groupId == group.id && m.status == 1); // Count members only with joined status
-                        <div class="group-card">
+                        <div class="group-card" data-group-name="@group.groupName.ToLower()">
                             <img src="@coverImage" alt="Group image">
                             <div class="group-info">
                                 <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = group.id })" style="color: black; font-weight: bold; text-decoration: none;">@group.groupName</a></h5>
                                 <p>Members @memberCount</p>
                                 <form action="@Url.Action("JoinGroup", "Home")" method="post">
                                     <input type="hidden" name="groupId" value="@group.id" />
+                                    <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery" />
                                     <button type="submit" class="btn btn-custom">Join Group</button>
                                 </form>
                             </div>
@@ -100,7 +101,7 @@
                                             : Url.Content("~/UploadedFiles/" + item.Groups.GroupImage.FirstOrDefault()?.coverPhoto);
 
                                 var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.groupId && m.status == 1 ); // Count members only with joined status
-                                <div class="group-card">
+                                <div class="group-card" data-group-name="@item.Groups.groupName.ToLower()">
                                     <img src="@coverImage" alt="Group image">
                                     <div class="group-info">
                                         <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = item.groupId })" style="color: black; font-weight: bold; text-decoration: none;">@item.Groups.groupName</a></h5>
@@ -125,7 +126,7 @@
                                             : Url.Content("~/UploadedFiles/" + group.Groups.GroupImage.FirstOrDefault()?.coverPhoto);
 
                                 var memberCount = Model.GroupMemberships.Count(m => m.groupId == group.groupId && m.status == 1); // Count members only with joined status
-                                <div class="group-card">
+                                <div class="group-card" data-group-name="@group.Groups.groupName.ToLower()">
                                     <img src="@coverImage" alt="Group image">
                                     <div class="group-info">
                                         <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = group.groupId })" style="color: black; font-weight: bold; text-decoration: none;">@group.Groups.groupName</a></h5>
@@ -154,7 +155,7 @@
                                             : Url.Content("~/UploadedFiles/" + item.GroupImage.FirstOrDefault()?.coverPhoto);
 
                                 var memberCount = Model.GroupMemberships.Count(m => m.groupId == item.id && m.status == 1); // Count members only with joined status
-                                <div class="group-card">
+                                <div class="group-card" data-group-name="@item.groupName.ToLower()">
                                     <img src="@coverImage" alt="Group image">
                                     <div class="group-info">
                                         <h5><a href="@Url.Action("GroupDetail", "Home", new { groupId = item.id })" style="color: black; font-weight: bold; text-decoration: none;">@item.groupName</a></h5>
@@ -284,4 +285,25 @@
         });
     });
 
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById('searchGroups');
+        const groupCards = document.querySelectorAll('.group-card');
+        let debounceTimeout; // Declare debounce timeout variable
+
+        searchInput.addEventListener('input', function () {
+            // Clear previous timeout to prevent unnecessary execution
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const query = searchInput.value.toLowerCase().trim();
+
+                groupCards.forEach(card => {
+                    const groupName = card.getAttribute('data-group-name');
+                    // Check if the group name includes the query
+                    card.style.display = groupName.includes(query) ? 'block' : 'none';
+                });
+            }, 300); // 300ms debounce delay
+        });
+    });
 </script>

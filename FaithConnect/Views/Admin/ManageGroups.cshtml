@@ -3,7 +3,15 @@
     ViewBag.Title = "Manage Groups";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+<style>
+    .error-message {
+    display: none;
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
 
+</style>
 <div class="content">
     <div class="page-inner">
         <div class="page-header">
@@ -72,13 +80,10 @@
                                             <td>@Html.DisplayFor(modelItem => item.groupName)</td>
                                             <td>@Html.DisplayFor(modelItem => item.description)</td>
                                             <td>@Html.DisplayFor(modelItem => item.groupAdmin)</td>
-                                            <td>
-                                                
-                                                <form action="@Url.Action("DeleteGroup", new { id = item.id })" method="post" style="display:inline;">
-                                                    <button type="submit" class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash"></i> Delete
-                                                    </button>
-                                                </form>
+                                            <td>                                              
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteGroup(@item.id)">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
                                             </td>
                                         </tr>
                                     }
@@ -135,6 +140,8 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
@@ -158,4 +165,37 @@
                 "responsive": true,
             });
         });
+    </script>
+
+    <script>
+        function confirmDeleteGroup(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This group will be permanently deleted.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteGroup", "Admin")',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire('Deleted!', response.message, 'success')
+                                    .then(() => location.reload());
+                            } else {
+                                Swal.fire('Error!', response.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error!', 'Failed to process your request.', 'error');
+                        }
+                    });
+                }
+            });
+        }
     </script>

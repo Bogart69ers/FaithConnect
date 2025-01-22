@@ -5,6 +5,80 @@
     var userInfo = Model.UserInformation;
     string profileImage = string.IsNullOrEmpty(userInfo.Image.FirstOrDefault()?.imageFile) ? Url.Content("~/UploadedFiles/default.png") : Url.Content("~/UploadedFiles/" + userInfo.Image.FirstOrDefault()?.imageFile);
 }
+@functions {
+    private string GetRedirectUrl(Notification notification)
+    {
+        // Example logic for determining redirect URL
+        if (notification.message.Contains("Event"))
+        {
+            // Redirect to the event details page
+            return Url.Action("Approval", "Admin");
+        }
+        else if (notification.message.Contains("group"))
+        {
+            // Redirect to the group details page
+            return Url.Action("ManageGroups", "Admin");
+        }
+
+        // Default fallback
+        return Url.Action("AdminDashboard", "Admin");
+    }
+}
+<style>
+    .notification-item {
+        border: none;
+        padding: 10px 0;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .notification-item:hover {
+            background-color: #f1f1f1;
+        }
+
+    .notification-form {
+        display: flex;
+        width: 100%;
+        padding: 0;
+    }
+
+    .notification-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .notification-message {
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .notification-time {
+        font-size: 12px;
+        color: #888;
+    }
+
+    .notification-status {
+        font-size: 12px;
+        margin-left: 10px;
+    }
+
+    .notification-button {
+        border: none;
+        background: none;
+        text-align: left;
+        padding: 0;
+        width: 100%;
+    }
+
+        .notification-button:focus {
+            outline: none;
+        }
+</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -214,24 +288,35 @@
                                         return (years <= 1) ? "1 year ago" : years + " years ago";
                                     }
                                 }
-                                <li>
-                                    <div class="notif-scroll scrollbar-outer">
-                                        <div class="notif-center">
-                                        @foreach (var notifVm in ViewBag.Notifications as List<notificationViewModel>)
-                                        {
-                                            <a href="#">
-                                                <div class="notif-icon notif-primary">
-                                                    <img src="@notifVm.AvatarUrl" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover"/>
-                                                </div>
-                                                <div class="notif-content">
-                                                    <span class="block">@notifVm.Notification.message</span>
-                                                    <span class="time">@GetTimeAgo(notifVm.Notification.date)</span>
-                                                </div>
-                                            </a>
-                                        }  
-                                        </div>
-                                    </div>
-                                </li>                               
+                                @if (ViewBag.Notifications != null)
+                                {
+                                    foreach (var notifVm in ViewBag.Notifications as List<notificationViewModel>)
+                                    {
+                                        <li class="notification-item my-2" style="margin: 0 10px 0 10px">
+                                            <form action="@Url.Action("MarkNotificationAsRead", "Base")" method="post" class="notification-form">
+                                                <input type="hidden" name="id" value="@notifVm.Notification.id" />
+                                                <input type="hidden" name="redirectUrl" value="@GetRedirectUrl(notifVm.Notification)" />
+                                                <button type="submit" class="notification-button">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="@notifVm.AvatarUrl" alt="Avatar" class="notification-avatar me-3" />
+                                                        <div>
+                                                            <p class="notification-message m-0">@notifVm.Notification.message</p>
+                                                            <span class="notification-time text-muted small">@GetTimeAgo(notifVm.Notification.date)</span>
+                                                        </div>
+                                                        @if (!(notifVm.Notification.isRead ?? false))
+                                                        {
+                                                            <i class="fas fa-circle notification-status text-primary ms-auto"></i>
+                                                        }
+                                                    </div>
+                                                </button>
+                                            </form>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="text-center text-muted">No notifications found.</li>
+                                }                                 
                             </ul>
                         </li>                       
                         <li class="nav-item topbar-user dropdown hidden-caret">

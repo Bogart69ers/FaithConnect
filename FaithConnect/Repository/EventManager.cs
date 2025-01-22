@@ -24,6 +24,21 @@ namespace FaithConnect.Repository
 
         }
 
+        public int GetEventAttendanceCount(int eventId)
+        {
+            try
+            {
+                return _eventAtRepository._table
+                    .Count(a => a.eventId == eventId && a.status == 1); // Assuming 1 means 'Going'
+            }
+            catch (Exception ex)
+            {
+                // Log error
+                Console.WriteLine($"Error in GetEventAttendanceCount: {ex.Message}");
+                return 0;
+            }
+        }
+
 
         public IEnumerable<Event> GetEventsByGroupId(int groupId)
         {
@@ -67,12 +82,21 @@ namespace FaithConnect.Repository
                 return null;
             }
         }
-
+        public Event GetEventById(int id)
+        {
+            return _eventRepository.Get(id);
+        }
 
         public List<Event> GetAllEvents()
         {
             return _eventRepository.GetAll();
         }
+
+        public IQueryable<Event> GetAllEvent()
+        {
+            return _eventRepository._table.Include(e => e.EventMedia);
+        }
+
         public List<EventAttendance> GetAllEventAttendance()
         {
             return _eventAtRepository.GetAll();
@@ -152,6 +176,25 @@ namespace FaithConnect.Repository
             {
                 // Log exception if necessary
                 errMsg = ex.Message;
+                return ErrorCode.Error;
+            }
+        }
+
+        public ErrorCode DeleteEvent(int id, ref string errMsg)
+        {
+            try
+            {
+                var events = GetEventById(id);
+                if (events == null)
+                {
+                    errMsg = "Event not found";
+                    return ErrorCode.Error;
+                }
+                return _eventRepository.Delete(id, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                errMsg = $"An error occurred: {ex.Message}";
                 return ErrorCode.Error;
             }
         }

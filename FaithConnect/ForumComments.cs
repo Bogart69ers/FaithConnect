@@ -23,6 +23,5 @@ namespace FaithConnect
     
         public virtual Forum Forum { get; set; }
         public virtual Groups Groups { get; set; }
-        public virtual UserAccount UserAccount { get; set; }
     }
 }

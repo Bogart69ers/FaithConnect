@@ -11,6 +11,15 @@
     };
 }
 
+<style>
+    .error-message {
+    display: none;
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+</style>
 <div class="content">
     <div class="page-inner">
         <div class="page-header">
@@ -98,6 +107,22 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="form-group mb-3">
+                                <label for="religion">Religion</label>
+                                <div class="input-icon">
+                                    <span class="input-icon-addon"><i class="fas fa-hands-helping"></i></span>
+                                    <select class="form-control" name="religion" required>
+                                        <option value="" disabled selected>Religion</option>
+                                        <option value="Catholic">Catholic</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Iglesia Ni Cristo">Iglesia Ni Cristo</option>
+                                        <option value="Born Again Christians">Born Again Christians</option>
+                                        <option value="Jehovah's Witness">Jehovah's Witness</option>
+                                        <option value="7th Day Adventist">7th Day Adventist</option>
+                                        <option value="Protestantism">Protestantism</option>
+                                    </select>
+                                  </div>
+                            </div>
                             <div class="form-group">
                                 <label for="status">Status</label>
                                 <div class="input-icon">
@@ -144,11 +169,10 @@
                                             <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="@Url.Action("DeleteAccount", new { id = item.id })" method="post" style="display:inline;">
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteAccount(@item.id)">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+
                                         </td>
                                     </tr>
                                 }
@@ -186,11 +210,9 @@
                                             <a class="btn btn-warning btn-sm" href="javascript:void(0);" onclick="openEditModal(@item.id)">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="@Url.Action("DeleteAccount", new { id = item.id })" method="post" style="display:inline;">
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteAccount(@item.id)">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
                                         </td>
                                     </tr>
                                 }
@@ -240,7 +262,7 @@
                             <option value="3">Spiritual Leader</option>
                             <option value="1">User</option>
                         </select>
-                    </div>
+                    </div>                  
                     <div class="form-group">
                         <label for="editStatus">Status</label>
                         <select class="form-control" id="editStatus" name="status" required>
@@ -255,8 +277,41 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function confirmDeleteAccount(accountId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This account will be permanently deleted.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("DeleteAccount", "Admin")',
+                    type: 'POST',
+                    data: { id: accountId },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire('Deleted!', response.message, 'success')
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Error!', 'Failed to process your request.', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>
 <script>
     $(document).ready(function() {
         $('#accountTable').DataTable({

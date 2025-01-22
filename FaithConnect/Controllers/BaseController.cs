@@ -5,6 +5,7 @@ using FaithConnect.Models;
 using FaithConnect.ViewModel;
 using System.Linq;
 using System.Collections.Generic;
+using FaithConnect.Utils;
 
 
 
@@ -24,7 +25,11 @@ namespace FaithConnect.Controllers
         public CommentManager _commentManager;
         public NotificationManager _NotificationManager;
         public PostMediaManager _postMediaManager; 
-        public EventMediaManager _eventMediaManager; 
+        public EventMediaManager _eventMediaManager;
+        public ReactionManager _reactionManager;
+        public RepostManager _repostManager;
+
+
 
         public String Username { get { return User.Identity.Name; } }
         public String UserId { get { return _AccManager.GetUserByUsername(Username).userId; } }
@@ -43,6 +48,24 @@ namespace FaithConnect.Controllers
             _NotificationManager = new NotificationManager();
             _postMediaManager = new PostMediaManager(); 
             _eventMediaManager = new EventMediaManager();
+            _reactionManager = new ReactionManager();
+            _repostManager = new RepostManager();
+        }
+        [HttpPost]
+        public ActionResult MarkNotificationAsRead(int id, string redirectUrl)
+        {
+            string errMsg;
+            var result = _NotificationManager.MarkAsRead(id, out errMsg);
+
+            if (result == ErrorCode.Success)
+            {
+                // Redirect to the specified content
+                return Redirect(redirectUrl);
+            }
+
+            // Handle errors and redirect to a fallback page
+            TempData["ErrorMessage"] = errMsg;
+            return RedirectToAction("Index", "Home");
         }
         private string GetAvatarUrl(int id)
         {

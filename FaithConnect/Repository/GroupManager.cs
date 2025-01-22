@@ -184,6 +184,28 @@ namespace FaithConnect.Repository
                 return ErrorCode.Error;
             }
         }
+        public ErrorCode CancelJoinRequest(int groupId, int userId, ref string errMsg)
+        {
+            try
+            {
+                var membership = _membershipRepo._table
+                    .FirstOrDefault(m => m.groupId == groupId && m.userId == userId && m.status == (int)MembershipStatus.Pending);
+
+                if (membership == null)
+                {
+                    errMsg = "No pending join request found.";
+                    return ErrorCode.Error;
+                }
+
+                return _membershipRepo.Delete(membership.id, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+                return ErrorCode.Error;
+            }
+        }
+
 
     }
 }
