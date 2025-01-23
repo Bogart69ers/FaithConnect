@@ -81,7 +81,7 @@
                                         <td>     
                                                                                   
                                             <!-- View Details Button -->
-                                            <button type="button" class="btn btn-info btn-sm event-title"
+                                            <button type="button" class="btn btn-sm event-title"
                                                     data-toggle="modal"
                                                     data-target="#eventDetailsModal"
                                                     data-title="@item.title"
@@ -91,7 +91,9 @@
                                                     data-date="@(item.event_date.HasValue ? item.event_date.Value.ToString("MMMM d, yyyy hh:mm tt") : "N/A")"
                                                     data-groupImage="@(Url.Content("~/UploadedFiles/" + (item.Groups.GroupImage.FirstOrDefault()?.coverPhoto ?? "default-cover.jpg")))"
                                                     data-groupName="@(item.Groups?.groupName ?? "N/A")"
-                                                    data-media='@Html.Raw(Json.Encode(item.EventMedia.Select(m => Url.Content(m.mediaFile))))'>
+                                                    data-media='@Html.Raw(Json.Encode(item.EventMedia.Select(m => Url.Content(m.mediaFile))))'
+                                                    
+                                                    style="background:rgb(207 185 159); border-color:transparent; color:white">
                                                 <i class="fas fa-eye"></i> View Details
                                             </button>
 
@@ -196,7 +198,7 @@
             <div class="modal-footer">
                 <input type="hidden" id="eventIdInput">
                 <input type="hidden" id="groupIdInput">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn" data-dismiss="modal" style="background:rgb(207 185 159); border-color:transparent; color:white">Close</button>
             </div>
         </div>
     </div>

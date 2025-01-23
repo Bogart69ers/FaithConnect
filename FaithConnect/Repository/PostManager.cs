@@ -74,6 +74,26 @@ namespace FaithConnect.Repository
                 return ErrorCode.Error;
             }
         }
+
+        public ErrorCode DeletePost(int id, ref string errMsg)
+        {
+            try
+            {
+                var post = GetPostById(id);
+                if (post == null)
+                {
+                    errMsg = "Post not found";
+                    return ErrorCode.Error;
+                }
+                return _postRepository.Delete(id, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                errMsg = $"An error occurred: {ex.Message}";
+                return ErrorCode.Error;
+            }
+        }
+
         public List<Post> GetPostByGroup(int groupId)
         {
             return _postRepository._table

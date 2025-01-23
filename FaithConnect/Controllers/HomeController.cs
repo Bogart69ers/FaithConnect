@@ -473,7 +473,7 @@ namespace FaithConnect.Controllers
                     userId = userInfo.userId,
                     date_created = userInfo.date_created,
                     status = userInfo.status,
-                    religion = userInfo.religion,
+                    religion = religion,
                     first_name = firstname,
                     last_name = lastname,
                     email = email,
@@ -574,11 +574,30 @@ namespace FaithConnect.Controllers
             var result = _eventManager.DeleteEvent(id, ref ErrorMessage);
             if (result == ErrorCode.Success)
             {
+                TempData["SuccessMessage"] = "Event deleted successfully!";
                 return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
             }
             // Handle error
-
+            TempData["ErrorMessage"] = "Failed to delete the event. Please try again.";
             return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
+        }
+
+        [HttpPost]
+        public ActionResult DeletePost(int id, int groupId)
+        {
+            var username = User.Identity.Name;
+            var user = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+
+            var result = _postManager.DeletePost(id, ref ErrorMessage);
+            if (result == ErrorCode.Success)
+            {
+                TempData["SuccessMessage"] = "Post deleted successfully!";
+                return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "contents" });
+            }
+
+            // Handle error
+            TempData["ErrorMessage"] = "Failed to delete the post. Please try again.";
+            return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "contents" });
         }
 
         [Authorize]
@@ -1400,8 +1419,14 @@ namespace FaithConnect.Controllers
                 // Combine event_date and event_time into a DateTime
                 DateTime parsedDate = DateTime.ParseExact(event_date, "yyyy-MM-dd", null);
                 TimeSpan parsedTime = TimeSpan.Parse(event_time);
-
                 DateTime eventDateTime = parsedDate.Date.Add(parsedTime);
+
+                var existingEvent = _eventManager.GetEventByTitle(title, groupId); // You need to implement this method in your event manager
+                if (existingEvent != null && existingEvent.event_date >= DateTime.Now)
+                {
+                    TempData["ErrorMessage"] = "The event title is already in use for an upcoming event. Please choose a different title.";
+                    return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
+                }
 
                 // Set additional event properties
                 ev.createdBy = user.id;
@@ -1413,9 +1438,9 @@ namespace FaithConnect.Controllers
                 // Save the event using the manager
                 if (_eventManager.CreateEvent(ev, ref ErrorMessage) != ErrorCode.Success)
                 {
-                    ModelState.AddModelError(string.Empty, ErrorMessage);
-                    var model = PrepareManageAccountViewModel();
-                    return View("GroupDetail", model);
+                    TempData["ErrorMessage"] = ErrorMessage;
+                    TempData.Keep("ErrorMessage");
+                    return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
                 }
 
                 if (mediaFiles != null && mediaFiles.ContentLength > 0)
@@ -1495,20 +1520,18 @@ namespace FaithConnect.Controllers
 
                         if (superAdminNotifResult == ErrorCode.Error)
                         {
-                            ModelState.AddModelError(string.Empty, ErrorMessage);
-                            var model = PrepareManageAccountViewModel();
-                            return View("GroupDetail", model);
+                            TempData["ErrorMessage"] = ErrorMessage;
+                            return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
                         }
                     }
                 }
-
+                TempData["SuccessMessage"] = "Event created successfully!";
                 return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-                var model = PrepareManageAccountViewModel();
-                return View("GroupDetail", model);
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("GroupDetail", new { groupId = groupId, activeTab = "events" });
             }
         }
        
@@ -1522,9 +1545,20 @@ namespace FaithConnect.Controllers
                 if (currentUser == null)
                 {
                     ModelState.AddModelError(string.Empty, "User not found.");
-                    var model = PrepareManageAccountViewModel();
+                    var model = PrepareGroupViewModel(); // Use the correct model preparation
                     return View("Group", model);
                 }
+
+                var existingGroup = _groupManager.GetGroupByNameAndDescription(groupName, description);
+                if (existingGroup != null)
+                {
+                    TempData["ErrorMessage"] = "A group with the same name and description already exists. Please use a different description or a different group name.";
+                    TempData["ActiveTab"] = "createGroupBtn"; // Stay on the 'Create Group' tab
+                    var model = PrepareGroupViewModel(); // Prepare a GroupViewModel
+                    return View("Group", model); // Return the view with the correct model
+                }
+
+
                 group.privacy = privacy;
                 group.groupAdmin = groupAdmin;
                 group.status = (int)Status.InActive;
@@ -1536,7 +1570,7 @@ namespace FaithConnect.Controllers
                 if (_groupManager.CreateGroup(group, ref ErrorMessage) != ErrorCode.Success)
                 {
                     ModelState.AddModelError(string.Empty, ErrorMessage);
-                    var model = PrepareManageAccountViewModel();
+                    var model = PrepareGroupViewModel(); // Ensure correct model preparation on exception
                     return View("Group", model);
                 }
 
@@ -1551,7 +1585,7 @@ namespace FaithConnect.Controllers
                 if (_groupManager.AddGroupMembership(groupMembership, ref ErrorMessage) != ErrorCode.Success)
                 {
                     ModelState.AddModelError(string.Empty, ErrorMessage);
-                    var model = PrepareManageAccountViewModel();
+                    var model = PrepareGroupViewModel(); // Ensure correct model preparation on exception
                     return View("Group", model);
                 }
 
@@ -1579,7 +1613,7 @@ namespace FaithConnect.Controllers
                         if (superAdminNotifResult == ErrorCode.Error)
                         {
                             ModelState.AddModelError(string.Empty, ErrorMessage);
-                            var model = PrepareManageAccountViewModel();
+                            var model = PrepareGroupViewModel(); // Ensure correct model preparation on exception
                             return View("Group", model);
                         }
                     }
@@ -1593,7 +1627,7 @@ namespace FaithConnect.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-                var model = PrepareManageAccountViewModel();
+                var model = PrepareGroupViewModel(); // Ensure correct model preparation on exception
                 return View("Group", model);
             }
         }
@@ -1612,6 +1646,29 @@ namespace FaithConnect.Controllers
                 Group = new Groups()
             };
         }
+
+        private GroupViewModel PrepareGroupViewModel()
+        {
+            var username = User.Identity.Name;
+            var userInformation = _AccManager.CreateOrRetrieve(username, ref ErrorMessage);
+            var groupMemberships = _groupManager.GetAllGroupMemberships();
+            var allGroups = _groupManager.GetAllGroups();
+
+            // Filter out groups the user has joined or has pending requests for
+            var userGroupMemberships = groupMemberships.Where(m => m.userId == userInformation.id).ToList();
+            var joinedOrPendingGroupIds = userGroupMemberships.Select(m => m.groupId).ToList();
+            var discoverGroups = allGroups.Where(g => !joinedOrPendingGroupIds.Contains(g.id)).ToList();
+
+            return new GroupViewModel
+            {
+                UserInformation = userInformation,
+                GroupMemberships = groupMemberships,
+                AllGroups = discoverGroups,
+                Group = allGroups
+            };
+        }
+
+
     }
-    
+
 }

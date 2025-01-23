@@ -29,30 +29,7 @@
 
     string currentPath = Request.Path;
 }
-@functions {
-    private string GetRedirectUrl(Notification notification)
-    {
-        // Example logic for determining redirect URL
-        if (notification.message.Contains("post"))
-        {
-            // Redirect to the post details page
-            return Url.Action("PostDetails", "Posts", new { postId = notification.userIdfrom });
-        }
-        else if (notification.message.Contains("event"))
-        {
-            // Redirect to the event details page
-            return Url.Action("EventDetails", "Events", new { eventId = notification.userIdfrom });
-        }
-        else if (notification.message.Contains("group"))
-        {
-            // Redirect to the group details page
-            return Url.Action("GroupDetail", "Groups", new { groupId = notification.userIdfrom });
-        }
 
-        // Default fallback
-        return Url.Action("Index", "Home");
-    }
-}
 <!DOCTYPE html>
 <html>
 <head>
@@ -279,9 +256,8 @@
                             foreach (var notifVm in ViewBag.Notifications as List<notificationViewModel>)
                             {
                             <li class="notification-item my-2">
-                                <form action="@Url.Action("MarkNotificationAsRead", "Base")" method="post" class="notification-form">
+                                <form action="@Url.Action("MarkNotificationAsReadUser", "Base")" method="post" class="notification-form">
                                     <input type="hidden" name="id" value="@notifVm.Notification.id" />
-                                    <input type="hidden" name="redirectUrl" value="@GetRedirectUrl(notifVm.Notification)" />
                                     <button type="submit" class="notification-button">
                                         <div class="d-flex align-items-center">
                                             <img src="@notifVm.AvatarUrl" alt="Avatar" class="notification-avatar me-3" />

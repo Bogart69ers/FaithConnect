@@ -116,24 +116,16 @@
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar" data-background-color="dark">
+    <div class="sidebar">
         <div class="sidebar-logo">
             <!-- Logo Header -->
-            <div class="logo-header" data-background-color="dark">
-                <a href="~/Admin/AdminDashboard" class="logo">
+            <div class="logo-header">
+                <a href="~/Admin/AdminDashboard" class="logo" style="color:black">
                     <img src="~/Assets/login/img/Logo.png"
                          alt="navbar brand"
                          class="navbar-brand"
                          height="70" /> FaithConnect
-                </a>
-                <div class="nav-toggle">
-                    <button class="btn btn-toggle toggle-sidebar">
-                        <i class="gg-menu-right"></i>
-                    </button>
-                    <button class="btn btn-toggle sidenav-toggler">
-                        <i class="gg-menu-left"></i>
-                    </button>
-                </div>
+                </a>             
                 <button class="topbar-toggler more">
                     <i class="gg-more-vertical-alt"></i>
                 </button>
@@ -141,9 +133,9 @@
             <!-- End Logo Header -->
         </div>
         <div class="sidebar-wrapper scrollbar scrollbar-inner">
-            <div class="sidebar-content">
+            <div class="sidebar-content" >
                 <ul class="nav nav-secondary">
-                    <li class="nav-item active">
+                    <li class="nav-item" >
                         <a href="~/Admin/AdminDashboard">
                             <i class="fas fa-home"></i>
                             <p>Dashboard</p>
@@ -251,7 +243,7 @@
                                 <i class="fa fa-bell"></i>
                             @if (unreadCount > 0)
                             {
-                                <span class="notification">@unreadCount</span>
+                                <span class="notification" style="background-color:red">@unreadCount</span>
 
                             }
                             </a>

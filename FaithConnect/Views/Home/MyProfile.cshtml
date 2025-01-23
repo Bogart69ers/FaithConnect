@@ -303,6 +303,10 @@
                                 <label class="tx-11 font-weight-bold mb-0 text-uppercase">Email:</label>
                                 <p class="text-muted">@Model.UserInformation.email</p>
                             </div>
+                            <div class="mt-3">
+                                <label class="tx-11 font-weight-bold mb-0 text-uppercase">Religion:</label>
+                                <p class="text-muted">@Model.UserInformation.religion</p>
+                            </div>
                             <div class="mt-3 d-flex social-links">
                                 <!-- Social links -->
                             </div>
@@ -509,10 +513,6 @@
                         @Html.HiddenFor(model => model.UserInformation.userId)
                         @Html.HiddenFor(model => model.UserInformation.date_created)
                         @Html.HiddenFor(model => model.UserInformation.status)
-                        @Html.HiddenFor(model => model.UserInformation.religion)
-                        <input type="hidden" name="religion" value="@Model.UserInformation.religion" class="form-control">
-
-
 
                         <div class="form-group text-center">
                             <label for="profilePicture">Profile Picture</label>
@@ -558,6 +558,19 @@
                             <label for="address">Address</label>
                             <input type="text" name="address" value="@Model.UserInformation.address" class="form-control">
                             @Html.ValidationMessageFor(model => model.UserInformation.address, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label for="religion">Religion</label>
+                            <select name="religion" class="form-control" required>
+                                <option value="" disabled @(Model.UserInformation.religion == null ? "selected" : "")>Select Religion</option>
+                                <option value="Catholic" @(Model.UserInformation.religion == "Catholic" ? "selected" : "")>Catholic</option>
+                                <option value="Islam" @(Model.UserInformation.religion == "Islam" ? "selected" : "")>Islam</option>
+                                <option value="Iglesia Ni Cristo" @(Model.UserInformation.religion == "Iglesia Ni Cristo" ? "selected" : "")>Iglesia Ni Cristo</option>
+                                <option value="Born Again Christians" @(Model.UserInformation.religion == "Born Again Christians" ? "selected" : "")>Born Again Christians</option>
+                                <option value="Jehovah's Witness" @(Model.UserInformation.religion == "Jehovah's Witness" ? "selected" : "")>Jehovah's Witness</option>
+                                <option value="7th Day Adventist" @(Model.UserInformation.religion == "7th Day Adventist" ? "selected" : "")>7th Day Adventist</option>
+                                <option value="Protestantism" @(Model.UserInformation.religion == "Protestantism" ? "selected" : "")>Protestantism</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">

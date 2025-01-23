@@ -39,6 +39,10 @@ namespace FaithConnect.Repository
             }
         }
 
+        public Event GetEventByTitle(string title, int groupId)
+        {
+            return _eventRepository._table.FirstOrDefault(e => e.title == title && e.groupId == groupId);
+        }
 
         public IEnumerable<Event> GetEventsByGroupId(int groupId)
         {

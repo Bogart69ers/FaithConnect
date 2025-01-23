@@ -307,3 +307,43 @@
         });
     });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const activeTabId = '@TempData["ActiveTab"]';
+
+        if (activeTabId) {
+            // Remove 'active' class from all buttons and content
+            document.querySelectorAll('.groups-sidebar-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.groups-content').forEach(content => content.classList.remove('active'));
+
+            // Add 'active' class to the specific tab button and content
+            const activeButton = document.getElementById(activeTabId);
+            const activeContentId = activeButton.getAttribute('id').replace('Btn', '');
+            const activeContent = document.getElementById(activeContentId);
+
+            activeButton.classList.add('active');
+            activeContent.classList.add('active');
+        } else {
+            // Default to Discover tab if no active tab is set
+            document.getElementById('discoverBtn').classList.add('active');
+            document.getElementById('discoverGroups').classList.add('active');
+        }
+    });
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+        // Check if there's an error message from the server
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '@TempData["ErrorMessage"]',
+                    confirmButtonText: 'OK'
+                });
+            </text>
+        }
+</script>

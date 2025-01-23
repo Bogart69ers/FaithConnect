@@ -67,6 +67,20 @@ namespace FaithConnect.Controllers
             TempData["ErrorMessage"] = errMsg;
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpPost]
+        public ActionResult MarkNotificationAsReadUser(int id)
+        {
+            string errMsg;
+            var result = _NotificationManager.MarkAsRead(id, out errMsg);
+
+            if (Request.UrlReferrer != null)
+            {
+                return Redirect(Request.UrlReferrer.ToString());
+            }
+            // Handle errors and redirect to a fallback page
+            return RedirectToAction("Index", "Home");
+        }
         private string GetAvatarUrl(int id)
         {
             // 1) If userId = 0 or invalid, return a default image or handle as needed

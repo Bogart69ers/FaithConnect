@@ -83,6 +83,11 @@ namespace FaithConnect.Repository
             return _groupRepo.Get(id);
         }
 
+        public Groups GetGroupByNameAndDescription(string groupName, string description)
+        {
+            return _groupRepo._table.FirstOrDefault(g => g.groupName == groupName && g.description == description);
+        }
+
         public Groups GetGroupByIds(int? id)
         {
             return _groupRepo.Get(id);
