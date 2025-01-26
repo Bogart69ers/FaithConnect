@@ -68,6 +68,81 @@
 <link href="~/Assets/signup/css/style2.css" rel="stylesheet">
 <link href="~/Assets/Index/css/modal.css" rel="stylesheet" />
 <style>
+.custom-dropdown {
+    display: flex;
+    align-items: start;
+    position: relative;
+}
+
+.dropdown-menu-container {
+    position: relative;
+    flex-grow: 1;
+}
+
+.am-pm-switch {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    margin-left: 10px; /* Add spacing between dropdown and buttons */
+}
+
+.toggle-button {
+    width: 60px;
+    text-align: center;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    color: black;
+    cursor: pointer;
+    margin-bottom: 5px; /* Spacing between AM and PM buttons */
+}
+
+.toggle-button.active {
+    background-color: #d6c4a7;
+    color: white;
+}
+
+.toggle-button:disabled {
+    background-color: #e0e0e0;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.dropdown-item.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+.dropdown-item:hover:not(.disabled) {
+    background-color: #f0f0f0;
+    color: #007bff;
+}
+
+#timeList {
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+
+
+
+
+
      .modal-header {
         flex-wrap: nowrap;
         justify-content: flex-start;
@@ -798,11 +873,25 @@
                                     </div>
                                     <div class="form-group mt-3">
                                         <label>Start Date</label>
-                                        <input type="date" name="event_date" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                        <input type="date" id="event_date_tab1" name="event_date" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
                                     </div>
                                     <div class="form-group mt-3">
-                                        <label>Start Time</label>
-                                        <input type="time" name="event_time" class="form-control" required>                                   
+                                        <label for="event_time_tab1">Start Time</label>
+                                        <div class="dropdown custom-dropdown d-flex">
+                                            <div class="dropdown-menu-container flex-grow-1">
+                                                <button style="border:1px solid #ced4da;" class="btn dropdown-toggle w-100" type="button" id="timeDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Select Time
+                                                </button>
+                                                <ul class="dropdown-menu w-100" id="timeDropdown">
+                                                    <div id="timeList"></div>
+                                                </ul>
+                                            </div>
+                                            <div class="am-pm-switch d-flex flex-column">
+                                                <button type="button" id="amButton" class="toggle-button active">AM</button>
+                                                <button type="button" id="pmButton" class="toggle-button">PM</button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="event_time_hidden" name="event_time">
                                     </div>
                                     <div class="form-group mt-3">
                                         <textarea class="form-control" name="description" placeholder="Event / Meeting Details"></textarea>
@@ -1756,39 +1845,6 @@
 
 </script>
 
-@*<script>
-    // Function to preview selected media files
-    function previewMediaFiles(input) {
-        const previewContainer = document.getElementById('mediaPreview');
-        previewContainer.innerHTML = ''; // Clear previous previews
-
-        if (input.files) {
-            Array.from(input.files).forEach(file => {
-                const fileURL = URL.createObjectURL(file);
-                const fileType = file.type;
-
-                const mediaElement = document.createElement(fileType.startsWith('image') ? 'img' : 'video');
-                mediaElement.src = fileURL;
-                mediaElement.classList.add('img-thumbnail', 'mr-2', 'mb-2');
-                mediaElement.style.maxWidth = '100px';
-                mediaElement.style.maxHeight = '100px';
-
-                if (fileType.startsWith('video')) {
-                    mediaElement.setAttribute('controls', 'controls');
-                }
-
-                previewContainer.appendChild(mediaElement);
-            });
-        }
-    }
-
-    // Event listener for file input changes
-    $(document).ready(function () {
-        $('#mediaFiles').on('change', function () {
-            previewMediaFiles(this);
-        });
-    });
-</script>*@
 
 <script>
     function toggleLike(button, postId) {
@@ -2100,3 +2156,172 @@
     });
 
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const eventForm = document.querySelector('form[action$="createEventForm"]');
+
+    if (eventForm) {
+        eventForm.addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(eventForm);
+
+            fetch(eventForm.action, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success",
+                        text: data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    // Optionally, reload or update events list
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message,
+                        confirmButtonText: "OK"
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "An unexpected error occurred. Please try again."
+                });
+            });
+        });
+    }
+});
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const timeDropdownButton = document.getElementById('timeDropdownButton');
+        const timeList = document.getElementById('timeList');
+        const amButton = document.getElementById('amButton');
+        const pmButton = document.getElementById('pmButton');
+        const dateInput = document.getElementById('event_date_tab1');
+        const hiddenTimeInput = document.getElementById('event_time_hidden');
+
+        function generateTimeOptions(period) {
+            timeList.innerHTML = ''; // Clear existing options
+            const now = new Date();
+            const selectedDate = new Date(dateInput.value);
+
+            const isToday = now.toDateString() === selectedDate.toDateString();
+
+            const isPM = period === 'PM';
+            const startHour = isPM ? 12 : 0; // 12 PM for start of PM, 0 for start of AM
+            const endHour = isPM ? 24 : 12; // End hour for PM or AM
+
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minute = 0; minute < 60; minute += 30) {
+                    const displayHour = hour % 12 || 12; // Convert to 12-hour format
+                    const displayMinutes = minute.toString().padStart(2, '0');
+                    const optionTime = `${displayHour}:${displayMinutes}`; // Time without AM/PM
+
+                    // Check if the time should be disabled
+                    let isDisabled = false;
+                    if (isToday) {
+                        const optionDate = new Date(selectedDate);
+                        optionDate.setHours(hour, minute, 0, 0);
+                        isDisabled = optionDate < now; // Disable past times if today
+                    }
+
+                    // Create a list item
+                    const li = document.createElement('li');
+                    li.classList.add('dropdown-item');
+                    if (isDisabled) {
+                        li.classList.add('disabled');
+                    }
+                    li.innerText = optionTime;
+
+                    // Click event to select time
+                    if (!isDisabled) {
+                        li.addEventListener('click', function () {
+                            timeDropdownButton.innerText = `${optionTime} ${period}`; // Add AM/PM to displayed text
+                            hiddenTimeInput.value = `${optionTime} ${period}`; // Store selected time with AM/PM
+
+                            // Manually close the dropdown after selection
+                            const dropdown = bootstrap.Dropdown.getInstance(timeDropdownButton);
+                            dropdown.hide();
+                        });
+                    }
+
+                    timeList.appendChild(li);
+                }
+            }
+        }
+
+        // Event listeners for AM/PM buttons
+        amButton.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent dropdown from closing
+            amButton.classList.add('active');
+            pmButton.classList.remove('active');
+
+            // Clear the selected time
+            timeDropdownButton.innerText = "Select Time"; // Reset dropdown button text
+            hiddenTimeInput.value = ""; // Clear hidden input value
+
+            generateTimeOptions('AM'); // Show AM options
+        });
+
+        pmButton.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent dropdown from closing
+            pmButton.classList.add('active');
+            amButton.classList.remove('active');
+
+            // Clear the selected time
+            timeDropdownButton.innerText = "Select Time"; // Reset dropdown button text
+            hiddenTimeInput.value = ""; // Clear hidden input value
+
+            generateTimeOptions('PM'); // Show PM options
+        });
+
+        // Event listener for date input change
+        dateInput.addEventListener('change', function () {
+            // Clear the selected time when the date changes
+            timeDropdownButton.innerText = "Select Time"; // Reset dropdown button text
+            hiddenTimeInput.value = ""; // Clear hidden input value
+
+            const activePeriod = amButton.classList.contains('active') ? 'AM' : 'PM';
+            generateTimeOptions(activePeriod); // Regenerate options based on the selected date
+        });
+
+        // Default to AM options on load
+        generateTimeOptions('AM');
+    });
+
+</script>
+
+
+
+
+
+@if (TempData["WarningMessage"] != null)
+{
+    <script>
+        Swal.fire('Warning', '@TempData["WarningMessage"]', 'warning');
+    </script>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        Swal.fire('Success', '@TempData["SuccessMessage"]', 'success');
+    </script>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        Swal.fire('Error', '@TempData["ErrorMessage"]', 'error');
+    </script>
+}

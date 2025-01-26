@@ -38,12 +38,101 @@ namespace FaithConnect.Controllers
                     PdfWriter.GetInstance(document, ms);
                     document.Open();
 
-                    // Add document title and metadata
-                    var titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
-                    var metadataFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
-                    document.Add(new Paragraph("Admin Dashboard Report", titleFont));
-                    document.Add(new Paragraph($"Generated on: {DateTime.Now}", metadataFont));
+                    // Load logos
+                    string userLogoPath = Server.MapPath("~/Assets/Admin/img/Logo.png");
+                    string schoolLogoPath = Server.MapPath("~/Assets/Admin/img/UC_logo.png");
+
+                    var userLogo = iTextSharp.text.Image.GetInstance(userLogoPath);
+                    var schoolLogo = iTextSharp.text.Image.GetInstance(schoolLogoPath);
+
+                    // Resize logos
+                    userLogo.ScaleAbsolute(50, 50); // Adjust as needed
+                    schoolLogo.ScaleAbsolute(50, 25);
+
+                    // Create a table for the header (1 column, everything centered)
+                    PdfPTable headerTable = new PdfPTable(1);
+                    headerTable.WidthPercentage = 100;
+
+                    // Add logos and title in a vertical layout
+                    PdfPTable logoAndTitleTable = new PdfPTable(3);
+                    logoAndTitleTable.WidthPercentage = 100;
+                    logoAndTitleTable.SetWidths(new float[] { 1, 4, 1 }); // Adjust column widths for spacing
+
+                    // Left logo (school)
+                    PdfPCell schoolLogoCell = new PdfPCell(schoolLogo)
+                    {
+                        Border = PdfPCell.NO_BORDER,
+                        HorizontalAlignment = Element.ALIGN_CENTER,
+                        PaddingTop = 10
+                    };
+                    logoAndTitleTable.AddCell(schoolLogoCell);
+
+                    // Title and address
+                    // Title and subtitle (centered)
+                    PdfPCell titleCell = new PdfPCell
+                    {
+                        Border = PdfPCell.NO_BORDER,
+                        HorizontalAlignment = Element.ALIGN_CENTER,
+                        VerticalAlignment = Element.ALIGN_MIDDLE
+                    };
+
+                    var titleFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
+                    var subtitleFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL);
+
+                    // Add title
+                    Paragraph title = new Paragraph("UNIVERSITY OF CEBU LAPU-LAPU AND MANDAUE", titleFont)
+                    {
+                        Alignment = Element.ALIGN_CENTER
+                    };
+                    titleCell.AddElement(title);
+
+                    // Add address
+                    Paragraph address = new Paragraph("A. C. Cortes Ave., Looc Mandaue City", subtitleFont)
+                    {
+                        Alignment = Element.ALIGN_CENTER
+                    };
+                    titleCell.AddElement(address);
+
+                    // Add Faith Connect subtitle
+                    Paragraph faithConnect = new Paragraph("Faith Connect", subtitleFont)
+                    {
+                        Alignment = Element.ALIGN_CENTER
+                    };
+                    titleCell.AddElement(faithConnect);
+
+                    logoAndTitleTable.AddCell(titleCell);
+
+
+                    // Right logo (Faith Connect)
+                    PdfPCell userLogoCell = new PdfPCell(userLogo)
+                    {
+                        Border = PdfPCell.NO_BORDER,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    };
+                    logoAndTitleTable.AddCell(userLogoCell);
+
+                    // Add the logo-and-title table to the header table
+                    headerTable.AddCell(new PdfPCell(logoAndTitleTable)
+                    {
+                        Border = PdfPCell.NO_BORDER,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    });
+
+                    // Add the header table to the document
+                    document.Add(headerTable);
+
+                    // Add some spacing after the header
                     document.Add(new Paragraph("\n"));
+
+                    // Add report title
+                    var reportTitleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+                    Paragraph reportTitle = new Paragraph("Admin Dashboard Report", reportTitleFont)
+                    {
+                        Alignment = Element.ALIGN_CENTER
+                    };
+                    document.Add(reportTitle);
+
+                    document.Add(new Paragraph("\n")); // Add spacing
 
                     // Create a table with metrics
                     PdfPTable table = new PdfPTable(2) { WidthPercentage = 100 };
@@ -100,6 +189,7 @@ namespace FaithConnect.Controllers
                 return RedirectToAction("AdminDashboard");
             }
         }
+
 
         public ActionResult AdminDashboard()
         {

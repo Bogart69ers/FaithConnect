@@ -398,6 +398,7 @@
     <Content Include="Assets\Admin\img\flags\zw.png" />
     <Content Include="Assets\Admin\img\img-shadow.png" />
     <Content Include="Assets\Admin\img\jm_denis.jpg" />
+    <Content Include="Assets\Admin\img\Logo.png" />
     <Content Include="Assets\Admin\img\logoproduct.svg" />
     <Content Include="Assets\Admin\img\logoproduct2.svg" />
     <Content Include="Assets\Admin\img\logoproduct3.svg" />
@@ -406,6 +407,7 @@
     <Content Include="Assets\Admin\img\profile2.jpg" />
     <Content Include="Assets\Admin\img\sauro.jpg" />
     <Content Include="Assets\Admin\img\talha.jpg" />
+    <Content Include="Assets\Admin\img\UC_logo.png" />
     <Content Include="Assets\Admin\img\undraw\undraw_blank_canvas_3rbb.svg" />
     <Content Include="Assets\Admin\img\undraw\undraw_creative_team_r90h.svg" />
     <Content Include="Assets\Admin\img\undraw\undraw_empty_xct9.svg" />
